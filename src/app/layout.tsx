@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import ClientWrapper from "@/components/ClientWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Dhaval Tanna | System Security Specialist",
-  description: "Enterprise Software Engineer & Security Specialist",
+  description: "Enterprise Software Engineer building secure, scalable systems.",
 };
 
 export default function RootLayout({
@@ -16,10 +16,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.className} bg-black text-white antialiased`}>
-        <Navbar />
-        {children}
+    <html lang="en" className="dark h-full">
+      <body className={`${inter.className} bg-black text-white antialiased h-full`}>
+        <ClientWrapper>{children}</ClientWrapper>
       </body>
     </html>
   );
