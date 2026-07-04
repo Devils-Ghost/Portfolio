@@ -1,15 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
-import { ChevronRight, GitBranch, ExternalLink } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import ProjectCard, { ProjectData } from "@/components/ui/ProjectCard";
-import Modal from "@/components/ui/Modal"; // Import the new Modal
 
 export default function ProjectsSection() {
-  const [selectedProject, setSelectedProject] = useState<ProjectData | null>(
-    null,
-  );
+  const containerRef = useRef<HTMLElement>(null);
+
+  // Same scroll-linked pattern as SkillsSection: scrollYProgress moves from
+  // 0 to 1 as the section's top travels from 80% down the viewport to 30%
+  // down it, and everything below reads directly off that value - so the
+  // scroll wheel *is* the timeline, forwards and backwards.
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start 70%", "start 30%"],
+  });
+
+  const headingOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
+  const headingY = useTransform(scrollYProgress, [0, 0.2], [20, 0]);
 
   const projects: ProjectData[] = [
     {
@@ -39,8 +49,14 @@ export default function ProjectsSection() {
   ];
 
   return (
-    <section className="w-full max-w-5xl mx-auto px-6 py-20 relative">
-      <div className="flex justify-between items-end mb-16">
+    <section
+      ref={containerRef}
+      className="w-full max-w-6xl mx-auto px-6 py-16 relative"
+    >
+      <motion.div
+        style={{ opacity: headingOpacity, y: headingY }}
+        className="flex justify-between items-end mb-10"
+      >
         <h2 className="text-3xl md:text-4xl font-bold">Featured Work</h2>
         <Link
           href="/projects"
@@ -52,20 +68,31 @@ export default function ProjectsSection() {
             className="group-hover:translate-x-1 transition-transform"
           />
         </Link>
-      </div>
+      </motion.div>
 
-      {/* ================= ORGANIC CLUSTER LAYOUT ================= */}
+      {/* ================= ORGANIC CLUSTER LAYOUT =================
+          Card 0 (top-left) and card 1 (top-right) sit at nearly the same
+          height, and card 2 sits centered underneath, spanning the gap
+          between them - rather than a diagonal staircase. The whole
+          cluster is also shifted inward (12% / 55% / 32%) instead of
+          pinning card 0 to the very left edge, so it reads as centered
+          rather than left-heavy. Each ProjectCard tracks its own scroll
+          entrance internally, so nothing scroll-related needs computing
+          here. */}
       <div className="flex flex-col gap-12 md:gap-0 relative">
         {projects.map((project, index) => {
           let positionClasses = "";
+          let baseRotation = 0;
 
           if (index === 0) {
-            positionClasses = "md:self-start";
+            positionClasses = "md:ml-[12%]";
+            baseRotation = -3; // Tilt left for the first card
           } else if (index === 1) {
-            positionClasses = "md:self-end md:-mt-24 lg:-mt-32";
+            positionClasses = "md:ml-[55%] md:-mt-52";
+            baseRotation = 3; // Tilt right for the second card
           } else if (index === 2) {
-            positionClasses =
-              "md:self-start md:-mt-24 lg:-mt-32 md:ml-12 lg:ml-24";
+            positionClasses = "md:ml-[32%] md:mt-3";
+            baseRotation = -1; // Slightly less left tilt for the third card
           }
 
           return (
@@ -73,66 +100,12 @@ export default function ProjectsSection() {
               key={index}
               project={project}
               index={index}
-              onClick={() => setSelectedProject(project)}
               className={positionClasses}
+              baseRotation={baseRotation}
             />
           );
         })}
       </div>
-
-      {/* ================= REUSABLE MODAL ================= */}
-      <Modal
-        isOpen={!!selectedProject}
-        onClose={() => setSelectedProject(null)}
-        className="max-w-2xl" // Pass custom width for the project modal
-      >
-        {selectedProject && (
-          <>
-            <div className="w-12 h-1 bg-blue-500 rounded-full mb-6" />
-            <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              {selectedProject.title}
-            </h3>
-
-            <div className="flex flex-wrap gap-2 mb-8">
-              {selectedProject.techStack.map((tech, i) => (
-                <span
-                  key={i}
-                  className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs text-blue-300 font-mono"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-
-            <p className="text-gray-300 leading-relaxed mb-10">
-              {selectedProject.fullDesc}
-            </p>
-
-            <div className="flex gap-4">
-              {selectedProject.github && (
-                <a
-                  href={selectedProject.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium transition-colors"
-                >
-                  <GitBranch size={18} /> Source Code
-                </a>
-              )}
-              {selectedProject.live && (
-                <a
-                  href={selectedProject.live}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-colors"
-                >
-                  <ExternalLink size={18} /> Live Demo
-                </a>
-              )}
-            </div>
-          </>
-        )}
-      </Modal>
     </section>
   );
 }

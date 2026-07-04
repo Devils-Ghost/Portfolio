@@ -3,12 +3,13 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { ReactNode, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
-  className?: string; // Allows customizing width/padding per use case
+  className?: string; // Allows customizing width/padding/background per use case
 }
 
 export default function Modal({
@@ -48,7 +49,10 @@ export default function Modal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className={`relative w-full bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl p-8 z-10 overflow-hidden ${className}`}
+            className={cn(
+              "relative w-full max-h-[90vh] overflow-y-auto bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl p-8 z-10",
+              className,
+            )}
           >
             {/* Standardized Close Button */}
             <button

@@ -21,7 +21,7 @@ export default function SkillsSection() {
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start 80%", "start 30%"],
+    offset: ["start 70%", "start 30%"],
   });
 
   return (
