@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useState } from "react";
+import { motion, type MotionStyle } from "framer-motion";
 import { GitBranch, ExternalLink } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
@@ -22,54 +22,40 @@ interface ProjectCardProps {
   className?: string;
   /**
    * "pinned" (default) - the homepage "Featured Work" treatment: tilted like
-   *   a pinned photo, entrance scrubbed by this card's own scroll position,
-   *   straightens + scales up on hover.
+   *   a pinned photo, entrance scrubbed by the *section's* scroll position
+   *   (via the `style` prop below), straightens + scales up on hover.
    * "grid" - flat, untilted card for a plain layout (e.g. the /projects
-   *   page): no tilt, no scroll-linked entrance (renders immediately visible),
-   *   and a lighter hover lift instead of the straighten+scale. Defaults to
-   *   a full-width card since a grid's own columns/gap should control
-   *   sizing - pass `className` to override. Treat the hover/sizing here as
-   *   a placeholder to refine once that page's actual design is settled.
+   *   page): `baseRotation` and `style` are both force-disabled here
+   *   regardless of what's passed in, so a grid card can never end up
+   *   rotated or scroll-animated by accident. Hover is a lighter lift
+   *   instead of straighten+scale. Defaults to a full-width card since a
+   *   grid's own columns/gap should control sizing - pass `className` to
+   *   override. Treat the hover/sizing here as a placeholder to refine once
+   *   that page's actual design is settled.
    */
   variant?: "pinned" | "grid";
-  baseRotation?: number; // Optional override for the base rotation (tilt) of the card, in degrees. Only meaningful for "pinned" variant.
+  // Resting tilt in degrees, set by the parent per-card. Only ever applied
+  // when variant is "pinned" - ignored for "grid" no matter what's passed.
+  baseRotation?: number;
+  // Scroll-linked opacity/x computed by the parent (ProjectsSection) off of
+  // the SECTION's own scroll position, so every card reads from one shared
+  // timeline instead of tracking its own visibility. Only ever applied when
+  // variant is "pinned" - ignored for "grid".
+  style?: MotionStyle;
 }
 
 export default function ProjectCard({
   project,
-  index,
   onClick,
   className = "",
   variant = "pinned",
   baseRotation = 0,
+  style,
 }: ProjectCardProps) {
   // Each card owns its own modal state, so it's fully self-contained and can be
   // dropped into the homepage "Featured Work" section or the full /projects grid.
   const [isOpen, setIsOpen] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
   const isPinned = variant === "pinned";
-
-  // Even index = Left side. Odd index = Right side. Only meaningful for the
-  // tilted "pinned" treatment - the grid variant never rotates.
-  const isLeft = index % 2 === 0;
-
-  // Tracks THIS card's own visibility rather than a shared, manually-tuned
-  // window: "30% end" is the point 30% of the way down the card meeting the
-  // bottom edge of the viewport - i.e. the moment 30% of the card has
-  // scrolled into view. "70% end" is the same at 70% visible. So progress 0
-  // = card is 30% visible, progress 1 = card is 70% visible.
-  // Hooks always run (rules of hooks) - the resulting motion values are
-  // simply left unused when variant is "grid".
-  const { scrollYProgress } = useScroll({
-    target: cardRef,
-    offset: ["50% end", "90% end"],
-  });
-  const scrollOpacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const scrollX = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [isLeft ? -100 : 100, 0],
-  );
 
   const handleCardClick = () => {
     setIsOpen(true);
@@ -79,11 +65,10 @@ export default function ProjectCard({
   return (
     <>
       <motion.div
-        ref={cardRef}
-        initial={{ rotateZ: baseRotation }}
-        // Grid cards skip the scroll-scrubbed entrance entirely and just
-        // render visible immediately.
-        style={isPinned ? { opacity: scrollOpacity, x: scrollX } : undefined}
+        initial={{ rotateZ: isPinned ? baseRotation : 0 }}
+        // Grid cards never receive the scroll-scrubbed entrance, even if a
+        // style prop is passed in by mistake - they just render visible.
+        style={isPinned ? style : undefined}
         // Pinned cards snap straight + scale up on hover (spring, on purpose
         // - it's a quick micro-interaction, not the scroll-driven entrance).
         // Grid cards get a simpler lift for now.

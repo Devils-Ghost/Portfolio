@@ -9,17 +9,25 @@ import ProjectCard, { ProjectData } from "@/components/ui/ProjectCard";
 export default function ProjectsSection() {
   const containerRef = useRef<HTMLElement>(null);
 
-  // Same scroll-linked pattern as SkillsSection: scrollYProgress moves from
-  // 0 to 1 as the section's top travels from 80% down the viewport to 30%
-  // down it, and everything below reads directly off that value - so the
-  // scroll wheel *is* the timeline, forwards and backwards.
-  const { scrollYProgress } = useScroll({
+  // Heading fade - the section's top crossing from 70% down the viewport to
+  // 30% down it.
+  const { scrollYProgress: headingProgress } = useScroll({
     target: containerRef,
     offset: ["start 70%", "start 30%"],
   });
 
-  const headingOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
-  const headingY = useTransform(scrollYProgress, [0, 0.2], [20, 0]);
+  const headingOpacity = useTransform(headingProgress, [0, 0.2], [0, 1]);
+  const headingY = useTransform(headingProgress, [0, 0.2], [20, 0]);
+
+  // Card entrance - driven by the SECTION's own position, not each card's
+  // individual visibility: progress 0 is the moment the section's top
+  // crosses the bottom-30%-of-viewport line (i.e. reaches the 70% mark),
+  // and progress 1 is the moment the section's bottom reaches the 80% mark.
+  // All three cards read off this one shared timeline.
+  const { scrollYProgress: cardsProgress } = useScroll({
+    target: containerRef,
+    offset: ["start 70%", "end 80%"],
+  });
 
   const projects: ProjectData[] = [
     {
@@ -76,9 +84,9 @@ export default function ProjectsSection() {
           between them - rather than a diagonal staircase. The whole
           cluster is also shifted inward (12% / 55% / 32%) instead of
           pinning card 0 to the very left edge, so it reads as centered
-          rather than left-heavy. Each ProjectCard tracks its own scroll
-          entrance internally, so nothing scroll-related needs computing
-          here. */}
+          rather than left-heavy. All three cards animate off the shared
+          cardsProgress timeline above, each in its own staggered slice of
+          it, rather than tracking their own individual visibility. */}
       <div className="flex flex-col gap-12 md:gap-0 relative">
         {projects.map((project, index) => {
           let positionClasses = "";
@@ -95,6 +103,20 @@ export default function ProjectsSection() {
             baseRotation = -1; // Slightly less left tilt for the third card
           }
 
+          // Each card gets its own staggered slice of the shared section
+          // timeline, so they settle in slightly offset from one another
+          // instead of all arriving at once.
+          const start = 0.1 + index * 0.15;
+          const end = start + 0.35;
+          const isLeft = index % 2 === 0;
+
+          const opacity = useTransform(cardsProgress, [start, end], [0, 1]);
+          const x = useTransform(
+            cardsProgress,
+            [start, end],
+            [isLeft ? -100 : 100, 0],
+          );
+
           return (
             <ProjectCard
               key={index}
@@ -102,6 +124,7 @@ export default function ProjectsSection() {
               index={index}
               className={positionClasses}
               baseRotation={baseRotation}
+              style={{ opacity, x }}
             />
           );
         })}
