@@ -3,6 +3,7 @@
 import { IntroProvider, useIntro } from "@/context/IntroContext";
 import SplashScreen from "./SplashScreen";
 import Navbar from "./Navbar";
+import Footer from "./Footer"; // Import your new footer here
 import { AnimatePresence, motion } from "framer-motion";
 
 function MainLayout({ children }: { children: React.ReactNode }) {
@@ -22,7 +23,12 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         className="flex flex-col min-h-screen"
       >
         {isIntroDone && <Navbar />}
+
+        {/* The main tag uses flex-grow to push the footer down if the page is short */}
         <main className="flex-grow">{children}</main>
+
+        {/* Render Footer only when the intro is finished */}
+        {isIntroDone && <Footer />}
       </motion.div>
     </>
   );

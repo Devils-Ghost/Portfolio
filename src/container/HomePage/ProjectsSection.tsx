@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import ProjectCard, { ProjectData } from "@/components/ui/ProjectCard";
+import ProjectCard, { ProjectData } from "@/components/home/ProjectCard";
 
 export default function ProjectsSection() {
   const containerRef = useRef<HTMLElement>(null);

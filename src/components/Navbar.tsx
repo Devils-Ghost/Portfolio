@@ -45,7 +45,7 @@ export default function Navbar() {
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
-          {/* Desktop Links & Desktop Hire Me Button (Hidden on Mobile) */}
+          {/* Desktop Links & Desktop CTA Button (Hidden on Mobile) */}
           <div className="hidden md:flex items-center gap-6">
             <div className="flex gap-6 text-sm text-gray-300 mr-2">
               {navLinks.map((link) => (
@@ -62,9 +62,9 @@ export default function Navbar() {
             {/* Desktop CTA */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="px-5 py-2 bg-white text-black text-sm font-semibold rounded-full hover:bg-gray-200 transition-colors"
+              className="px-6 py-2 bg-white text-black text-sm font-bold rounded-full hover:bg-gray-200 transition-colors"
             >
-              Hire Me
+              Let's Talk
             </button>
           </div>
         </div>
@@ -93,13 +93,13 @@ export default function Navbar() {
         </AnimatePresence>
       </motion.nav>
 
-      {/* Mobile Floating Hire Me Button (Hidden on Desktop) */}
+      {/* Mobile Floating CTA Button (Hidden on Desktop) */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="md:hidden fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 bg-white text-black rounded-full font-semibold shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-gray-200 transition-colors"
+        className="md:hidden fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-white text-black rounded-full shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:bg-gray-200 active:scale-95 transition-all duration-200"
+        aria-label="Let's Talk"
       >
-        <MessageSquare size={20} />
-        Hire Me
+        <MessageSquare size={24} />
       </button>
 
       {/* Shared Modal Overlay */}

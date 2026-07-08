@@ -27,7 +27,7 @@ export default function SkillsSection() {
   return (
     <section
       ref={containerRef}
-      className="w-full max-w-6xl mx-auto px-6 py-20 flex flex-col items-center"
+      className="w-full max-w-6xl mx-auto px-6 py-16 flex flex-col items-center"
     >
       <motion.h2
         style={{

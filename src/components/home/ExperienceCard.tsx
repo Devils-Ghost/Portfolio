@@ -7,8 +7,6 @@ import {
   useTransform,
   useMotionTemplate,
 } from "framer-motion";
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 
 export interface ExperienceData {
@@ -21,8 +19,11 @@ export interface ExperienceData {
   techStack: string[];
 }
 
-// ================= INDIVIDUAL CARD COMPONENT =================
-function ExperienceCard({ exp }: { exp: ExperienceData }) {
+interface ExperienceCardProps {
+  exp: ExperienceData;
+}
+
+export default function ExperienceCard({ exp }: ExperienceCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -39,7 +40,11 @@ function ExperienceCard({ exp }: { exp: ExperienceData }) {
   const rightEdge = useTransform(scrollYProgress, [0.15, 0.8], [50, 100]);
 
   // 3. Dynamic Fade
-  const fadeAmount = useTransform(scrollYProgress, [0.15, 0.5, 0.8], [0, 8, 0]);
+  const fadeAmount = useTransform(
+    scrollYProgress,
+    [0.15, 0.5, 0.8],
+    [0, 20, 0],
+  );
 
   // 4. The Soft Gradient Mask
   const maskImage = useMotionTemplate`linear-gradient(to right, 
@@ -62,7 +67,7 @@ function ExperienceCard({ exp }: { exp: ExperienceData }) {
   return (
     <>
       <div ref={cardRef} className="relative w-full max-w-4xl mx-auto py-2">
-        {/* Left Split Line */}
+        {/* Left Split Line - Updated with vertical gradient */}
         <motion.div
           style={{
             scaleY: lineScaleY,
@@ -70,10 +75,10 @@ function ExperienceCard({ exp }: { exp: ExperienceData }) {
             left: leftLinePos,
             transformOrigin: "top",
           }}
-          className="absolute top-0 bottom-0 w-[2px] bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.8)] z-10 -ml-[1px]"
+          className="absolute top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-blue-500 to-transparent shadow-[0_0_12px_rgba(59,130,246,0.8)] z-10 -ml-[1px]"
         />
 
-        {/* Right Split Line */}
+        {/* Right Split Line - Updated with vertical gradient */}
         <motion.div
           style={{
             scaleY: lineScaleY,
@@ -81,7 +86,7 @@ function ExperienceCard({ exp }: { exp: ExperienceData }) {
             right: rightLinePos,
             transformOrigin: "top",
           }}
-          className="absolute top-0 bottom-0 w-[2px] bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.8)] z-10 -mr-[1px]"
+          className="absolute top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-blue-500 to-transparent shadow-[0_0_12px_rgba(59,130,246,0.8)] z-10 -mr-[1px]"
         />
 
         {/* The Card with the Feathered Reveal Mask and LED Hover Effect */}
@@ -159,100 +164,5 @@ function ExperienceCard({ exp }: { exp: ExperienceData }) {
         <p className="text-gray-300 leading-relaxed">{exp.fullDesc}</p>
       </Modal>
     </>
-  );
-}
-
-// ================= MAIN SECTION COMPONENT =================
-export default function ExperienceSection() {
-  const containerRef = useRef<HTMLElement>(null);
-
-  // Header scroll animation
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start 70%", "start 30%"],
-  });
-
-  const headingOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
-  const headingY = useTransform(scrollYProgress, [0, 0.2], [20, 0]);
-
-  const experiences: ExperienceData[] = [
-    {
-      role: "Research Volunteer",
-      org: "SEFCOM Lab",
-      type: "Volunteer",
-      date: "Jul 2026 - Present",
-      shortDesc:
-        "Focusing on systems engineering and vulnerability research within the SEFCOM environment.",
-      fullDesc:
-        "Engaged in specialized systems engineering and vulnerability research. This role involves deep technical analysis, contributing to ongoing security investigations, and developing novel approaches to identifying and mitigating complex system vulnerabilities.",
-      techStack: [
-        "Vulnerability Research",
-        "Systems Engineering",
-        "Security Analysis",
-      ],
-    },
-    {
-      role: "Graduate Teaching Assistant",
-      org: "Arizona State University",
-      type: "Academic",
-      date: "Aug 2025 - Present",
-      shortDesc:
-        "Mentoring 150+ students in Software Security (CSE 545) and developing custom CTF challenges.",
-      fullDesc:
-        "Serving as the primary Graduate Teaching Assistant for CSE 545 (Software Security) under Professor Erik Trickel. Responsibilities include mentoring over 150 graduate students, grading complex security assignments, and actively developing custom Capture The Flag (CTF) challenges focusing on offensive security concepts.",
-      techStack: [
-        "Offensive Security",
-        "CTF Development",
-        "Binary Exploitation",
-        "Reverse Engineering",
-      ],
-    },
-    {
-      role: "Software Engineer II",
-      org: "UBS",
-      type: "Full-Time",
-      date: "Jul 2021 - Jun 2024",
-      shortDesc:
-        "Engineered enterprise-scale software solutions within the financial sector.",
-      fullDesc:
-        "Promoted from Software Engineer I to Software Engineer II. Designed, developed, and maintained highly resilient enterprise software solutions. Focused heavily on the intersection of systems engineering and robust security practices within a strictly regulated financial environment.",
-      techStack: [
-        "Enterprise Architecture",
-        "Systems Engineering",
-        "Secure SDLC",
-      ],
-    },
-  ];
-
-  return (
-    <section
-      ref={containerRef}
-      className="w-full max-w-6xl mx-auto px-6 py-32 relative"
-    >
-      {/* Animated Header with View All Link */}
-      <motion.div
-        style={{ opacity: headingOpacity, y: headingY }}
-        className="flex justify-between items-end mb-16"
-      >
-        <h2 className="text-3xl md:text-4xl font-bold">Experience</h2>
-        <Link
-          href="/experience"
-          className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1 group"
-        >
-          View All{" "}
-          <ChevronRight
-            size={16}
-            className="group-hover:translate-x-1 transition-transform"
-          />
-        </Link>
-      </motion.div>
-
-      <div className="flex flex-col gap-12">
-        {experiences.map((exp, index) => (
-          // The component now manages its own modal internally
-          <ExperienceCard key={index} exp={exp} />
-        ))}
-      </div>
-    </section>
   );
 }
