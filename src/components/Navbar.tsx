@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useMotionValueEvent,
+} from "framer-motion";
 import { useState } from "react";
 import { Menu, X, MessageSquare } from "lucide-react";
 import HireMeModal from "./HireMeModal"; // Ensure this is imported
@@ -9,6 +14,23 @@ import HireMeModal from "./HireMeModal"; // Ensure this is imported
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+
+  const { scrollY } = useScroll();
+
+  // Track scroll direction to hide/show the navbar
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+
+    if (latest > previous && latest > 100) {
+      // Scrolling down and past 100px: hide navbar and close mobile menu
+      setHidden(true);
+      setIsOpen(false);
+    } else {
+      // Scrolling up: show navbar
+      setHidden(false);
+    }
+  });
 
   const navLinks = [
     { name: "About", href: "/about" },
@@ -20,10 +42,14 @@ export default function Navbar() {
   return (
     <>
       <motion.nav
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2.5 }} // Matches the duration of the logo flight
-        className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl border border-white/10 bg-black/50 backdrop-blur-md shadow-lg transition-all duration-300 ${
+        initial={{ opacity: 0, y: -50, x: "-50%" }}
+        animate={{ opacity: 1, y: hidden ? -120 : 0, x: "-50%" }}
+        transition={{
+          opacity: { duration: 2.5 }, // Preserves your 2.5s logo flight duration
+          y: { duration: 0.3, ease: "easeInOut" }, // Snappy up/down scroll animation
+          x: { duration: 0 },
+        }}
+        className={`fixed top-4 left-1/2 z-50 w-[95%] max-w-5xl border border-white/10 bg-black/50 backdrop-blur-md shadow-lg transition-[border-radius,background-color] duration-300 ${
           isOpen ? "rounded-2xl" : "rounded-[32px] md:rounded-full"
         } px-6 py-4 flex flex-col md:flex-row md:justify-between md:items-center`}
       >

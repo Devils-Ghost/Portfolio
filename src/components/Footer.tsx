@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Terminal } from "lucide-react";
+import { MapPin, ChevronRight, Terminal } from "lucide-react";
 
 // ================= OFFICIAL BRAND SVGS =================
-// Using exact official paths to perfectly replicate the logos
-
 const GithubIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
     <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
@@ -41,12 +39,13 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="w-full relative bg-[#05080c] overflow-hidden pt-20 pb-8 mt-20">
-      {/* Top Border Line */}
-      <div className="absolute top-0 w-full h-[1px] bg-white/5" />
+    <footer className="w-full relative bg-[#05080c] border-t border-white/10 overflow-hidden pt-20 pb-8 mt-20">
+      {/* Restored Glowing Background Elements */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none -translate-y-1/2" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 mb-16">
           {/* ================= BRAND & SOCIALS ================= */}
           <div className="md:col-span-5 flex flex-col items-start">
             <Link href="/" className="inline-block mb-6">
@@ -55,10 +54,15 @@ export default function Footer() {
               </span>
             </Link>
 
-            <p className="text-gray-400 leading-relaxed mb-8 max-w-sm">
+            <p className="text-gray-400 leading-relaxed mb-6 max-w-sm">
               Bridging the gap between robust software engineering and proactive
               offensive security.
             </p>
+
+            <div className="flex items-center gap-2 text-sm text-gray-500 font-mono mb-8 px-4 py-2 bg-white/5 border border-white/10 rounded-lg">
+              <MapPin size={14} className="text-blue-500" />
+              <span>Operating from Tempe, Arizona</span>
+            </div>
 
             <div className="flex items-center gap-4">
               {socialLinks.map((social) => {
@@ -69,32 +73,33 @@ export default function Footer() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-11 h-11 flex items-center justify-center rounded-full bg-transparent border border-white/10 text-gray-400 hover:text-white hover:border-white/30 transition-all duration-300"
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 hover:border-blue-500/30 transition-all duration-300 hover:-translate-y-1"
                     aria-label={social.label}
                   >
-                    <Icon className="w-5 h-5" />
+                    <Icon className="w-[18px] h-[18px]" />
                   </Link>
                 );
               })}
             </div>
           </div>
 
-          {/* ================= DIRECTORY (Redesigned Middle Column) ================= */}
+          {/* ================= NAVIGATION ================= */}
           <div className="md:col-span-3 md:col-start-7 flex flex-col">
             <h4 className="text-white font-semibold mb-6 tracking-wide">
               Navigation
             </h4>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               {quickLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="group flex items-center gap-4 text-gray-400 hover:text-white transition-colors w-fit"
+                  className="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-1 group text-sm md:text-base w-fit"
                 >
-                  <span className="relative overflow-hidden py-1">
-                    {link.name}
-                    <span className="absolute left-0 bottom-0 w-full h-[1px] bg-blue-400 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
-                  </span>
+                  <ChevronRight
+                    size={14}
+                    className="opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300"
+                  />
+                  {link.name}
                 </Link>
               ))}
             </div>
@@ -106,7 +111,7 @@ export default function Footer() {
               Current Focus
             </h4>
             <div className="flex flex-col gap-4">
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/5">
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
                 <Terminal size={18} className="text-blue-500 shrink-0 mt-0.5" />
                 <div className="flex flex-col">
                   <span className="text-gray-300 text-sm font-medium mb-1">
@@ -123,10 +128,10 @@ export default function Footer() {
         </div>
 
         {/* ================= COPYRIGHT & TECH STACK ================= */}
-        <div className="w-full pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+        <div className="w-full pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs md:text-sm text-gray-500 font-mono">
           <p>© {currentYear} Dhaval Tanna. All rights reserved.</p>
-          <p className="text-gray-500">
-            Designed & Built with Next.js, Springboot and Firebase
+          <p className="flex items-center gap-1.5">
+            Built with Next.js, Springboot and Firebase
           </p>
         </div>
       </div>

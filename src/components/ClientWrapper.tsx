@@ -4,6 +4,7 @@ import { IntroProvider, useIntro } from "@/context/IntroContext";
 import SplashScreen from "./SplashScreen";
 import Navbar from "./Navbar";
 import Footer from "./Footer"; // Import your new footer here
+import CustomScrollbar from "./CustomScrollbar";
 import { AnimatePresence, motion } from "framer-motion";
 
 function MainLayout({ children }: { children: React.ReactNode }) {
@@ -30,6 +31,9 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         {/* Render Footer only when the intro is finished */}
         {isIntroDone && <Footer />}
       </motion.div>
+
+      {/* Custom scroll indicator: desktop-only, no-ops until the intro is done */}
+      {isIntroDone && <CustomScrollbar />}
     </>
   );
 }
