@@ -8,7 +8,10 @@ import Image from "next/image";
 
 export default function AboutSection() {
   return (
-    <section className="relative w-full max-w-6xl mx-auto px-6 py-16 overflow-visible">
+    <section
+      id="about"
+      className="relative w-full max-w-6xl mx-auto px-6 py-16 overflow-visible scroll-mt-28"
+    >
       <div className="flex flex-col md:flex-row gap-16 items-center">
         {/* ================= THE STABLE CONTAINER (The Sensor) ================= */}
         {/* We move whileInView to this parent container so the scroll trigger is calculated accurately */}

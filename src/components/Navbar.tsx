@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import { Menu, X, MessageSquare } from "lucide-react";
 import HireMeModal from "./HireMeModal"; // Ensure this is imported
+import { SOCIAL_LINKS } from "@/components/icons/SocialIcons";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -113,6 +114,22 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
+
+              {/* Compact social row — phone visitors get these without scrolling to the Footer */}
+              <div className="flex items-center gap-5 pt-1">
+                {SOCIAL_LINKS.map(({ icon: Icon, href, label }) => (
+                  <Link
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="text-gray-400 hover:text-blue-400 transition-colors"
+                  >
+                    <Icon className="w-[18px] h-[18px]" />
+                  </Link>
+                ))}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
