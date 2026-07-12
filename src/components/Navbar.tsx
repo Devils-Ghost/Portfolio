@@ -42,14 +42,13 @@ export default function Navbar() {
   return (
     <>
       <motion.nav
-        initial={{ opacity: 0, y: -50, x: "-50%" }}
-        animate={{ opacity: 1, y: hidden ? -120 : 0, x: "-50%" }}
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: hidden ? -120 : 0 }}
         transition={{
           opacity: { duration: 2.5 }, // Preserves your 2.5s logo flight duration
           y: { duration: 0.3, ease: "easeInOut" }, // Snappy up/down scroll animation
-          x: { duration: 0 },
         }}
-        className={`fixed top-4 left-1/2 z-50 w-[95%] max-w-5xl border border-white/10 bg-black/50 backdrop-blur-md shadow-lg transition-[border-radius,background-color] duration-300 ${
+        className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl border border-white/10 bg-black/50 backdrop-blur-md shadow-lg transition-[border-radius,background-color] duration-300 ${
           isOpen ? "rounded-2xl" : "rounded-[32px] md:rounded-full"
         } px-6 py-4 flex flex-col md:flex-row md:justify-between md:items-center`}
       >

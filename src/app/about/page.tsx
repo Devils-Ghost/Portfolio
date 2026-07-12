@@ -1,7 +1,10 @@
-export default function ExperiencePage() {
+import UnderConstruction from "@/components/UnderConstruction";
+
+export default function AboutPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-black text-white">
-      <h1 className="text-4xl">About page</h1>
-    </main>
+    <UnderConstruction
+      page="About"
+      tagline="The full origin story is still being written."
+    />
   );
 }

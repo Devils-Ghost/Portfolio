@@ -1,7 +1,10 @@
-export default function ExperiencePage() {
+import UnderConstruction from "@/components/UnderConstruction";
+
+export default function BlogPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-black text-white">
-      <h1 className="text-4xl">Blog page</h1>
-    </main>
+    <UnderConstruction
+      page="Blog"
+      tagline="Drafts currently outnumber published posts."
+    />
   );
 }

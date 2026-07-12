@@ -1,7 +1,10 @@
+import UnderConstruction from "@/components/UnderConstruction";
+
 export default function ExperiencePage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-black text-white">
-      <h1 className="text-4xl">Experience page</h1>
-    </main>
+    <UnderConstruction
+      page="Experience"
+      tagline="Reverse engineering my own timeline."
+    />
   );
 }
