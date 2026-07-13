@@ -2,13 +2,17 @@
 
 import { motion, HTMLMotionProps } from "framer-motion";
 
-// By extending HTMLMotionProps, this component can now accept ANY Framer Motion 
+// By extending HTMLMotionProps, this component can now accept ANY Framer Motion
 // or standard button property (style, initial, whileInView, onClick, etc.)
 interface SkillPillProps extends HTMLMotionProps<"button"> {
   skill: string;
 }
 
-export default function SkillPill({ skill, className, ...props }: SkillPillProps) {
+export default function SkillPill({
+  skill,
+  className,
+  ...props
+}: SkillPillProps) {
   return (
     <motion.button
       {...props} // Spreads all passed animation and event props onto the button

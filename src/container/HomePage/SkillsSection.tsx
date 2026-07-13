@@ -5,23 +5,14 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import SkillPill from "@/components/ui/SkillPill"; // Import the new reusable component
+import skillsData from "@/data/skills.json"; // Import skills data
 
 export default function SkillsSection() {
   const containerRef = useRef<HTMLElement>(null);
 
-  const skills = [
-    "Python",
-    "C/C++",
-    "Java",
-    "x86 Arch",
-    "Go",
-    "System Security",
-    "Reverse Engineering",
-  ];
-
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start 70%", "start 30%"],
+    offset: ["start 85%", "start 30%"],
   });
 
   return (
@@ -40,7 +31,7 @@ export default function SkillsSection() {
       </motion.h2>
 
       <div className="flex flex-wrap justify-center gap-4 mb-10">
-        {skills.map((skill, index) => {
+        {skillsData.skills.list.map((skill, index) => {
           const start = 0.1 + index * 0.08;
           const end = start + 0.2;
 

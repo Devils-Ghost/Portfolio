@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 // import professionalImage from '../../assets/Professional-Profile-Picture,jpg';
 import Image from "next/image";
+import aboutData from "@/data/about.json";
 
 export default function AboutSection() {
   return (
@@ -72,7 +73,7 @@ export default function AboutSection() {
                   Dhaval Tanna
                 </h3>
                 <p className="text-xs text-blue-400 font-mono text-center mt-1">
-                  Software Development Engineer
+                  Software Engineer
                 </p>
 
                 <div className="w-4/5 h-8 mt-6 opacity-30 flex gap-1 justify-center items-center">
@@ -99,14 +100,11 @@ export default function AboutSection() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="w-full md:w-2/3"
         >
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">Hello, World.</h2>
+          <h2 className="text-3xl md:text-5xl font-bold mb-6">
+            {aboutData.greeting}
+          </h2>
           <p className="text-gray-400 text-lg leading-relaxed mb-6">
-            I am Dhaval and I am an software development engineer and system
-            security specialist with a deep focus on offensive security, binary
-            exploitation, and building robust backend infrastructure. From
-            designing secure cloud migrations to analyzing kernel-level
-            vulnerabilities, I build systems by understanding exactly how they
-            can be broken.
+            {aboutData.description}
           </p>
           <Link
             href="/about"
