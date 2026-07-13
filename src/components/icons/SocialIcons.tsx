@@ -20,7 +20,15 @@ export const GmailIcon = ({ className }: { className?: string }) => (
 );
 
 export const SOCIAL_LINKS = [
-  { icon: LinkedinIcon, href: "https://linkedin.com", label: "LinkedIn" },
-  { icon: GithubIcon, href: "https://github.com", label: "GitHub" },
-  { icon: GmailIcon, href: "mailto:your.email@example.com", label: "Email" },
+  {
+    icon: LinkedinIcon,
+    href: "https://www.linkedin.com/in/dhaval-tanna-604762159/",
+    label: "LinkedIn",
+  },
+  {
+    icon: GithubIcon,
+    href: "https://github.com/Devils-Ghost",
+    label: "GitHub",
+  },
+  { icon: GmailIcon, href: "mailto:dtanna2@asu.edu", label: "Email" },
 ];

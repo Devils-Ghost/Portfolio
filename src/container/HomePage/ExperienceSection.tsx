@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import ExperienceCard, {
@@ -10,15 +10,6 @@ import ExperienceCard, {
 
 export default function ExperienceSection() {
   const containerRef = useRef<HTMLElement>(null);
-
-  // Header scroll animation
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start 70%", "start 30%"],
-  });
-
-  const headingOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
-  const headingY = useTransform(scrollYProgress, [0, 0.2], [20, 0]);
 
   const experiences: ExperienceData[] = [
     {
@@ -76,7 +67,10 @@ export default function ExperienceSection() {
     >
       {/* Animated Header with View All Link */}
       <motion.div
-        style={{ opacity: headingOpacity, y: headingY }}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.6 }}
+        transition={{ duration: 0.5 }}
         className="flex justify-between items-end mb-16"
       >
         <h2 className="text-3xl md:text-4xl font-bold">Experience</h2>

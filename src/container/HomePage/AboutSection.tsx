@@ -63,6 +63,7 @@ export default function AboutSection() {
                     src="/Professional-Profile-Picture.jpg"
                     alt="Dhaval Tanna"
                     fill
+                    sizes="208px"
                     className="object-cover"
                   />
                 </div>

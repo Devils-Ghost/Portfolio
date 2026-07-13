@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
-  useScroll,
-  useTransform,
+  useMotionValue,
   useMotionTemplate,
+  useInView,
+  animate,
 } from "framer-motion";
 import Modal from "@/components/ui/Modal";
 
@@ -23,30 +24,50 @@ interface ExperienceCardProps {
   exp: ExperienceData;
 }
 
+// Vertical fade applied to each bracket's own shape — solid through the
+// middle, feathering to transparent as it nears the card's top and bottom.
+const BRACKET_FADE_MASK =
+  "linear-gradient(to bottom, transparent, black 25%, black 75%, transparent)";
+
 export default function ExperienceCard({ exp }: ExperienceCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  const { scrollYProgress } = useScroll({
-    target: cardRef,
-    offset: ["start 95%", "end 70%"],
-  });
+  // Triggers once, the moment the card scrolls into view — and, unlike
+  // scroll-linked values, never re-fires or reverses on further scrolling.
+  const isInView = useInView(cardRef, { once: true, amount: 0.3 });
 
-  // 1. Line draws down in the center
-  const lineScaleY = useTransform(scrollYProgress, [0, 0.15], [0, 1]);
+  // 1. Bracket grows in, at the closed/center position
+  const lineScaleY = useMotionValue(0);
 
-  // 2. The Math for the Left and Right positions
-  const clipInset = useTransform(scrollYProgress, [0.15, 0.8], [50, 0]);
-  const rightEdge = useTransform(scrollYProgress, [0.15, 0.8], [50, 100]);
+  // 2. The left/right bracket positions — start clamped together at the
+  // horizontal center, then swing open to the card's real edges
+  const clipInset = useMotionValue(50);
+  const rightEdge = useMotionValue(50);
 
-  // 3. Dynamic Fade
-  const fadeAmount = useTransform(
-    scrollYProgress,
-    [0.15, 0.5, 0.8],
-    [0, 20, 0],
-  );
+  // 3. Soft feathered edge on the reveal mask while the curtain opens
+  const fadeAmount = useMotionValue(0);
 
-  // 4. The Soft Gradient Mask
+  // 4. Brackets fade out once the curtain has fully opened
+  const linesOpacity = useMotionValue(0);
+
+  useEffect(() => {
+    if (!isInView) return;
+    const timing = { duration: 1.3, ease: "easeInOut" as const };
+    animate(lineScaleY, [0, 1, 1], { ...timing, times: [0, 0.12, 1] });
+    animate(clipInset, [50, 50, 0], { ...timing, times: [0, 0.12, 0.65] });
+    animate(rightEdge, [50, 50, 100], { ...timing, times: [0, 0.12, 0.65] });
+    animate(fadeAmount, [0, 0, 20, 0], {
+      ...timing,
+      times: [0, 0.12, 0.45, 0.65],
+    });
+    animate(linesOpacity, [0, 1, 1, 0], {
+      ...timing,
+      times: [0, 0.05, 0.65, 0.8],
+    });
+  }, [isInView]);
+
+  // 5. The Soft Gradient Mask on the card's own content
   const maskImage = useMotionTemplate`linear-gradient(to right, 
     transparent ${clipInset}%, 
     black calc(${clipInset}% + ${fadeAmount}%), 
@@ -54,39 +75,36 @@ export default function ExperienceCard({ exp }: ExperienceCardProps) {
     transparent ${rightEdge}%
   )`;
 
-  const leftLinePos = useMotionTemplate`${clipInset}%`;
-  const rightLinePos = useMotionTemplate`${clipInset}%`;
-
-  // 5. Lines fade out as the curtains finish opening
-  const linesOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.05, 0.8, 0.9],
-    [0, 1, 1, 0],
-  );
+  const leftBracketPos = useMotionTemplate`${clipInset}%`;
+  const rightBracketPos = useMotionTemplate`${clipInset}%`;
 
   return (
     <>
       <div ref={cardRef} className="relative w-full max-w-4xl mx-auto py-2">
-        {/* Left Split Line - Updated with vertical gradient */}
+        {/* Left bracket — a "[" shape hugging the card's left edge, not just a line */}
         <motion.div
           style={{
             scaleY: lineScaleY,
             opacity: linesOpacity,
-            left: leftLinePos,
+            left: leftBracketPos,
             transformOrigin: "top",
+            WebkitMaskImage: BRACKET_FADE_MASK,
+            maskImage: BRACKET_FADE_MASK,
           }}
-          className="absolute top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-blue-500 to-transparent shadow-[0_0_12px_rgba(59,130,246,0.8)] z-10 -ml-[1px]"
+          className="absolute top-[8%] bottom-[8%] w-5 border-l-2 border-t-2 border-b-2 border-blue-500 rounded-l-md shadow-[0_0_12px_rgba(59,130,246,0.7)] z-10"
         />
 
-        {/* Right Split Line - Updated with vertical gradient */}
+        {/* Right bracket — a "]" shape hugging the card's right edge */}
         <motion.div
           style={{
             scaleY: lineScaleY,
             opacity: linesOpacity,
-            right: rightLinePos,
+            right: rightBracketPos,
             transformOrigin: "top",
+            WebkitMaskImage: BRACKET_FADE_MASK,
+            maskImage: BRACKET_FADE_MASK,
           }}
-          className="absolute top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-blue-500 to-transparent shadow-[0_0_12px_rgba(59,130,246,0.8)] z-10 -mr-[1px]"
+          className="absolute top-[8%] bottom-[8%] w-5 border-r-2 border-t-2 border-b-2 border-blue-500 rounded-r-md shadow-[0_0_12px_rgba(59,130,246,0.7)] z-10"
         />
 
         {/* The Card with the Feathered Reveal Mask and LED Hover Effect */}
