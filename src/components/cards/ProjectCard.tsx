@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { motion, type MotionStyle } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
 import { GitBranch, ExternalLink } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
@@ -37,25 +42,46 @@ interface ProjectCardProps {
   // Resting tilt in degrees, set by the parent per-card. Only ever applied
   // when variant is "pinned" - ignored for "grid" no matter what's passed.
   baseRotation?: number;
-  // Scroll-linked opacity/x computed by the parent (ProjectsSection) off of
-  // the SECTION's own scroll position, so every card reads from one shared
-  // timeline instead of tracking its own visibility. Only ever applied when
-  // variant is "pinned" - ignored for "grid".
-  style?: MotionStyle;
+  // The SECTION's own scroll progress, handed down by the parent
+  // (ProjectsSection) so every card reads from one shared timeline instead of
+  // tracking its own visibility. The card derives its own staggered slice of
+  // it from `index`. Only ever applied when variant is "pinned" - ignored for
+  // "grid", and optional because a grid has no section timeline to offer.
+  progress?: MotionValue<number>;
 }
 
 export default function ProjectCard({
   project,
+  index,
   onClick,
   className = "",
   variant = "pinned",
   baseRotation = 0,
-  style,
+  progress,
 }: ProjectCardProps) {
   // Each card owns its own modal state, so it's fully self-contained and can be
   // dropped into the homepage "Featured Work" section or the full /projects grid.
   const [isOpen, setIsOpen] = useState(false);
   const isPinned = variant === "pinned";
+
+  // The entrance transform is computed HERE rather than in the parent's
+  // .map(). React matches hooks positionally, so calling useTransform once
+  // per item inside a loop only holds while the project list is a
+  // fixed-length literal - a variable-length list (Phase 1) would throw
+  // "Rendered fewer hooks than expected" and white-screen the page.
+  //
+  // Both hooks run unconditionally on every render, because hooks always
+  // must; a grid card simply never *applies* the result. The constant
+  // fallback covers grid usage, where there's no section timeline to read.
+  const staticProgress = useMotionValue(1);
+  const source = progress ?? staticProgress;
+
+  const start = 0.1 + index * 0.15;
+  const end = start + 0.35;
+  const isLeft = index % 2 === 0;
+
+  const opacity = useTransform(source, [start, end], [0, 1]);
+  const x = useTransform(source, [start, end], [isLeft ? -100 : 100, 0]);
 
   const handleCardClick = () => {
     setIsOpen(true);
@@ -67,8 +93,8 @@ export default function ProjectCard({
       <motion.div
         initial={{ rotateZ: isPinned ? baseRotation : 0 }}
         // Grid cards never receive the scroll-scrubbed entrance, even if a
-        // style prop is passed in by mistake - they just render visible.
-        style={isPinned ? style : undefined}
+        // progress value is passed in by mistake - they just render visible.
+        style={isPinned ? { opacity, x } : undefined}
         // Pinned cards snap straight + scale up on hover (spring, on purpose
         // - it's a quick micro-interaction, not the scroll-driven entrance).
         // Grid cards get a simpler lift for now.

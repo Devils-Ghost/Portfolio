@@ -102,26 +102,18 @@ export default function ProjectsSection() {
 
           // Each card gets its own staggered slice of the shared section
           // timeline, so they settle in slightly offset from one another
-          // instead of all arriving at once.
-          const start = 0.1 + index * 0.15;
-          const end = start + 0.35;
-          const isLeft = index % 2 === 0;
-
-          const opacity = useTransform(cardsProgress, [start, end], [0, 1]);
-          const x = useTransform(
-            cardsProgress,
-            [start, end],
-            [isLeft ? -100 : 100, 0],
-          );
-
+          // instead of all arriving at once. That slice is worked out inside
+          // ProjectCard from its `index` - computing it here would mean
+          // calling useTransform in a loop, which breaks as soon as the
+          // project list stops being a fixed-length literal.
           return (
             <ProjectCard
-              key={index}
+              key={project.title}
               project={project}
               index={index}
               className={positionClasses}
               baseRotation={baseRotation}
-              style={{ opacity, x }}
+              progress={cardsProgress}
             />
           );
         })}
