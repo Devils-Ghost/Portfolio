@@ -375,12 +375,7 @@ export interface ImageRef {
 ```ts
 // ─────────────── SKILL — the hub everything links to ───────────────
 export type SkillCategory =
-  | "language"
-  | "framework"
-  | "platform"
-  | "tool"
-  | "domain"
-  | "practice";
+  "language" | "framework" | "platform" | "tool" | "domain" | "practice";
 export type SkillLevel = "core" | "working" | "familiar";
 
 export interface Skill {
