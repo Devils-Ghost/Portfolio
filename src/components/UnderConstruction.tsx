@@ -4,6 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, Mail, Terminal } from "lucide-react";
+import { SOCIAL_LINKS } from "@/components/icons/SocialIcons";
+
+// Reuse the site-wide contact address rather than inlining it a second time —
+// SOCIAL_LINKS is already the single source of truth for Footer, SocialRail
+// and the Navbar's mobile menu.
+const EMAIL_HREF =
+  SOCIAL_LINKS.find((l) => l.label === "Email")?.href ?? "mailto:";
 
 type Props = {
   /** Page name shown in the heading and terminal prompt, e.g. "Experience" */
@@ -174,7 +181,7 @@ export default function UnderConstruction({ page, tagline }: Props) {
           </Link>
 
           <a
-            href="mailto:your.email@example.com"
+            href={EMAIL_HREF}
             className="inline-flex items-center gap-2 px-8 py-3 bg-white/5 text-white border border-white/10 rounded-full font-medium hover:bg-white/10 transition-colors"
           >
             <Mail size={18} />

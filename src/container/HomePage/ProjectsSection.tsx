@@ -36,7 +36,6 @@ export default function ProjectsSection() {
       fullDesc:
         "An advanced machine learning pipeline capable of classifying over 40 different types of network intrusion attempts. This system drastically reduces false positives while maintaining high detection rates across complex network topologies.",
       techStack: ["Python", "Scikit-Learn", "Pandas", "Network Security"],
-      github: "https://github.com/yourusername/repo",
     },
     {
       title: "Blockchain Chain of Custody",
@@ -44,7 +43,6 @@ export default function ProjectsSection() {
       fullDesc:
         "Engineered a highly secure chain of custody application using Go. This ensures that digital forensic evidence remains completely immutable from the moment of capture through the final court presentation.",
       techStack: ["Go", "Hyperledger", "Blockchain", "Cryptography"],
-      github: "https://github.com/yourusername/repo",
     },
     {
       title: "Secure AI Civic Platform",
@@ -52,7 +50,6 @@ export default function ProjectsSection() {
       fullDesc:
         "Designed during the AI + Elections Hackathon, this platform provides voters with a secure, untampered AI assistant to verify polling data, reducing election misinformation through robust backend validation.",
       techStack: ["Next.js", "Python", "LLMs", "System Design"],
-      live: "https://your-live-link.com",
     },
   ];
 
