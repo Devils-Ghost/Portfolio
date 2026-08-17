@@ -152,6 +152,7 @@ export default function ExperienceCard({ exp }: ExperienceCardProps) {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         className="max-w-2xl"
+        label={`${exp.role} at ${exp.org}`}
       >
         <div className="w-12 h-1 bg-blue-500 rounded-full mb-6" />
 

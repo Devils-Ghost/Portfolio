@@ -22,6 +22,7 @@ export default function HireMeModal({ isOpen, setIsOpen }: Props) {
       isOpen={isOpen}
       onClose={() => setIsOpen(false)}
       className="max-w-lg bg-black p-6"
+      label="Get in touch"
     >
       <h3 className="text-xl font-bold text-white tracking-tight mb-4 pr-8">
         Let&apos;s Connect

@@ -147,6 +147,7 @@ export default function ProjectCard({
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         className="max-w-2xl"
+        label={project.title}
       >
         <div className="w-12 h-1 bg-blue-500 rounded-full mb-6" />
         <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
