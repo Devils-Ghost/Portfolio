@@ -1,0 +1,13 @@
+# Build output and dependencies
+.next/
+out/
+build/
+node_modules/
+next-env.d.ts
+
+# Lockfile — npm owns its formatting
+package-lock.json
+
+# Static assets (fonts, images, third-party SVGs)
+public/
+src/app/*.ttf
