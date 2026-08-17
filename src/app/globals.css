@@ -1,28 +1,43 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * ============================ DESIGN TOKENS ============================
+ * The single place the site's look is defined. project-plan.md §D6 and
+ * site-behavior.md §3 and §8.5: no new hex literals in components.
+ */
+@theme {
+  /* ── Typography ────────────────────────────────────────────────────
+     Inter is loaded by next/font in app/layout.tsx, which exposes it as
+     --font-inter. Wiring it here is what makes `font-sans` mean Inter. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* ── Surfaces ──────────────────────────────────────────────────────
+     Previously repeated as raw hex 9x and 3x respectively. */
+  --color-surface: #0a0f18; /* every card background */
+  --color-surface-deep: #05080c; /* footer, gradient card bottoms */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  /* ── Accent ────────────────────────────────────────────────────────
+     The accent is Tailwind's blue scale, which ~100 utility references
+     across the site already point at. Redefining the scale here — rather
+     than replacing every `blue-500` with a custom name — means retuning
+     the whole site's accent is an edit to these five lines, with no file
+     churn at all.
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+     Seeded with Tailwind v4's exact defaults, so this commit changes
+     nothing visually. Change the values, not the call sites. */
+  --color-blue-300: oklch(80.9% 0.105 251.813);
+  --color-blue-400: oklch(70.7% 0.165 254.624);
+  --color-blue-500: oklch(62.3% 0.214 259.815);
+  --color-blue-600: oklch(54.6% 0.245 262.881);
+  --color-blue-900: oklch(37.9% 0.146 265.522);
+
+  /* Semantic aliases — prefer these in new components. */
+  --color-accent: var(--color-blue-500);
+  --color-accent-soft: var(--color-blue-400);
+
+  /* ── Shape & depth ─────────────────────────────────────────────────── */
+  --radius-card: 1rem; /* matches the rounded-xl cards use today */
+  --shadow-card: 0 20px 40px -15px rgb(0 0 0 / 0.7);
 }
 
 /*
