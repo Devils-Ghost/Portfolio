@@ -25,7 +25,6 @@ export default function SplashScreen() {
         layoutId="brand-name"
         transition={{ type: "tween", ease: "easeInOut", duration: 2.5 }}
         className="relative text-5xl md:text-7xl font-bold tracking-tight"
-        style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
       >
         {/* The Base Layer (Ghost Text waiting to be filled) */}
         <span className="text-white/20 block">Dhaval Tanna</span>

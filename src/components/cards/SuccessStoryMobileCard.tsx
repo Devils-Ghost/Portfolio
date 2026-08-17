@@ -11,7 +11,7 @@ export default function SuccessStoryMobileCard({
   const Icon = story.icon;
 
   return (
-    <div className="snap-start shrink-0 w-[85vw] sm:w-[75vw] bg-[#0a0f18] border border-white/5 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col p-6 sm:p-8">
+    <div className="snap-start shrink-0 w-[85vw] sm:w-[75vw] bg-surface border border-white/5 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col p-6 sm:p-8">
       <div className="absolute -top-16 -right-16 w-48 h-48 bg-blue-500/10 blur-[80px] rounded-full pointer-events-none" />
       <div className="relative z-10 flex flex-col h-full">
         <div className="flex flex-wrap items-center gap-3 mb-5">

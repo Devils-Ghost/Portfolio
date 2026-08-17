@@ -115,7 +115,7 @@ export default function ExperienceCard({ exp }: ExperienceCardProps) {
         <motion.div
           style={{ WebkitMaskImage: maskImage, maskImage: maskImage }}
           onClick={() => setIsOpen(true)}
-          className="w-full p-8 md:p-10 bg-[#0a0f18] rounded-2xl flex flex-col items-start group cursor-pointer 
+          className="w-full p-8 md:p-10 bg-surface rounded-2xl flex flex-col items-start group cursor-pointer 
                      border border-white/10 shadow-2xl
                      transition-all duration-500 ease-out
                      hover:-translate-y-1.5 hover:border-blue-500/40 

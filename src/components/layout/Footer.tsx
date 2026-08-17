@@ -17,7 +17,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="w-full relative bg-[#05080c] border-t border-white/10 overflow-hidden pt-20 pb-8 mt-20">
+    <footer className="w-full relative bg-surface-deep border-t border-white/10 overflow-hidden pt-20 pb-8 mt-20">
       {/* Restored Glowing Background Elements */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none -translate-y-1/2" />

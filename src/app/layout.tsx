@@ -2,7 +2,14 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+// Exposed as a CSS variable rather than applied via inter.className, so
+// globals.css can point --font-sans at it and `font-sans` utilities finally
+// resolve to the font we actually load.
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Dhaval Tanna | Full-Stack Software Engineer",
@@ -22,10 +29,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark h-full">
-      <body
-        className={`${inter.className} bg-black text-white antialiased h-full`}
-      >
+    <html lang="en" className={`${inter.variable} dark h-full`}>
+      <body className="font-sans bg-black text-white antialiased h-full">
         {children}
       </body>
     </html>

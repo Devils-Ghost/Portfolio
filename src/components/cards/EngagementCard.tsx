@@ -37,7 +37,7 @@ export default function EngagementCard({
       onClick={onClick}
       className={`relative group overflow-hidden rounded-3xl cursor-pointer transition-[flex,border-color,background-color] duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] border ${
         isActive
-          ? "flex-[4] bg-[#0a0f18] border-blue-500/30 shadow-[0_0_30px_rgba(59,130,246,0.1)]"
+          ? "flex-[4] bg-surface border-blue-500/30 shadow-[0_0_30px_rgba(59,130,246,0.1)]"
           : "flex-[1] bg-black/40 border-white/5 hover:bg-white/[0.03]"
       }`}
     >
@@ -71,7 +71,7 @@ export default function EngagementCard({
 
       {/* ================= ACTIVE STATE (Details) ================= */}
       <div
-        className={`absolute inset-0 p-6 md:p-10 flex flex-col justify-end bg-gradient-to-t from-[#0a0f18] via-[#0a0f18]/90 to-transparent transition-opacity duration-500 ${
+        className={`absolute inset-0 p-6 md:p-10 flex flex-col justify-end bg-gradient-to-t from-surface via-surface/90 to-transparent transition-opacity duration-500 ${
           isActive
             ? "opacity-100 delay-300"
             : "opacity-0 pointer-events-none delay-0"

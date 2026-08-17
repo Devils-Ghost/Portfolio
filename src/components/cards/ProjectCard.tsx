@@ -28,9 +28,9 @@ interface ProjectCardProps {
   /**
    * "pinned" (default) - the homepage "Featured Work" treatment: tilted like
    *   a pinned photo, entrance scrubbed by the *section's* scroll position
-   *   (via the `style` prop below), straightens + scales up on hover.
+   *   (via the `progress` prop below), straightens + scales up on hover.
    * "grid" - flat, untilted card for a plain layout (e.g. the /projects
-   *   page): `baseRotation` and `style` are both force-disabled here
+   *   page): `baseRotation` and `progress` are both force-disabled here
    *   regardless of what's passed in, so a grid card can never end up
    *   rotated or scroll-animated by accident. Hover is a lighter lift
    *   instead of straighten+scale. Defaults to a full-width card since a
@@ -112,7 +112,7 @@ export default function ProjectCard({
         }
         onClick={handleCardClick}
         className={cn(
-          "relative flex flex-col p-6 md:p-7 bg-[#0a0f18] border border-blue-900/30 rounded-xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7)] hover:shadow-blue-900/20 transition-shadow cursor-pointer group",
+          "relative flex flex-col p-6 md:p-7 bg-surface border border-blue-900/30 rounded-xl shadow-card hover:shadow-blue-900/20 transition-shadow cursor-pointer group",
           isPinned
             ? "pt-8 w-full md:w-[34%] md:min-h-[240px]"
             : "w-full min-h-[240px]",

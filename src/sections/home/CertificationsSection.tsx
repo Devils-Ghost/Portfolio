@@ -55,7 +55,7 @@ export default function CertificationsSection() {
         {/* ================= CERTIFICATIONS MODULE ================= */}
         <motion.div
           style={{ opacity: card1Opacity, y: card1Y }}
-          className="relative bg-gradient-to-b from-[#0a0f18] to-[#05080c] border border-white/5 rounded-3xl p-8 md:p-10 shadow-2xl overflow-hidden group"
+          className="relative bg-gradient-to-b from-surface to-surface-deep border border-white/5 rounded-3xl p-8 md:p-10 shadow-2xl overflow-hidden group"
         >
           {/* Subtle top accent line */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600/0 via-blue-500/50 to-blue-600/0 opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
@@ -94,7 +94,7 @@ export default function CertificationsSection() {
         {/* ================= BEYOND THE CODE MODULE ================= */}
         <motion.div
           style={{ opacity: card2Opacity, y: card2Y }}
-          className="relative bg-gradient-to-b from-[#0a0f18] to-[#05080c] border border-white/5 rounded-3xl p-8 md:p-10 shadow-2xl overflow-hidden group"
+          className="relative bg-gradient-to-b from-surface to-surface-deep border border-white/5 rounded-3xl p-8 md:p-10 shadow-2xl overflow-hidden group"
         >
           {/* Subtle top accent line */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-600/0 via-indigo-500/50 to-purple-600/0 opacity-50 group-hover:opacity-100 transition-opacity duration-500" />

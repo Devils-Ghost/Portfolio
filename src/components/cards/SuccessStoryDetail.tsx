@@ -8,7 +8,7 @@ export default function SuccessStoryDetail({ story }: { story: StoryData }) {
   const Icon = story.icon;
 
   return (
-    <div className="w-full p-8 md:p-10 bg-[#0a0f18] border border-white/5 rounded-3xl shadow-2xl relative overflow-hidden min-h-[320px] flex items-center">
+    <div className="w-full p-8 md:p-10 bg-surface border border-white/5 rounded-3xl shadow-2xl relative overflow-hidden min-h-[320px] flex items-center">
       <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none" />
 
       <AnimatePresence mode="wait">
