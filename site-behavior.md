@@ -306,24 +306,32 @@ These apply to every future change. They exist so that decisions don't have to b
 
 ## 9. Build status
 
-| Area                                          | Status                                                |
-| --------------------------------------------- | ----------------------------------------------------- |
-| Splash → navbar transition                    | ✅ Built                                              |
-| Navbar, footer, social rail, custom scrollbar | ✅ Built                                              |
-| Hero section                                  | ✅ Built, content approved                            |
-| About card                                    | ✅ Built, content approved                            |
-| Home sections 3–10                            | ⚠️ Built as UI, hardcoded content, several inaccurate |
-| Skill → project/experience linking            | ❌ Not started — needs the ID model                   |
-| Achievements & Awards section                 | ❌ Not started                                        |
-| Soft-skill evidence linking                   | ❌ Not started                                        |
-| Global modal system                           | ❌ Not started — modal state is trapped inside cards  |
-| Content repository / typed schema             | ❌ Not started                                        |
-| Firestore backend                             | ❌ Not started                                        |
-| Admin panel                                   | ❌ Not started                                        |
-| `/about`, `/projects`, `/experience`, `/blog` | ❌ `UnderConstruction` placeholders                   |
-| 3D corridor                                   | ❌ Not started (Phase 6, optional)                    |
-| SEO: OG images, sitemap, structured data      | ❌ Not started                                        |
+**Phase 0 complete** — foundation done, nothing visible changed beyond the splash typeface.
 
-**Known live defects:** placeholder GitHub/demo/email URLs in production; two Rules-of-Hooks violations that will crash the page once content length varies; `Inter` font not actually applied (a stray `font-family: Arial` in `globals.css` overrides it).
+| Area                                          | Status                                                                                   |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Splash → navbar transition                    | ✅ Built; skips on repeat visits via `sessionStorage`                                    |
+| Navbar, footer, social rail, custom scrollbar | ✅ Built                                                                                 |
+| Hero section                                  | ✅ Built, content approved                                                               |
+| About card                                    | ✅ Built, content approved                                                               |
+| Home sections 3–10                            | ⚠️ Built as UI, hardcoded content, several inaccurate                                    |
+| Repo structure per §4, incl. `(site)` group   | ✅ Done (Phase 0)                                                                        |
+| Design tokens in `@theme`                     | ✅ Done (Phase 0)                                                                        |
+| `Modal` shell: keyboard + a11y                | ✅ Done (Phase 0) — Escape, focus trap/restore, `role="dialog"`, ref-counted scroll lock |
+| Tooling: Prettier, typecheck/lint scripts, CI | ✅ Done (Phase 0)                                                                        |
+| Skill → project/experience linking            | ❌ Not started — needs the ID model                                                      |
+| Achievements & Awards section                 | ❌ Not started                                                                           |
+| Soft-skill evidence linking                   | ❌ Not started                                                                           |
+| Global modal system                           | ❌ Not started — modal state is still trapped inside cards; the shell is ready for it    |
+| Content repository / typed schema             | ❌ Not started                                                                           |
+| Firestore backend                             | ❌ Not started                                                                           |
+| Admin panel                                   | ❌ Not started                                                                           |
+| `/about`, `/projects`, `/experience`, `/blog` | ❌ `UnderConstruction` placeholders                                                      |
+| 3D corridor                                   | ❌ Not started (Phase 6, optional)                                                       |
+| SEO: OG images, sitemap, structured data      | ❌ Not started                                                                           |
+
+**Known live defects:** ~~placeholder GitHub/demo/email URLs~~ fixed; ~~two Rules-of-Hooks violations~~ fixed; ~~`Inter` font not applied~~ **this one was a misdiagnosis** — body text was always Inter, since `next/font`'s class selector outranked the `body` element selector. Only `SplashScreen` was in Arial, via an inline style, and it no longer is. See `PROJECT_PLAN.md` §1.4 #8.
+
+Still outstanding: the whole tree renders inside one client boundary (`ClientWrapper`), so §D4's Server-Component split is untouched — that's Phase 1. `HireMeModal` is still mounted twice; Phase 2 removes the duplicate.
 
 Full detail in `PROJECT_PLAN.md` §1.3–1.4.
