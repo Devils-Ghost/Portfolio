@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, Mail, Terminal } from "lucide-react";
 import { SOCIAL_LINKS } from "@/components/icons/SocialIcons";
@@ -42,36 +42,27 @@ export default function UnderConstruction({ page, tagline }: Props) {
 
   const fullText = lines.join("\n");
   const [charCount, setCharCount] = useState(0);
-  const [reduceMotion, setReduceMotion] = useState(false);
-  const [done, setDone] = useState(false);
+  // Subscribes to the media query rather than sampling it once on mount, so a
+  // visitor toggling the OS setting is honoured immediately. Returns null
+  // until hydrated, which for our purposes means "not reduced".
+  const reduceMotion = useReducedMotion() ?? false;
 
+  // One scheduled tick at a time rather than a self-clearing interval: it
+  // stops on its own when the text is fully typed, and nothing impure has to
+  // happen inside the state updater. Same shape as HeroSection's role typing.
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduceMotion(mq.matches);
-  }, []);
+    if (reduceMotion) return; // finished state is derived at render instead, below
+    if (charCount >= fullText.length) return; // done typing, stop scheduling
+    const timeout = setTimeout(() => setCharCount((c) => c + 1), 22);
+    return () => clearTimeout(timeout);
+  }, [charCount, fullText, reduceMotion]);
 
-  useEffect(() => {
-    if (reduceMotion) {
-      setCharCount(fullText.length);
-      setDone(true);
-      return;
-    }
-    setCharCount(0);
-    setDone(false);
-    const interval = setInterval(() => {
-      setCharCount((c) => {
-        if (c >= fullText.length) {
-          clearInterval(interval);
-          setDone(true);
-          return c;
-        }
-        return c + 1;
-      });
-    }, 22);
-    return () => clearInterval(interval);
-  }, [fullText, reduceMotion]);
-
-  const typed = fullText.slice(0, charCount);
+  // Both derived rather than held in state: reduced motion shows the finished
+  // terminal instantly, and "done" is just the counter reaching the end.
+  // `fullText` is fixed for a mount's lifetime — every route passes a literal
+  // `page` — so there's no stale-count case that needs resetting.
+  const typed = reduceMotion ? fullText : fullText.slice(0, charCount);
+  const done = reduceMotion || charCount >= fullText.length;
 
   return (
     <main className="relative min-h-screen flex flex-col items-center justify-center bg-black text-white px-4 py-32 overflow-hidden">

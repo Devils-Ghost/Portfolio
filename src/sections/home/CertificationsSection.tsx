@@ -2,16 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import {
-  Award,
-  Zap,
-  ShieldCheck,
-  ChevronRight,
-  Mail,
-  MapPin,
-  ArrowRight,
-} from "lucide-react";
-import Link from "next/link";
+import { Award, Zap, ShieldCheck, ChevronRight } from "lucide-react";
 
 export default function CertificationsSection() {
   const containerRef = useRef<HTMLElement>(null);

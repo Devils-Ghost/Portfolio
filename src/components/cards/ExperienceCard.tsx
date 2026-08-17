@@ -65,7 +65,11 @@ export default function ExperienceCard({ exp }: ExperienceCardProps) {
       ...timing,
       times: [0, 0.05, 0.65, 0.8],
     });
-  }, [isInView]);
+    // Every motion value below is useMotionValue-backed, so its identity is
+    // stable for the lifetime of the component. Listing them satisfies the
+    // exhaustive-deps rule without changing when this runs: isInView is still
+    // the only thing that can actually re-trigger it, and it's `once: true`.
+  }, [isInView, lineScaleY, clipInset, rightEdge, fadeAmount, linesOpacity]);
 
   // 5. The Soft Gradient Mask on the card's own content
   const maskImage = useMotionTemplate`linear-gradient(to right, 

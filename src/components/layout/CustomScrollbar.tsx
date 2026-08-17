@@ -116,6 +116,11 @@ export default function CustomScrollbar() {
   useEffect(() => {
     if (!canRender) return;
 
+    // measureDimensions reads clientHeight/scrollHeight/innerHeight — real
+    // post-layout geometry that does not exist until the browser has laid the
+    // page out. There is no render-time equivalent to derive it from, so an
+    // effect is the correct place and the state write is unavoidable.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     measureDimensions();
     updatePosition();
 

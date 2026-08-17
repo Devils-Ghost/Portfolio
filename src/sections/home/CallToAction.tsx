@@ -50,7 +50,7 @@ export default function CallToAction() {
 
         {/* Scaled up the typography to command the empty space */}
         <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
-          Let's build something <br className="hidden md:block" />
+          Let&apos;s build something <br className="hidden md:block" />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">
             secure and scalable.
           </span>

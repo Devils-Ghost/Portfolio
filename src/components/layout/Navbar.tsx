@@ -90,7 +90,7 @@ export default function Navbar() {
               onClick={() => setIsModalOpen(true)}
               className="px-6 py-2 bg-white text-black text-sm font-bold rounded-full hover:bg-gray-200 transition-colors"
             >
-              Let's Talk
+              Let&apos;s Talk
             </button>
           </div>
         </div>

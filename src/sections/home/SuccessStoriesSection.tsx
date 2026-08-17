@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import Link from "next/link";
 import { ChevronRight, Trophy, Medal, Star } from "lucide-react";
 import SuccessStoryMobileCard from "@/components/cards/SuccessStoryMobileCard";
@@ -49,7 +49,7 @@ export default function SuccessStoriesSection() {
     ["0%", `${(stories.length - 1) * 100}%`],
   );
 
-  const listVariants = {
+  const listVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -57,7 +57,7 @@ export default function SuccessStoriesSection() {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, x: -20 },
     visible: {
       opacity: 1,

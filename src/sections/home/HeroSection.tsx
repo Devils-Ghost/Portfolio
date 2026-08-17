@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, animate, motion } from "framer-motion";
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useReducedMotion,
+} from "framer-motion";
 import { ChevronsDown, FileText } from "lucide-react";
 import { useIntro } from "@/context/IntroContext";
 
@@ -23,7 +28,10 @@ const STATUSES = [
 
 export default function HeroSection() {
   const { isIntroDone } = useIntro();
-  const [reduceMotion, setReduceMotion] = useState(false);
+  // Subscribes to the media query rather than sampling it once on mount, so a
+  // visitor toggling the OS setting is honoured immediately. Returns null
+  // until hydrated, which for our purposes means "not reduced".
+  const reduceMotion = useReducedMotion() ?? false;
 
   // Deterministic default (matches server render) so there's no hydration
   // mismatch — the real random pick happens client-side in the effect below,
@@ -31,12 +39,11 @@ export default function HeroSection() {
   // into the page at build time.
   const [headline, setHeadline] = useState(HEADLINES[0]);
   useEffect(() => {
+    // Setting state in an effect is exactly the point here: the value must
+    // differ between the server render and the client, and this is the only
+    // hook that runs after hydration has already matched.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHeadline(HEADLINES[Math.floor(Math.random() * HEADLINES.length)]);
-  }, []);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduceMotion(mq.matches);
   }, []);
 
   // --- roles: type once across two lines, then stay put (no looping) ---
@@ -46,17 +53,20 @@ export default function HeroSection() {
   const [roleCharCount, setRoleCharCount] = useState(0);
 
   useEffect(() => {
-    if (reduceMotion) {
-      setRoleCharCount(ROLE_SCRIPT.length); // show the finished state instantly
-      return;
-    }
+    if (reduceMotion) return; // finished state is derived at render instead, below
     if (!isIntroDone) return; // hero isn't visible yet — don't burn typing time behind the splash screen
     if (roleCharCount >= ROLE_SCRIPT.length) return; // done typing, stop scheduling
     const timeout = setTimeout(() => setRoleCharCount((c) => c + 1), 40);
     return () => clearTimeout(timeout);
   }, [roleCharCount, reduceMotion, isIntroDone]);
 
-  const revealedRoles = ROLE_SCRIPT.slice(0, roleCharCount);
+  // Reduced motion shows the finished state instantly. Deriving that here
+  // rather than pushing the count to its maximum from the effect keeps it a
+  // pure function of props/state — and means it can't flash the empty state
+  // for one frame before the effect runs.
+  const revealedRoles = reduceMotion
+    ? ROLE_SCRIPT
+    : ROLE_SCRIPT.slice(0, roleCharCount);
   const [roleLine1 = "", roleLine2 = ""] = revealedRoles.split("\n");
   const roleCursorOnLine2 = revealedRoles.includes("\n");
 

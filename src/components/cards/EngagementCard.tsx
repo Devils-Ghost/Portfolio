@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Calendar } from "lucide-react";
+import { Calendar, type LucideIcon } from "lucide-react";
 
 export interface EngagementData {
   title: string;
@@ -9,7 +9,10 @@ export interface EngagementData {
   type: string;
   date: string;
   desc: string;
-  icon: any;
+  // A component reference for now. Phase 1 replaces this with a string
+  // `iconName` resolved through lib/icons.ts, because a React component can't
+  // be serialized out of Firestore or across a server/client boundary.
+  icon: LucideIcon;
   number: string;
 }
 
