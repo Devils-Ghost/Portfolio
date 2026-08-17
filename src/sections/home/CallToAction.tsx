@@ -3,10 +3,10 @@
 import { useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Mail, MapPin } from "lucide-react";
-import HireMeModal from "@/components/HireMeModal";
+import HireMeModal from "@/components/modals/HireMeModal";
 
 // Assuming you have your HireMeModal component available to import
-// import HireMeModal from "@/components/HireMeModal";
+// import HireMeModal from "@/components/modals/HireMeModal";
 
 export default function CallToAction() {
   const containerRef = useRef<HTMLElement>(null);

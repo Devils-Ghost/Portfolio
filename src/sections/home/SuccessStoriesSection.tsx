@@ -4,11 +4,11 @@ import { useState, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { ChevronRight, Trophy, Medal, Star } from "lucide-react";
-import SuccessStoryMobileCard from "@/components/home/SuccessStoryMobileCard";
+import SuccessStoryMobileCard from "@/components/cards/SuccessStoryMobileCard";
 import SuccessStoryListItem, {
   StoryData,
-} from "@/components/home/SuccessStoryListItem";
-import SuccessStoryDetail from "@/components/home/SuccessStoryDetail";
+} from "@/components/cards/SuccessStoryListItem";
+import SuccessStoryDetail from "@/components/cards/SuccessStoryDetail";
 
 export default function SuccessStoriesSection() {
   const [activeIndex, setActiveIndex] = useState(0);

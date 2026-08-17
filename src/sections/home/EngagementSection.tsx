@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ChevronRight, Flag, Trophy, Code } from "lucide-react";
 import EngagementCard, {
   EngagementData,
-} from "@/components/home/EngagementCard";
+} from "@/components/cards/EngagementCard";
 
 export default function EngagementSection() {
   const [activeIndex, setActiveIndex] = useState(0);

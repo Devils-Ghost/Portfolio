@@ -9,7 +9,7 @@ import {
 } from "framer-motion";
 import { useState } from "react";
 import { Menu, X, MessageSquare } from "lucide-react";
-import HireMeModal from "./HireMeModal"; // Ensure this is imported
+import HireMeModal from "@/components/modals/HireMeModal";
 import { SOCIAL_LINKS } from "@/components/icons/SocialIcons";
 
 export default function Navbar() {

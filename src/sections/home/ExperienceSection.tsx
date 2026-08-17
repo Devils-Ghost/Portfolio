@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import ExperienceCard, {
   ExperienceData,
-} from "@/components/home/ExperienceCard";
+} from "@/components/cards/ExperienceCard";
 
 export default function ExperienceSection() {
   const containerRef = useRef<HTMLElement>(null);

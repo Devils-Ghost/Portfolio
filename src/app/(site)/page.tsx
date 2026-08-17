@@ -1,12 +1,12 @@
-import HeroSection from "@/container/HomePage/HeroSection";
-import AboutSection from "@/container/HomePage/AboutSection";
-import SkillsSection from "@/container/HomePage/SkillsSection";
-import ProjectsSection from "@/container/HomePage/ProjectsSection";
-import ExperienceSection from "@/container/HomePage/ExperienceSection";
-import CertificationsSection from "@/container/HomePage/CertificationsSection";
-import EngagementSection from "@/container/HomePage/EngagementSection";
-import BlogSection from "@/container/HomePage/SuccessStoriesSection";
-import CallToAction from "@/container/HomePage/CallToAction";
+import HeroSection from "@/sections/home/HeroSection";
+import AboutSection from "@/sections/home/AboutSection";
+import SkillsSection from "@/sections/home/SkillsSection";
+import ProjectsSection from "@/sections/home/ProjectsSection";
+import ExperienceSection from "@/sections/home/ExperienceSection";
+import CertificationsSection from "@/sections/home/CertificationsSection";
+import EngagementSection from "@/sections/home/EngagementSection";
+import SuccessStoriesSection from "@/sections/home/SuccessStoriesSection";
+import CallToAction from "@/sections/home/CallToAction";
 
 export default function Home() {
   return (
@@ -24,7 +24,7 @@ export default function Home() {
       <ProjectsSection />
       <ExperienceSection />
       <EngagementSection />
-      <BlogSection />
+      <SuccessStoriesSection />
       <CertificationsSection />
       <CallToAction />
     </div>
