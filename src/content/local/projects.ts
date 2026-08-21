@@ -135,8 +135,7 @@ A single shared application load balancer with path-based ingress routing rather
 **What happened.** I presented the PoC with benchmark data on idle compute and patching overhead. The design and the migration were approved.
 
 The production migration then went to Azure instead, because of enterprise vendor contracts — a decision made well above this work. What eventually shipped was a phased lift-and-shift to Azure VMs, which I led.
-
-**Being precise about what this is.** This was a proof of concept that I designed, built and benchmarked. It was not operated in production at scale, and I would rather say that plainly than let a résumé bullet imply otherwise. The design reasoning is real and I can defend every choice in it. The operational scar tissue that comes from running something for a year is not there, and those are different things.`,
+`,
     highlights: [
       "Decoupled architecture benchmarked against the existing on-prem estate",
       "Horizontal pod autoscaling with explicit resource requests, limits and readiness probes",
@@ -232,7 +231,14 @@ Undergraduate work, and still the project I point at when someone asks what I di
       "skl_system_design",
       "skl_c_cpp",
     ],
-    links: [],
+    links: [
+      { kind: "live", url: "https://smartsociety.eternalglitch.com", label: "Live site" },
+      { kind: "github", url: "https://github.com/Devils-Ghost/Smart-Society-Software", label: "Web app source" },
+      { kind: "github", url: "https://github.com/Devils-Ghost/Smart-Society-Hardware", label: "Hardware source" },
+      { kind: "video", url: "https://youtu.be/l7T70eZS7-4", label: "Demo video" },
+      { kind: "video", url: "https://youtu.be/XFRKeFaI02s", label: "Prototype video" },
+      { kind: "paper", url: "https://www.ijariit.com/manuscript/internet-of-things-based-smart-society/", label: "Published paper" },
+    ],
     status: "shipped",
     date: { start: { year: 2020, month: 8 }, end: { year: 2021, month: 4 } },
     context: { kind: "academic" },
