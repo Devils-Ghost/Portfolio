@@ -18,7 +18,6 @@ export const awards: Award[] = [
       "skl_rest_soap",
       "skl_java",
       "skl_spring_boot",
-      "skl_network_security",
     ],
     iconName: "trophy",
     featured: true,
