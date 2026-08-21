@@ -2,15 +2,13 @@ import type { Award } from "../types";
 
 export const awards: Award[] = [
   {
-    id: "awd_great_contribution",
-    slug: "great-contribution-award",
-    title: "Great Contribution Award",
+    id: "awd_outstanding_contribution",
+    slug: "outstanding-contribution-award",
+    title: "Outstanding Contribution Award",
     issuer: "UBS",
     date: { year: 2022, month: 4 },
     summary: "For resolving a major production outage in record time.",
-    body: `Awarded to the team for resolving a certificate-related authentication outage that had blocked customer access and couldn't be rolled back.
-
-The fast fix available on the day would have meant permanently downgrading encryption. We migrated a legacy integration to REST in two days instead, which retired the tech debt that caused the outage.`,
+    body: `Awarded for resolving a Sev-1 production outage that had blocked customer access. The resolution also retired a legacy tech debt so the same failure can never happen again.`,
     sourceExperienceId: "exp_ubs_swe",
     storyId: "story_cipher_suite",
     skillIds: [
@@ -34,18 +32,8 @@ The fast fix available on the day would have meant permanently downgrading encry
     issuer: "UBS",
     date: { year: 2022, month: 8 },
     summary:
-      "For a first year's work out of university — including a Sev-1 recovery, and an architecture that was innovative, functional, and ultimately scrapped.",
-    body: `This is the award I find most interesting.
-
-It covered my first year at UBS, straight out of university, but two pieces of work pushed it over the line.
-
-The first was the certificate outage — a Sev-1 that couldn't be rolled back, resolved by migrating a legacy integration to REST in two days rather than downgrading encryption.
-
-The second never shipped. We were decoupling a Spring Web MVC monolith into React and Spring Boot under a constraint that the load balancer mappings couldn't change, which forced an inverted architecture: the backend as entry point, routing traffic back up to the front end. Nobody builds this. I built it, with custom interceptors arbitrating between the React router and the Spring router, and it passed every functional test.
-
-Then performance testing showed the extra network hop per request blew our response-time SLA, and the project was scrapped.
-
-It wasn't right. But the way we made it work was genuinely novel, and that's what the award was for.`,
+      "For becoming a core part of the team within my first year — building financial applications, resolving production incidents, and engineering inventive solutions to complex problems.",
+    body: `Awarded for becoming a core part of the team within my first year at UBS, straight out of university — building and maintaining financial applications, resolving production incidents, and engineering inventive solutions to complex problems.`,
     sourceExperienceId: "exp_ubs_swe",
     storyId: "story_reverse_routing",
     skillIds: [
@@ -68,12 +56,10 @@ It wasn't right. But the way we made it work was genuinely novel, and that's wha
     slug: "cdio-champion-award",
     title: "CDIO Champion Award",
     issuer: "UBS",
-    date: { year: 2022, month: 11 }, // ⚠️ "late 2022" — narrow if you can
+    date: { year: 2022, month: 11 },
     summary:
       "For leadership and coordination across cultural activities, celebrations and sports tournaments.",
-    body: `Awarded for leadership across the departmental cultural committees — budget management, logistics, and running events from planning through execution.
-
-The cross-team relationships this built are a direct reason later multi-team releases went smoothly. When a batch migration depended on six enterprise teams aligning perfectly, most of those teams were already people I'd organised a cricket tournament with.`,
+    body: `Awarded for leadership across the departmental cultural committees — budget management, logistics, and running events from planning through execution. It built genuine strong relationships across the workplace, and made the office more fun to work at.`,
     sourceExperienceId: "exp_ubs_swe",
     skillIds: ["skl_mentorship"],
     iconName: "handshake",
@@ -88,14 +74,8 @@ The cross-team relationships this built are a direct reason later multi-team rel
     issuer: "UBS",
     date: { year: 2024, month: 4 },
     summary:
-      "For cloud migration delivery, remediation of critical compliance findings, and a file-transfer platform migration onto tooling learned from scratch.",
-    body: `The citation covers about eighteen months of work that mostly was not on my ticket board.
-
-Remediating critical compliance findings across a set of planning applications, coordinating with stakeholders and support teams who did not report to each other and had no shared deadline. Migrating two batch applications to the cloud, which meant a run of weekend release windows because batch cutovers do not get to happen during business hours. Migrating enterprise file transfers from Tumbleweed to Axway — a platform I had not used, learned under delivery pressure. And refactoring one of the applications for roughly a 40% performance improvement.
-
-The thread through all of it is scope. Almost none of this was assigned. It was the set of things that were quietly broken, or owned by nobody, or owned by somebody who had moved on — and where the number of teams affected made "not mine" a bad answer.
-
-That instinct is also the one I have had to learn to manage. Picking up orphaned problems is useful right up to the point where it means setting your own priorities unilaterally, and I have stepped over that line before. What changed is the front of the reflex, not the reflex: I surface it to whoever owns it first, and let them make the call.`,
+      "For closing critical compliance gaps, migrating batch applications to the cloud, and rebuilding file-transfer infrastructure.",
+    body: `Awarded for closing critical compliance gaps across financial applications, migrating batch jobs to the cloud, upgrading file-transfer infrastructure, and refactoring applications for a 40% performance gain in production.`,
     sourceExperienceId: "exp_ubs_swe",
     storyId: "story_halted_the_vendor",
     skillIds: [
@@ -122,10 +102,8 @@ That instinct is also the one I have had to learn to manage. Picking up orphaned
     issuer: "UBS",
     date: { year: 2024, month: 2 },
     summary:
-      "Corporate title promotion, following recognition as the team's SSL/TLS subject matter expert.",
-    body: `Promoted following three years of delivery and recognition as the team's SSL/TLS subject matter expert.
-
-The trajectory matters more to me than the title. I started as a graduate engineer who took four weeks on a task scoped for one, and had a supervisor with reasonable doubts about the hire. What changed was not effort — it was that the four weeks bought a foundation I never had to rebuild.`,
+      "Corporate title promotion following three years of delivery and informal recognition as an SSL/TLS specialist and Subject Matter Expert for the application.",
+    body: `Promoted to Authorized Officer after three years of delivery: resolving production incidents, building out application infrastructure, optimizing performance, shrinking server footprint, and leading cloud migration. Along the way, the team came to know me informally as its SSL/TLS specialist and, as a subject matter expert on the application.`,
     sourceExperienceId: "exp_ubs_swe",
     storyId: "story_one_week_became_four",
     skillIds: [
@@ -151,9 +129,18 @@ The trajectory matters more to me than the title. I started as a graduate engine
     issuer: "i3indya Technologies",
     date: { year: 2019, month: 9 },
     rank: "Finalist",
-    summary: "National IoT competition finalist.",
+    summary:
+      "Selected as a finalist to present the Smart Society project at IoT Challenge 2020, IIT Bombay.",
+    body: `Selected as a finalist to present the Smart Society project — an automated disaster-detection system that cut emergency response delays by 47% — at i3indya's IoT Challenge 2020, hosted at IIT Bombay. The final round never happened; the event was cancelled by the pandemic but it was a valuable experience.`,
     sourceProjectIds: ["prj_smart_society"],
-    skillIds: ["skl_atmega"],
+    skillIds: [
+      "skl_atmega",
+      "skl_java",
+      "skl_react",
+      "skl_firebase",
+      "skl_system_design",
+      "skl_c_cpp",
+    ],
     iconName: "flag",
     featured: false,
     order: 6,
