@@ -4,19 +4,19 @@ export const engagements: Engagement[] = [
   {
     id: "eng_tracer_fire_2026",
     slug: "tracer-fire-2026",
-    title: "Tracer Fire — Digital Forensics Workshop",
+    title: "Tracer Fire 13 — Digital Forensics Workshop",
     org: "Sandia National Laboratories",
     type: "competition",
     date: { start: { year: 2026, month: 1 }, end: { year: 2026, month: 1 } },
     summary:
-      "Tracer Fire 13. Fourth overall, second among ASU teams — and a much shorter ramp than the year before.",
-    body: `Tracer Fire 13, fifteen months after my first one. We came fourth overall and second among the ASU teams.
+      "Fourth overall and second among ASU teams at Sandia's incident-response exercise — my second run at it.",
+    body: `My second Tracer Fire, fifteen months after the first. We finished fourth overall and second among the ASU teams.
 
-The interesting part of doing one of these twice is what changes. The first time, most of my effort went into the tools — learning what Velociraptor collects, what Malcolm shows you that a packet capture does not, how to make Kibana answer the question I actually had. That is real work, and it is not the skill the exercise is testing.
+What changed between the two was where the time went. The first time, most of my effort went into the toolchain — learning what Velociraptor collects, what Malcolm shows you that a packet capture doesn't, and how to make Kibana answer the question I actually had.
 
-The second time, the tooling was already there, and what was left was the actual thing: reading evidence, forming a hypothesis, and knowing when to abandon it. Almost all of the time went into analysis rather than into fighting the interface.
+This time, those tools were already muscle memory. What I picked up instead was Kusto Query Language (KQL) for interrogating the cloud environment. I spent my time digging through cloud logs to identify exactly who logged in, tracking service principals, and tracing specific usernames across the tenant.
 
-That gap is the clearest measure I have of what the Master's year actually did. Same exercise, same tools, entirely different bottleneck.`,
+With the interface out of the way, we could focus on the actual breach. We used KQL and our forensics toolkit to reconstruct the attacker's entire playbook step by step. We tracked exactly how they found their entry point, whose compromised credentials they used, and how they escalated privileges to hijack the cloud environment. It wasn't just about reading alerts—it was about rebuilding the crime scene, from the very first suspicious login down to the hidden rootkits they left behind.`,
     iconName: "search",
     skillIds: [
       "skl_digital_forensics",
@@ -32,17 +32,17 @@ That gap is the clearest measure I have of what the Master's year actually did. 
   {
     id: "eng_tracer_fire_2024",
     slug: "tracer-fire-2024",
-    title: "Tracer Fire — Digital Forensics Workshop",
+    title: "Tracer Fire 12 — Digital Forensics Workshop",
     org: "Sandia National Laboratories",
     type: "competition",
     date: { start: { year: 2024, month: 10 }, end: { year: 2024, month: 10 } },
     summary:
-      "Tracer Fire 12. Sandia's competitive incident-response and threat-hunting exercise — fifth overall, first among ASU teams.",
-    body: `Tracer Fire is Sandia National Laboratories' hands-on digital forensics and incident response workshop — a compressed, competitive scenario where teams work real artifacts under time pressure rather than answering questions about them.
+      "Fifth overall and first among ASU teams at Sandia's competitive incident-response and threat-hunting exercise.",
+    body: `Hosted by Sandia National Laboratories, Tracer Fire is a two-day digital forensics workshop. Day one covers tool familiarization, and day two tests those skills in a fast-paced Capture-The-Flag competition where teams work backward from a fully compromised system to uncover how the attacker broke in and established persistence.
 
-The toolchain was the part I had least experience with going in: Kibana for log correlation, Malcolm for network traffic, Velociraptor for endpoint collection, and Autopsy for disk analysis. Four tools, each with its own idea of what "evidence" means, and much of the work is moving between them without losing the thread.
+The process requires gathering detailed evidence across four distinct systems: Kibana (logs), Malcolm (network traffic), Velociraptor (endpoints), and Autopsy (disk analysis). Together, they provide a comprehensive view of the entire attack surface.
 
-What surprised me was how much of it was reading rather than tooling. The tools narrow the search; the actual finding is someone noticing that a timestamp does not fit. That is the same instinct that found a year-old production bug at UBS, applied to somebody else's system instead of my own.
+The most remarkable part of the experience was seeing how real forensics works in practice. Even a massive breach leaves microscopic traces. By pulling at the smallest details — a weird log entry, a subtle timestamp anomaly, or a file that shouldn't exist — you can rebuild a complete, undeniable account of the adversary's every move.
 
 We finished fifth overall and first among the ASU teams.`,
     iconName: "search",
@@ -65,14 +65,12 @@ We finished fifth overall and first among the ASU teams.`,
     type: "hackathon",
     date: { start: { year: 2026, month: 2 }, end: { year: 2026, month: 2 } },
     summary:
-      "A three-hour design sprint with election officials, producing a privacy-first civic AI assistant that never ingests personal data.",
-    body: `Three hours, working directly with actual election officials to find a real friction point and architect something for it.
+      "A three-hour design sprint with election officials, producing privacy-first civic AI assistant.",
+    body: `Working alongside election officials in a three-hour hackathon, we uncovered a critical friction point: new voters need guidance, but distrust apps that require their personal data.
 
-The gap they described was not information availability — it was that new voters abandon the process over basic logistical uncertainty, and are simultaneously reluctant to hand personal details to a government portal or a third-party app. Those two facts make the obvious solution impossible: a personalised assistant needs to know something about you, and the people who most need it will not tell it anything.
+To solve this, we architected a dual-mode AI assistant where sensitive data never leaves the user's phone. By processing context locally and only allowing anonymized, encrypted queries to reach the backend, we designed a tool that offers highly specific civic guidance without ever knowing who is asking.
 
-The design I led was a dual-mode system. Users could register normally, or select a strict anonymous mode in which demographic data is processed locally on the device to curate relevant resources, and only an encrypted, anonymised query reaches the backend model. The assistant gets enough context to be useful; the backend never receives anything identifying.
-
-The concept was not selected for the final round. I still think the architectural move is the right one, and it is the clearest example I have of a privacy constraint improving a design rather than limiting it.
+The concept didn't make the final round, but the technical takeaway was invaluable: designing for absolute anonymity and zero-trust doesn't ruin the user experience, it actually improves it. 
 
 Built with Saurabh Dusane and Ojas Deodhar.`,
     iconName: "users",
@@ -90,14 +88,12 @@ Built with Saurabh Dusane and Ojas Deodhar.`,
     type: "leadership",
     date: { start: { year: 2021, month: 10 }, end: { year: 2024, month: 6 } },
     summary:
-      "One of two core leads for the departmental cultural committee — treasurer, logistics manager, and the reason cross-team releases went more smoothly than they should have.",
-    body: `I served as one of two core leads for UBS's departmental cultural committees, JOSH and TATVA, acting as both treasurer and logistics manager across three years.
-
-The work was genuinely operational: managing budgets and resources, organising Independence Day celebrations and religious festivals end to end, and running cricket and badminton tournaments including registrations, scheduling and logistics. Attendee experience was the metric that mattered, and it is a harsher one than it sounds — an event either works on the day or it does not.
-
-The reason it belongs on an engineering portfolio is what it did to the engineering. Enterprise releases at a bank are coupled to teams you have never met, and the difference between an email into the void and a message to someone you organised a cricket tournament with is measured in days. Building those relationships broke down silos that no process change had touched. When a batch migration later depended on six enterprise teams aligning perfectly, most of those teams were already people I knew.
-
-I also volunteered at the broader organisational level. The through-line is the same one that shows up in the teaching work: technical output is bounded by how well a group functions, and that is not somebody else's problem.`,
+      "Co-led the departmental cultural committee as treasurer and logistics manager, directing budgets and large-scale events to build a workplace community where teams actively connect.",
+    body: `I was one of two core leads for TATVA, my department's cultural committee, acting as both treasurer and logistics manager. I also volunteered with JOSH, the equivalent running across multiple UBS locations in India.
+ 
+The work was operational: managing budgets and resources, organizing national celebrations and religious festivals, and running sports tournaments including registrations, scheduling and logistics. Attendee experience was the metric that mattered.
+ 
+What mattered was what it built outside the work. Enterprise releases depend on teams you've never met, and knowing people across the office is what makes those conversations easy instead of formal.`,
     iconName: "handshake",
     skillIds: ["skl_mentorship"],
     phaseId: "phase_ubs",
@@ -113,10 +109,12 @@ I also volunteered at the broader organisational level. The through-line is the 
     type: "competition",
     date: { start: { year: 2017, month: 8 }, end: { year: 2018, month: 12 } },
     summary:
-      "Competitive robotics — designing, building and debugging machines that had to work on the day, in someone else's conditions.",
-    body: `Competition robotics across Robocon and Mindspark: a servo-driven four-legged walker, a line-following bot, and the sensor and encoder work underneath them.
+      "Engineered embedded robotic systems for Robocon and Mindspark — bridging software and hardware to build machines that execute flawlessly under unpredictable conditions.",
+    body: `My foundational experience in systems engineering started in my university's Advanced Robotics Lab, building for two very different competitive arenas: the international Robocon and the regional Mindspark.
 
-Competitive robotics teaches something a coursework project cannot. Your machine has to work once, on a floor you have not tested on, under lighting you did not choose, after being transported. Everything I learned about building for conditions you do not control started here.`,
+Coursework projects run in controlled environments, but competitive robotics forces you to build machines that survive transport and perform on the day, under lighting and floor friction you don't control. For Robocon, our team designed and programmed a four-legged robotic horse, bridging software and hardware using Arduino microcontrollers to sequence complex servo actuation. For Mindspark, I built a line-following robot driven by an Arduino Nano and Cytron IR sensors, alongside custom optical encoders to calculate real-time speed.
+
+This was where I first learned how to integrate embedded systems to actuate in the real world. Everything I know today about building resilient systems for unpredictable conditions started here.`,
     iconName: "cpu",
     skillIds: ["skl_atmega", "skl_c_cpp"],
     phaseId: "phase_undergrad",

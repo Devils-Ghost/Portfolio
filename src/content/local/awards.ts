@@ -31,7 +31,7 @@ export const awards: Award[] = [
     issuer: "UBS",
     date: { year: 2022, month: 8 },
     summary:
-      "For becoming a core part of the team within my first year — building financial applications, resolving production incidents, and engineering inventive solutions to complex problems.",
+      "Awarded for becoming a core part of the team within my first year — building financial applications, resolving production incidents, and engineering inventive solutions to complex problems.",
     body: `Awarded for becoming a core part of the team within my first year at UBS, straight out of university — building and maintaining financial applications, resolving production incidents, and engineering inventive solutions to complex problems.`,
     sourceExperienceId: "exp_ubs_swe",
     storyId: "story_reverse_routing",
@@ -101,8 +101,8 @@ export const awards: Award[] = [
     issuer: "UBS",
     date: { year: 2024, month: 2 },
     summary:
-      "Corporate title promotion following three years of delivery and informal recognition as an SSL/TLS specialist and Subject Matter Expert for the application.",
-    body: `Promoted to Authorized Officer after three years of delivery: resolving production incidents, building out application infrastructure, optimizing performance, shrinking server footprint, and leading cloud migration. Along the way, the team came to know me informally as its SSL/TLS specialist and, as a subject matter expert on the application.`,
+      "Corporate title promotion following two years of delivery and informal recognition as an SSL/TLS specialist and Subject Matter Expert for the application.",
+    body: `Promoted to Authorized Officer after two years of delivery: resolving production incidents, building out application infrastructure, optimizing performance, shrinking server footprint, and leading cloud migration. Along the way, the team came to know me informally as its SSL/TLS specialist and, as a subject matter expert on the application.`,
     sourceExperienceId: "exp_ubs_swe",
     storyId: "story_one_week_became_four",
     skillIds: [
