@@ -1,26 +1,29 @@
 import type { Experience } from "../types";
 
+/**
+ * Experience bodies are resume-register: XYZ-format bullets, impact first,
+ * numbers where they exist. Narrative belongs in the stories.
+ * `achievements` is retained for a distinct UI treatment.
+ */
 export const experiences: Experience[] = [
-  // ── PHASE: NOW ───────────────────────────────────────────────────
+  // ── PHASE: POST-MASTER'S ─────────────────────────────────────────
   {
     id: "exp_llm_re_research",
-    slug: "llm-assisted-reverse-engineering",
-    role: "Research Volunteer — LLM-Assisted Vulnerability Discovery",
-    org: "University of Georgia",
-    orgUrl: "https://www.uga.edu",
+    slug: "decompiler-evaluation-for-llm-vulnerability-discovery",
+    role: "Volunteer Research Assistant — Decompiler Evaluation for LLM Vulnerability Discovery",
+    org: "Noelo Lab, University of Georgia",
+    orgUrl: "https://noelo.org",
     type: "research",
     mode: "remote",
     location: "Remote",
     date: { start: { year: 2026, month: 6 }, end: null },
     summary:
-      "Evaluating how reliably large language models find vulnerabilities in compiled binaries when paired with decompiler tooling.",
-    body: `Reverse engineers spend most of their time on a translation problem. A binary gives you assembly; a decompiler gives you something that *looks* like C but has lost names, types, and structure. Everything after that is a human reading the wreckage and reconstructing intent.
-
-The obvious question is whether a language model can carry part of that load — and the less obvious question, which is the one worth answering, is *where it stops being reliable*. A model that finds nine bugs and confidently invents a tenth is not a productivity tool; it is a new source of work.
-
-I'm working with a professor on evaluating exactly that: how well current models identify real vulnerabilities in decompiled output, where their failure modes cluster, and whether the answers hold up when a human who knows the binary checks them.
-
-What draws me to it is that the intended users are the people I'd have been asking for help two years ago. Reverse engineers and bug hunters have a very low tolerance for tools that are usually right. Building for that audience means the evaluation has to be honest about the negative results, which is the part of research I find most interesting.`,
+      "Testing whether decompiler choice changes an LLM agent's ability to find real vulnerabilities — extending a university benchmark from measuring decompiler accuracy to measuring decompiler usefulness.",
+    body: `- Designed and ran controlled experiments measuring whether decompiler choice affects an MCP-connected LLM agent's ability to independently discover vulnerabilities in binaries.
+- Achieved 100% ground-truth consistency across decompilers by designing an address-anchored system to normalize output with incompatible naming conventions.
+- Reduced experimental data processing time by 89% through an automated Python pipeline to parse 100,000+ session log lines and compute discovery-efficiency metrics — context efficiency ratio, tool-call efficiency, and address recall — across dozens of experimental runs.
+- Resolved inconsistent vulnerability classifications across identical runs by designing a three-axis grading rubric separating localization, classification, and exploitation.
+- Established baseline LLM performance metrics through a 5-run pilot study, demonstrating agent localization accuracy consistently outperforms classification accuracy.`,
     achievements: [],
     skillIds: [
       "skl_reverse_engineering",
@@ -29,11 +32,46 @@ What draws me to it is that the intended users are the people I'd have been aski
       "skl_ghidra_ida",
       "skl_python",
       "skl_c_cpp",
+      "skl_binary_exploitation",
+      "skl_threat_modeling",
     ],
     links: [],
-    phaseId: "phase_now",
+    phaseId: "phase_post_masters",
     featured: true,
     order: 1,
+    visibility: "public",
+  },
+  {
+    id: "exp_barnum",
+    slug: "performance-ai-observability-dashboard",
+    role: "Volunteer Engineer — Performance AI",
+    org: "ASU CIPS-AI Lab",
+    type: "volunteer",
+    mode: "onsite",
+    location: "Tempe, AZ",
+    date: { start: { year: 2026, month: 7 }, end: { year: 2026, month: 8 } },
+    summary:
+      "Built a React/TypeScript observability dashboard for a multi-agent AI system, then resolved the Kubernetes, Helm, and telemetry pipeline failures keeping it from showing real data.",
+    body: `- Built a comprehensive observability UI for a multi-service AI system (FastAPI, LangGraph, OpenTelemetry), integrating React/TypeScript front-end panels with backend services to render 20 live metric tiles tracking drift-detection and model quality.
+- Resolved critical infrastructure pipeline failures by debugging Helm configurations and tracing a cluster-wide Docker/cri-dockerd symlink resolution gap in DaemonSet volume mounts via direct Kubernetes node log inspection.
+- Restored end-to-end telemetry data flow by rectifying Collector processing rules and fixing a backend SQL data-normalization defect, recovering 40% of drift-detection metrics.`,
+    achievements: [],
+    skillIds: [
+      "skl_react",
+      "skl_typescript",
+      "skl_kubernetes",
+      "skl_docker",
+      "skl_python",
+      "skl_sql",
+      "skl_linux",
+      "skl_system_design",
+      "skl_cloud",
+      "skl_ml_security",
+    ],
+    links: [],
+    phaseId: "phase_post_masters",
+    featured: false,
+    order: 2,
     visibility: "public",
   },
 
@@ -41,32 +79,20 @@ What draws me to it is that the intended users are the people I'd have been aski
   {
     id: "exp_asu_ta",
     slug: "graduate-teaching-assistant-software-security",
-    role: "Graduate Teaching Assistant — Software Security (CSE 545)",
+    role: "Teaching Assistant — Software Security",
     org: "Arizona State University",
-    orgUrl: "https://www.asu.edu",
+    orgUrl: "https://scai.engineering.asu.edu/",
     type: "academic",
     mode: "onsite",
     location: "Tempe, AZ",
     date: { start: { year: 2025, month: 8 }, end: { year: 2026, month: 5 } },
     summary:
-      "Built exploitation challenges and a hardened exam environment for 150+ graduate students learning memory corruption and reverse engineering.",
-    body: `A software security course has a structural problem that ordinary courses do not: the exam requires students to run attack code, on infrastructure you own, at the same time, while being graded.
-
-I built and ran the environment that made that possible, and wrote the challenges that ran inside it.
-
-**The challenges.** Hands-on exploitation exercises on the pwn.college platform, written in C, Python and Bash — memory corruption, return-oriented programming, web and system security. Each one is a deliberately placed hole, which makes the design harder than it sounds: the intended vulnerability has to be reachable and everything around it has to be locked, on a box the student has real shell access to.
-
-**The environment.** The platform handled orchestration and isolation *between* students. My work was inside that boundary: constraining what a student could reach within their own container using landrun, and proxying the challenge's several services to sandboxed instances on separate ports rather than exposing the real ones. I paired prevention with detection — flag submission timestamps and log analysis surfaced anomalies that prevention alone would never have shown me.
-
-**The teaching.** Seven-plus hours a week of office hours, and a change in how I ran them. The default TA move is to show a student a working solution. I stopped doing that and started debugging the student's own broken exploit with them instead, using their code as the baseline. Slower per student, and the only version that actually transfers.
-
-The course had a reputation for being brutal, and the historical class average reflected it. Restructuring the on-ramp — breaking a monolithic buffer-overflow task into micro-challenges, so students hit "find the buffer address" before "chain the exploit" — moved the average from below 60% to around 80%.`,
-    achievements: [
-      "Developed hands-on CTF challenges covering memory corruption, ROP, web and system security for 150+ graduate students",
-      "Engineered an isolated exam environment with Docker, landrun sandboxing, Nginx reverse proxy and Flask authentication",
-      "Paired preventative hardening with log-based anomaly detection to surface academic integrity violations",
-      "Restructured the advanced labs into progressive micro-challenges, lifting the class average from below 60% to ~80%",
-    ],
+      "Mentored 150+ graduate students in memory corruption and reverse engineering, and engineered the isolated CTF architecture their exams ran on.",
+    body: `- Mentored over 150 students in memory corruption and reverse engineering by developing hands-on CTF challenges in C, Python, and Bash, incorporating threat modeling to simulate real-life attack vectors on the pwn.college platform.
+- Maintained 100% exam security by engineering isolated CTF architectures in Docker, configuring Nginx reverse proxy, Python Flask authentication, and Landrun sandboxing to restrict IDE and terminal access, preventing unauthorized collaboration.
+- Enhanced student proficiency in Return Oriented Programming, secure coding practices, and web and system security through 7+ hours of weekly guidance, scripting with pwntools, GNU Debugger, IDA, Wireshark, and Burp Suite for dynamic and static analysis.
+- Lifted the class average from below 60% to approximately 80% by restructuring monolithic exploitation labs into progressive micro-challenges that isolated each concept before requiring composition.`,
+    achievements: [],
     skillIds: [
       "skl_binary_exploitation",
       "skl_reverse_engineering",
@@ -85,10 +111,13 @@ The course had a reputation for being brutal, and the historical class average r
       "skl_secure_coding",
       "skl_flask",
     ],
-    links: [],
+    links: [
+      { kind: "external", url: "https://pwn.college/cse545-fc25~dc4e237e/", label: "Course modules — Fall 2025" },
+      { kind: "external", url: "https://pwn.college/cse545-sc26~7ec2f341/", label: "Course modules — Spring 2026" },
+    ],
     phaseId: "phase_masters",
     featured: true,
-    order: 2,
+    order: 3,
     visibility: "public",
   },
 
@@ -104,26 +133,18 @@ The course had a reputation for being brutal, and the historical class average r
     location: "Pune, India",
     date: { start: { year: 2021, month: 7 }, end: { year: 2024, month: 6 } },
     summary:
-      "Three years on financial applications carrying a 99.9% availability SLA — backend, DevOps, infrastructure, and the incidents nobody else had solved.",
-    body: `I joined as a graduate engineer and left three years later as the person the team routed ambiguous, critical problems to. The work spanned the full lifecycle: Java and Spring Boot backends, the GitLab pipelines that deployed them, the Unix servers underneath, and the Azure migration that eventually moved them.
-
-**What the work actually was.** Financial applications used by advisors, under a strict 99.9% availability SLA, consumed by other enterprise teams through APIs. That last part is the constraint that shaped everything — a bad release did not just affect us, it cascaded.
-
-**Modernisation.** Decoupled a Spring Web MVC monolith into React and Spring Boot services. Refactored a Drools rules engine that had accumulated years of dead branches and redundant flows, mapping actual current business use cases against the codebase with stakeholders before deleting anything. Led infrastructure migration to Azure, and rebuilt the batch pipeline's event flow to fail gracefully instead of hard-blocking every downstream job.
-
-**Security.** Migrated hardcoded credentials into a vault-based secrets model with RBAC application profiles, and separated human access so the development team could not read production secrets at all. Enforced SSL/TLS across API endpoints. The SSL work is also how I ended up as the person pulled into certificate-related outages — including the one that turned into a Sev-1.
-
-**Incidents.** I was usually one of the people brought in when production broke. What I came to like about that was not the firefighting. It was that incidents are where you find out what your system actually does, as opposed to what the design document says it does. The two bugs I am proudest of — a year of intermittent 500s, and a six-month deployment failure — were both found by refusing to accept the layer the problem was reported at.
-
-**Leaving.** The application had been built before my time without coding standards or documentation, and three years of my work had gone into changing that. But a lot of what I knew about its actual behaviour had never left my head, because I had learned it by running into it. So I spent my notice period on the handover rather than coasting: the hidden services, the behaviours you only find by hitting them, the post-migration infrastructure, and a full map of upstream and downstream consumers with emergency contacts. The last useful thing I could do was make what I knew not depend on me.`,
+      "Three years modernizing and defending financial applications under a 99.9% availability SLA — backend architecture, cloud migration, and security hardening.",
+    body: `- Modernized Java application architecture and minimized operational errors by 99% through Drools workflow refactoring and decoupling Spring Web MVC monoliths into distributed React and Spring Boot microservices.
+- Led infrastructure migrations to Azure and ensured business continuity, maintaining 99.9% availability through rapid incident response for critical production outages, Unix server management, and GitLab pipeline engineering.
+- Boosted service performance by 53% and accelerated data processing by consolidating REST API requests and optimizing SQL queries for MySQL and Postgres databases.
+- Hardened system security by enforcing SSL/TLS encryption across API endpoints and implementing a least-privilege access model by migrating hardcoded credentials to an EVA Vault using RBAC profiles.
+- Improved batch application performance by 40% through targeted code refactoring, and migrated enterprise file transfer infrastructure from Tumbleweed to Axway.`,
     achievements: [
-      "Maintained 99.9% availability across financial applications through incident response, Unix server management and GitLab pipeline engineering",
-      "Cut service response time by 53% by profiling the full execution path and eliminating a redundant API call in an unowned legacy service",
-      "Reduced operational errors by refactoring a Drools state machine and decoupling a Spring Web MVC monolith into React + Spring Boot services",
-      "Led on-prem to Azure migration, taking architectural ownership from an external vendor and replacing a big-bang cutover with a phased strategy",
-      "Eliminated hardcoded secrets exposure with a vault-based RBAC model separating application read access from human access",
-      "Refactored a batch application for a ~40% performance improvement and migrated enterprise file transfers from Tumbleweed to Axway",
-      "Promoted to Authorized Officer; recognised as the team's SSL/TLS subject matter expert",
+      "Outstanding Contribution Award",
+      "Engineering Excellence Award",
+      "CDIO Champion Award",
+      "Going Above and Beyond Award",
+      "Promotion to Authorized Officer/SDE II",
     ],
     skillIds: [
       "skl_java",
@@ -154,7 +175,7 @@ The course had a reputation for being brutal, and the historical class average r
     links: [],
     phaseId: "phase_ubs",
     featured: true,
-    order: 3,
+    order: 4,
     visibility: "public",
   },
   {
@@ -168,19 +189,15 @@ The course had a reputation for being brutal, and the historical class average r
     location: "Pune, India",
     date: { start: { year: 2020, month: 6 }, end: { year: 2021, month: 1 } },
     summary:
-      "First exposure to enterprise engineering — smart business forms, and live web applications integrating SOAP and REST services.",
-    body: `Seven months that decided the next three years. I designed and managed smart business forms in AEM Forms Designer, cutting processing time by around 25%, and built live web applications in Java and React integrating with both SOAP and REST APIs.
-
-The technical content matters less than what it established. This was the first time I saw software that other people depended on in a way that had consequences, and the first time I worked inside a system too large to hold in my head. Both turned out to be the things I wanted more of.`,
-    achievements: [
-      "Designed smart business forms in AEM Forms Designer, reducing processing time by ~25%",
-      "Built live web applications in Java and React integrating SOAP and REST APIs, improving performance by ~20%",
-    ],
+      "Built enterprise business forms and live web applications integrating SOAP and REST services — the internship that became a full-time offer.",
+    body: `- Designed and managed smart business forms using AEM Forms Designer, improving user experience and reducing document processing time by 25%.
+- Engineered live web applications with Java and React, integrating with SOAP and REST APIs, resulting in a 20% increase in performance.`,
+    achievements: [],
     skillIds: ["skl_java", "skl_react", "skl_javascript", "skl_rest_soap", "skl_microservices"],
     links: [],
     phaseId: "phase_ubs",
     featured: false,
-    order: 4,
+    order: 5,
     visibility: "public",
   },
 
@@ -195,19 +212,16 @@ The technical content matters less than what it established. This was the first 
     location: "Pune, India",
     date: { start: { year: 2019, month: 7 }, end: { year: 2020, month: 5 } },
     summary:
-      "Grew the campus networking cell — recruiting students, running intra-division campaigns, and mentoring members through certification.",
-    body: `I ran campaigns to bring students into the campus networking cell and then made sure they finished what they started — guiding members through the CCNA coursework and the challenges that came with it, and stepping into a Division Head role to mentor others.
-
-This is where the networking foundation came from, and where I first noticed that explaining something is a different skill from knowing it. That observation is more or less the throughline to the teaching work at ASU five years later.`,
-    achievements: [
-      "Led intra-division campaigns to recruit and retain students in the networking cell",
-      "Mentored members through CCNA coursework as Division Head",
-    ],
+      "Grew the campus networking cell as Division Head, recruiting and onboarding over 150 students through intra-division networking campaigns.",
+    body: `- Grew the campus networking cell as Division Head, recruiting and onboarding over 150 students through intra-division networking campaigns.
+- Mentored club members through the CCNA certification track, troubleshooting hands-on networking challenges and guiding them to course completion.
+- Recognized by department faculty for driving technical domain awareness and advancing the club's core growth objectives across the 2019–2020 academic year.`,
+    achievements: [],
     skillIds: ["skl_network_security", "skl_mentorship"],
     links: [],
     phaseId: "phase_undergrad",
     featured: false,
-    order: 5,
+    order: 6,
     visibility: "public",
   },
   {
@@ -220,20 +234,22 @@ This is where the networking foundation came from, and where I first noticed tha
     location: "Pune, India",
     date: { start: { year: 2017, month: 7 }, end: { year: 2018, month: 5 } },
     summary:
-      "Built robots for international competition — a four-legged walker, a line follower, and an optical encoder — on Arduino and bare metal.",
-    body: `Robotics projects for competitions including Robocon: a four-legged robotic horse driven by servo motors on an Arduino, a line-following robot built around a Cytron IR sensor array, and an optical encoder for measuring bot speed.
-
-This is the earliest layer of the thing I still do. A robot that does not work does not throw an exception — it just sits there, or falls over, and you have to reason from the physical behaviour back to the cause. Learning to debug something with no stack trace turned out to be more transferable than any of the specific circuits.`,
-    achievements: [
-      "Designed and programmed a servo-driven four-legged robot on Arduino for Robocon",
-      "Built a line-following robot using a Cytron 7-bit IR sensor array and Arduino Nano",
-      "Contributed to an optical encoder for bot speed detection",
-    ],
+      "Built competition robotics on Arduino for Robocon and Mindspark — servo actuation, sensor integration, and custom optical encoders.",
+    body: `- Developed robotics projects on Arduino microcontrollers for competitions including Robocon and Mindspark.
+- Designed and programmed a four-legged robotic horse driven by servo motors on an Arduino microcontroller.
+- Built a line-following robot using a Cytron 7-bit IR sensor and Arduino Nano.
+- Contributed to development of a custom optical encoder for real-time bot speed detection.
+- Collaborated with a team to design, test, and optimize robotic systems, ensuring high performance and reliability in competitive environments.`,
+    achievements: [],
     skillIds: ["skl_atmega", "skl_c_cpp"],
-    links: [],
+    links: [
+      { kind: "github", url: "https://github.com/DhavalDDT/auto-bot2K19", label: "auto-bot2K19" },
+      { kind: "github", url: "https://github.com/DhavalDDT/MR1-Traversal", label: "MR1-Traversal" },
+      { kind: "github", url: "https://github.com/DhavalDDT/botwot", label: "botwot" },
+    ],
     phaseId: "phase_undergrad",
     featured: false,
-    order: 6,
+    order: 7,
     visibility: "public",
   },
   {
@@ -241,21 +257,21 @@ This is the earliest layer of the thing I still do. A robot that does not work d
     slug: "instructional-assistant",
     role: "Instructional Assistant",
     org: "Private Coaching Centre",
-    type: "contract",
+    type: "part-time",
     mode: "onsite",
     location: "Pune, India",
     date: { start: { year: 2019, month: 8 }, end: { year: 2020, month: 12 } },
     summary:
-      "Taught senior high school students object-oriented programming in C++ and 8085 microcontroller assembly.",
-    body: `Tutoring senior high school students in OOP with C++ and assembly programming on the 8085 microcontroller, plus organising and grading exams.
-
-Teaching assembly to teenagers is an unusually good way to find out whether you understand it. Every abstraction you have quietly been leaning on gets exposed the moment someone asks why.`,
+      "Taught object-oriented programming in C++ and 8085 microcontroller assembly to senior high school students.",
+    body: `- Tutored a cohort of 10–15 senior high school students in C++ and object-oriented programming over 17 months.
+- Taught computer architecture and assembly-level programming on the 8085 microprocessor — a historical predecessor to modern x86 — building students' foundation in low-level systems programming.
+- Authored and graded examinations across the C++ and assembly curricula to assess student performance.`,
     achievements: [],
     skillIds: ["skl_c_cpp", "skl_mentorship", "skl_x86_asm"],
     links: [],
     phaseId: "phase_undergrad",
     featured: false,
-    order: 7,
+    order: 8,
     visibility: "public",
   },
   {
@@ -268,14 +284,15 @@ Teaching assembly to teenagers is an unusually good way to find out whether you 
     location: "Pune, India",
     date: { start: { year: 2019, month: 6 }, end: { year: 2019, month: 7 } },
     summary:
-      "Designed system administration solutions for CRM on the Salesforce platform.",
-    body: `A short first internship building system administration solutions for customer relationship management on Salesforce. Small in scope, and the first line on the résumé that was not coursework.`,
+      "Designed system administration solutions for customer relationship management on the Salesforce platform.",
+    body: `- Designed Salesforce workflow automations to manage lead follow-up, replacing manual tracking with system-triggered task assignments.
+- Configured automated email sequences within Salesforce to maintain consistent follow-up communication, over a one-month internship.`,
     achievements: [],
     skillIds: ["skl_system_design"],
     links: [],
     phaseId: "phase_undergrad",
     featured: false,
-    order: 8,
+    order: 9,
     visibility: "public",
   },
 ];

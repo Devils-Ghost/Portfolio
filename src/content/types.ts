@@ -97,7 +97,8 @@ export interface Project {
 
 // ── EXPERIENCE ───────────────────────────────────────────────
 export type ExperienceType =
-  | "full-time" | "internship" | "academic" | "research" | "volunteer" | "contract";
+  | "full-time" | "internship" | "academic" | "research" | "volunteer"
+  | "contract" | "part-time";
 export type WorkMode = "onsite" | "hybrid" | "remote";
 
 export interface Experience {

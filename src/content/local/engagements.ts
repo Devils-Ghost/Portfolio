@@ -101,25 +101,4 @@ What mattered was what it built outside the work. Enterprise releases depend on 
     order: 4,
     visibility: "public",
   },
-  {
-    id: "eng_robocon",
-    slug: "robocon-mindspark",
-    title: "Robocon & Mindspark Robotics",
-    org: "Advanced Robotics Lab",
-    type: "competition",
-    date: { start: { year: 2017, month: 8 }, end: { year: 2018, month: 12 } },
-    summary:
-      "Engineered embedded robotic systems for Robocon and Mindspark — bridging software and hardware to build machines that execute flawlessly under unpredictable conditions.",
-    body: `My foundational experience in systems engineering started in my university's Advanced Robotics Lab, building for two very different competitive arenas: the international Robocon and the regional Mindspark.
-
-Coursework projects run in controlled environments, but competitive robotics forces you to build machines that survive transport and perform on the day, under lighting and floor friction you don't control. For Robocon, our team designed and programmed a four-legged robotic horse, bridging software and hardware using Arduino microcontrollers to sequence complex servo actuation. For Mindspark, I built a line-following robot driven by an Arduino Nano and Cytron IR sensors, alongside custom optical encoders to calculate real-time speed.
-
-This was where I first learned how to integrate embedded systems to actuate in the real world. Everything I know today about building resilient systems for unpredictable conditions started here.`,
-    iconName: "cpu",
-    skillIds: ["skl_atmega", "skl_c_cpp"],
-    phaseId: "phase_undergrad",
-    featured: false,
-    order: 5,
-    visibility: "public",
-  },
 ];

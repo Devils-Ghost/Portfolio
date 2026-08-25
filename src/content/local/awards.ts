@@ -55,7 +55,7 @@ export const awards: Award[] = [
     slug: "cdio-champion-award",
     title: "CDIO Champion Award",
     issuer: "UBS",
-    date: { year: 2022, month: 11 },
+    date: { year: 2022, month: 12 },
     summary:
       "For leadership and coordination across cultural activities, celebrations and sports tournaments.",
     body: `Awarded for leadership across the departmental cultural committees — budget management, logistics, and running events from planning through execution. It built genuine strong relationships across the workplace, and made the office more fun to work at.`,
