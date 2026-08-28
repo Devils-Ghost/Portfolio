@@ -1,6 +1,6 @@
 # Voice Guide
 
-**Why this exists:** the same five problems kept appearing across stories and awards, and the review notes kept repeating. This is the rule set so they stop.
+**Why this exists:** the same problems kept appearing across stories and awards, and the review notes kept repeating. This is the rule set so they stop.
 
 Applies to all written content. Two registers — see §7.
 
@@ -10,15 +10,15 @@ Applies to all written content. Two registers — see §7.
 
 The single worst habit. Say the thing. Don't explain that you're about to say it, or why.
 
-| ✗ Cut | ✓ Write |
-|---|---|
-| "I want to be exact about scope, because this is a distinction that matters and it is easy to overclaim. The platform owned multi-tenancy." | "The platform owned multi-tenancy." |
-| "It made developer life harder, and I want to state that plainly rather than let it sit in the gap between paragraphs." | "It made developer life harder." |
-| "I list this next to the engineering awards deliberately." | *(delete — placement speaks for itself)* |
-| "The part I would rather be judged on is the decision inside it." | *(delete — then just describe the decision)* |
-| "I would rather say that precisely than claim a cleaner attribution than I can support." | "I don't know which." |
+| ✗ Cut                                                                                                                                       | ✓ Write                                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| "I want to be exact about scope, because this is a distinction that matters and it is easy to overclaim. The platform owned multi-tenancy." | "The platform owned multi-tenancy."          |
+| "It made developer life harder, and I want to state that plainly rather than let it sit in the gap between paragraphs."                     | "It made developer life harder."             |
+| "I list this next to the engineering awards deliberately."                                                                                  | _(delete — placement speaks for itself)_     |
+| "The part I would rather be judged on is the decision inside it."                                                                           | _(delete — then just describe the decision)_ |
+| "I would rather say that precisely than claim a cleaner attribution than I can support."                                                    | "I don't know which."                        |
 
-**Test:** if a sentence is *about* the writing rather than about the events, cut it.
+**Test:** if a sentence is _about_ the writing rather than about the events, cut it.
 
 ## 2. Don't pre-defend
 
@@ -36,7 +36,7 @@ Editorial reasoning belongs in `CONTENT_DECISIONS.md`, never in the content.
 
 > ✗ "The engineering here is trivial. Someone found a duplicate call and deleted it. That is not a story."
 
-That was an argument about whether to *publish* the story. A director doesn't explain why a scene is in the film.
+That was an argument about whether to _publish_ the story. A director doesn't explain why a scene is in the film.
 
 ## 4. Prefer implication
 
@@ -57,7 +57,7 @@ Not jokes for their own sake — plainness where a corporate voice would reach f
 
 ## 6. Technical depth serves the story, never the reverse
 
-A non-technical reader — a friend, a family member, a recruiter — must be able to follow the whole thing. Keep the technical detail that makes the story *make sense*; cut the rest.
+A non-technical reader — a friend, a family member, a recruiter — must be able to follow the whole thing. Keep the technical detail that makes the story _make sense_; cut the rest.
 
 **Test:** would someone who doesn't code still follow this paragraph? If not, is it load-bearing? If not, cut it.
 
@@ -65,9 +65,9 @@ Symptom to watch for: enumerated technical specifics that don't change the outco
 
 ## 7. Two registers
 
-| | Register |
-|---|---|
-| **Stories** (`/blog`) | First person, personal, human, can be blunt. His life, his point of view. |
+|                                   | Register                                                                           |
+| --------------------------------- | ---------------------------------------------------------------------------------- |
+| **Stories** (`/blog`)             | First person, personal, human, can be blunt. His life, his point of view.          |
 | **Experiences, projects, awards** | Professional. Still plain, still no self-narration, but no jokes and no bluntness. |
 
 Awards sit closer to stories than to projects — they're personal recognition — but stay understated.

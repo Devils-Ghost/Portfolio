@@ -1,28 +1,162 @@
 import type { Project } from "../types";
 
+/**
+ * Project bodies are a 2–3 line description of what the thing IS.
+ * `highlights` carries the resume-register XYZ bullets — impact, quantification,
+ * and technologies, written so they can be lifted straight onto a résumé.
+ *
+ * `links` of kind "report" point at direct-download Drive URLs and should render
+ * WITHOUT target="_blank" — the browser downloads and stays on the page.
+ * Only "live" and "video" links navigate away.
+ */
 export const projects: Project[] = [
+  // ── PHASE: POST-MASTER'S ─────────────────────────────────────────
+  {
+    id: "prj_decompiler_eval",
+    slug: "decompiler-evaluation-for-llm-vulnerability-discovery",
+    title: "Decompiler Evaluation for LLM Vulnerability Discovery",
+    summary:
+      "A controlled study testing whether the choice of decompiler changes what an AI agent can find in a compiled binary.",
+    body: `Existing decompiler benchmarks measure how accurately a decompiler reconstructs source code. None measure whether that reconstruction is actually useful for a real security task. In this study, an MCP-connected LLM agent analyzes real-world binaries and attempts to independently discover a known CVE, scored against a hand-verified ground truth that stays valid regardless of which decompiler produced the analysis.`,
+    highlights: [
+      "Designed and ran controlled experiments measuring whether decompiler choice affects an MCP-connected LLM agent's ability to independently discover vulnerabilities in binaries.",
+      "Achieved 100% ground-truth consistency across decompilers by designing an address-anchored system to normalize output with incompatible naming conventions.",
+      "Reduced experimental data processing time by 89% through an automated Python pipeline to parse 100,000+ session log lines and compute discovery-efficiency metrics — context efficiency ratio, tool-call efficiency, and address recall — across dozens of experimental runs.",
+      "Resolved inconsistent vulnerability classifications across identical runs by designing a three-axis grading rubric separating localization, classification, and exploitation.",
+      "Established baseline LLM performance metrics through a 5-run pilot study, demonstrating agent localization accuracy consistently outperforms classification accuracy.",
+    ],
+    skillIds: [
+      "skl_reverse_engineering",
+      "skl_vuln_research",
+      "skl_ml_security",
+      "skl_ghidra_ida",
+      "skl_python",
+      "skl_c_cpp",
+      "skl_binary_exploitation",
+      "skl_threat_modeling",
+    ],
+    links: [],
+    status: "in-progress",
+    date: { start: { year: 2026, month: 6 }, end: null },
+    context: { kind: "research", experienceId: "exp_llm_re_research" },
+    phaseId: "phase_post_masters",
+    featured: false,
+    order: 1,
+    visibility: "public",
+  },
+  {
+    id: "prj_barnum",
+    slug: "performance-ai-observability-dashboard",
+    title: "Performance AI — Observability Dashboard",
+    summary:
+      "An observability platform monitoring a multi-agent AI application for model drift, resource usage, and behavioral quality in real time.",
+    body: `A research proof-of-concept for the ASU CIPS-AI Lab, deployed on Kubernetes with an OpenTelemetry pipeline. The dashboard displays drift-detection, resource monitors and model-quality indicators for a multi-agent AI chat system — the kind of visibility you need before you can trust an agent in production.`,
+    highlights: [
+      "Built a comprehensive observability UI for a multi-service AI system (FastAPI, LangGraph, OpenTelemetry), integrating React/TypeScript front-end panels with backend services to render 20 live metric tiles tracking drift-detection and model quality.",
+      "Resolved critical infrastructure pipeline failures by debugging Helm configurations and tracing a cluster-wide Docker/cri-dockerd symlink resolution gap in DaemonSet volume mounts via direct Kubernetes node log inspection.",
+      "Restored end-to-end telemetry data flow by rectifying Collector processing rules and fixing a backend SQL data-normalization defect, recovering 40% of drift-detection metrics.",
+    ],
+    skillIds: [
+      "skl_react",
+      "skl_typescript",
+      "skl_kubernetes",
+      "skl_docker",
+      "skl_python",
+      "skl_sql",
+      "skl_linux",
+      "skl_system_design",
+      "skl_cloud",
+      "skl_ml_security",
+    ],
+    links: [],
+    status: "archived",
+    date: { start: { year: 2026, month: 7 }, end: { year: 2026, month: 8 } },
+    context: { kind: "research", experienceId: "exp_barnum" },
+    phaseId: "phase_post_masters",
+    featured: false,
+    order: 2,
+    visibility: "public",
+  },
+  {
+    id: "prj_eternal_glitch_hub",
+    slug: "eternal-glitch-hub",
+    title: "Eternal Glitch Hub",
+    summary:
+      "A shared-domain project router replacing hard-to-remember subdomains with one live directory — built on a $0 infrastructure budget.",
+    body: `eternalglitch.com is a shared personal domain acting as a centralized routing hub for two independent developers to showcase their projects. Instead of forcing users to memorize fragmented subdomains, it functions as a unified directory and full-stack portal. Powered by an authenticated CMS and custom data visualizations, the platform allows both owners to instantly publish and manage links without triggering redeploys—all while running flawlessly on $0 infrastructure.`,
+    highlights: [
+      "Engineered a zero-cost production environment by architecting a Next.js 16/TypeScript multi-tenant routing hub, utilizing Incremental Static Regeneration (ISR) to instantly propagate CMS updates while keeping Firestore reads below 1% of daily quotas.",
+      "Eliminated client-side attack vectors by implementing a zero-trust backend model with deny-all Firestore rules, enforcing 100% server-mediated writes through custom JWT verification that bypassed complex ESM/CommonJS dependency conflicts.",
+      "Built a highly interactive, WCAG-compliant UI featuring a custom, library-free SVG visualization for rendering randomized, collision-verified data points, alongside atomic batched writes for drag-and-drop reordering.",
+    ],
+    skillIds: [
+      "skl_nextjs",
+      "skl_react",
+      "skl_typescript",
+      "skl_firebase",
+      "skl_system_design",
+      "skl_secure_coding",
+      "skl_perf_optimization",
+      "skl_threat_modeling",
+      "skl_cloud",
+    ],
+    links: [
+      { kind: "live", url: "https://eternalglitch.com", label: "Live site" },
+      { kind: "github", url: "https://github.com/Devils-Ghost/eternal-glitch-hub", label: "" },
+    ],
+    status: "shipped",
+    date: { start: { year: 2026, month: 6 }, end: null },
+    context: { kind: "personal" },
+    phaseId: "phase_post_masters",
+    featured: false,
+    order: 3,
+    visibility: "public",
+  },
+  {
+    id: "prj_portfolio",
+    slug: "this-portfolio",
+    title: "Personal Portfolio - This Site",
+    summary:
+      "A content-driven portfolio built on a typed content graph, where every skill, role, project and story is a linked entity.",
+    body: `This platform serves as a living, comprehensive archive of my engineering career. Designed to be fast for recruiters to scan and deep enough for engineers to explore, the site seamlessly connects my technical capabilities with concrete proof of work. Built on Next.js 16, it features a custom content management system that allows me to document my entire professional history which also the site you are on right now.`,
+    highlights: [
+      "Engineered a dynamic professional archive in Next.js 16, architecting a relational content graph that seamlessly interlinks technical capabilities with real-world project and career outcomes.",
+      "Streamlined portfolio management by building a custom CMS, enabling efficient, structured documentation and seamless updates to my entire professional history.",
+      "Maximized SEO and screen-reader accessibility by enforcing default server-side rendering, alongside implementing one-shot entry animations that strictly honor system-level reduced-motion preferences.",
+    ],
+    skillIds: [
+      "skl_typescript",
+      "skl_nextjs",
+      "skl_react",
+      "skl_firebase",
+      "skl_system_design",
+    ],
+    links: [
+      { kind: "live", url: "https://dhaval-tanna.eternalglitch.com", label: "Live site" },
+      { kind: "github", url: "https://github.com/Devils-Ghost/Portfolio", label: "" },
+    ],
+    status: "in-progress",
+    date: { start: { year: 2026, month: 6 }, end: null },
+    context: { kind: "personal" },
+    phaseId: "phase_post_masters",
+    featured: false,
+    order: 4,
+    visibility: "public",
+  },
+
+  // ── PHASE: MASTER'S ──────────────────────────────────────────────
   {
     id: "prj_ldp_analysis",
     slug: "local-differential-privacy-attack-analysis",
     title: "Attacking Local Differential Privacy",
     summary:
-      "Derived the Maximum-Gain Attack against three LDP frequency-estimation protocols and quantified where the privacy–security tradeoff breaks.",
-    body: `Local Differential Privacy promises something appealing: each user perturbs their own data before it ever leaves their device, so the aggregator learns useful statistics without learning individuals. The guarantee is mathematical, which makes it easy to trust and easy to misread.
-
-The thing the guarantee does *not* cover is data poisoning. LDP protects users from the aggregator. It says nothing about protecting the aggregator from users — and a protocol that accepts perturbed input by design cannot easily tell noise from a lie.
-
-I analysed three frequency-estimation protocols under one framework — k-ary Randomised Response, Optimised Unary Encoding, and Optimised Local Hashing — and derived the Maximum-Gain Attack mathematically for each, measuring how attacker gain scales against the fraction of injected fake users.
-
-**The uncomfortable result.** The privacy budget works against you. Lowering ε — which is what you do when you want *stronger* privacy — causes attack gains to grow asymptotically. The protocol configuration that best protects the individual is the one most vulnerable to a poisoning adversary. Those two goals are not merely in tension; under this attack they are directly opposed.
-
-**The useful result.** Optimised Local Hashing holds up best, maintaining stable gains independent of domain size. That independence is the property that matters in deployment, where you rarely control how large the domain gets.
-
-The takeaway I carry from this is broader than LDP. A security proof is a statement about a specific threat model, and the failure mode is almost never that the proof was wrong — it is that the threat model quietly excluded the adversary you actually have.`,
+      "Analyzed Local Differential Privacy protocols against data-poisoning attacks, mathematically proving that stronger privacy protections make enterprise-scale data easier to manipulate.",
+    body: `This research investigates the resilience of Local Differential Privacy (LDP) frequency estimation protocols against targeted data-poisoning attacks. The study demonstrates how attackers can use fake accounts to manipulate statistics, ultimately proving that strengthening user privacy inadvertently makes the entire system more vulnerable.`,
     highlights: [
-      "Unified analysis of kRR, OUE and OLH under a single attack framework",
-      "Mathematically derived the Maximum-Gain Attack and its scaling against injected fake users",
-      "Proved asymptotic growth of attack gain as the privacy budget tightens",
-      "Identified OLH as the protocol with gains independent of domain size",
+      "Evaluated 3 primary data-privacy protocols (kRR, OUE, OLH) against simulated data-poisoning attacks to determine their resilience and security at an enterprise scale.",
+      "Exposed a critical scalability flaw in a standard privacy protocol by deriving its attack model, proving it becomes inherently insecure for systems tracking 100,000+ distinct items.",
+      "Identified an optimal privacy method that exponentially reduces network costs while maintaining stable security across massive databases.",
+      "Quantified a fundamental security paradox, proving that as attackers inject more fake accounts, enforcing stricter privacy guarantees actually makes the system easier to manipulate.",
     ],
     skillIds: [
       "skl_privacy",
@@ -31,12 +165,19 @@ The takeaway I carry from this is broader than LDP. A security proof is a statem
       "skl_threat_modeling",
       "skl_ml_security",
     ],
-    links: [],
-    status: "shipped",
+    links: [
+      {
+        kind: "report",
+        url: "https://drive.google.com/uc?export=download&id=1K136Vf2CVoF81Kn7FlEINGl0p7Bw8fCF",
+        label: "Project report",
+      },
+    ],
+    status: "archived",
     date: { start: { year: 2025, month: 8 }, end: { year: 2025, month: 12 } },
-    context: { kind: "academic", experienceId: "exp_asu_ta" },
+    context: { kind: "academic" },
+    phaseId: "phase_masters",
     featured: true,
-    order: 1,
+    order: 5,
     visibility: "public",
   },
   {
@@ -44,23 +185,12 @@ The takeaway I carry from this is broader than LDP. A security proof is a statem
     slug: "blockchain-chain-of-custody",
     title: "Blockchain Chain of Custody",
     summary:
-      "A permissioned-blockchain evidence lifecycle system giving forensic artifacts a tamper-evident audit trail across multiple legal organisations.",
-    body: `Digital evidence has a paperwork problem. A forensic artifact passes through investigators, analysts, prosecutors and defence — and its admissibility depends less on the artifact than on whether you can prove nobody could have altered it in transit. That proof is traditionally a signed form, and a signed form is exactly as trustworthy as the organisation holding the pen.
-
-This is a genuinely good fit for a permissioned blockchain, which is a sentence I do not enjoy writing. The requirements line up: multiple organisations that must cooperate but should not have to trust each other, an append-only history, and no single party who gets to be the authority.
-
-**What it does.** Built on Hyperledger Fabric with Go smart contracts and CouchDB as the state database, containerised with Docker. Every custody event — acquisition, transfer, analysis, release — is a chaincode transaction. The full lifecycle of a disk or memory image is reconstructible after the fact, by any participant, without anyone's word for it.
-
-**Immutability that survives the extraction step.** Sealing the evidence is only half the problem; artifacts extracted *from* it need the same treatment or the chain has a gap exactly where the analysis happens. A dual-write logging strategy captures extracted artifacts into the same tamper-evident trail as their source.
-
-**Between organisations, not just within them.** All inter-organisational communication runs over TLS with the certificate infrastructure the Fabric network requires. Multi-org identity and channel configuration turned out to be the real work — the chaincode was straightforward by comparison.
-
-What I took from it: "immutable ledger" is the easy half of an integrity system. The hard half is the boundary where data enters and leaves it, because that is where every real attack lives.`,
+      "A permissioned-blockchain system tracking forensic evidence across multiple legal organizations with a tamper-evident audit trail.",
+    body: `This platform introduces a permissioned blockchain architecture to securely manage the chain of custody for digital forensics. Traditional evidence management relies on centralized databases that are vulnerable to tampering, human error, and single points of failure. To solve this, the system leverages Hyperledger Fabric to create a decentralized, tamper-evident record tracking the complete lifecycle of digital evidence across multiple organizations.`,
     highlights: [
-      "Hyperledger Fabric network with Go chaincode and CouchDB state, fully containerised",
-      "Complete custody lifecycle tracking for forensic disk and memory artifacts",
-      "Dual-write logging so extracted artifacts inherit the same tamper-evident trail",
-      "TLS-secured communication across a multi-organisational network",
+      "Achieved 100% traceability for forensic disk and memory assets by designing a Docker-containerized decentralized system using Hyperledger Fabric, CouchDB, and Go smart contracts to manage the digital evidence lifecycle.",
+      "Established immutable audit trails for extracted artifacts by implementing a dual-write logging strategy, and secured multi-organizational network communication with TLS.",
+      "Modeled the complete custody lifecycle — acquisition, transfer, analysis, and release — as chaincode transactions, making evidence history independently reconstructible by any participating organization.",
     ],
     skillIds: [
       "skl_hyperledger",
@@ -72,34 +202,37 @@ What I took from it: "immutable ledger" is the easy half of an integrity system.
       "skl_system_design",
       "skl_postgres",
     ],
-    links: [],
-    status: "shipped",
+    links: [
+      {
+        kind: "report",
+        url: "https://drive.google.com/uc?export=download&id=14f3FAZqtDy8z-0c1kdcWT2RQpaBXdseU",
+        label: "Project report",
+      },
+      {
+        kind: "github",
+        url: "https://github.com/Devils-Ghost/Blockchain-Chain-of-Custody",
+        label: "",
+      },
+    ],
+    status: "archived",
     date: { start: { year: 2025, month: 8 }, end: { year: 2025, month: 12 } },
     context: { kind: "academic" },
+    phaseId: "phase_masters",
     featured: true,
-    order: 2,
+    order: 6,
     visibility: "public",
   },
   {
     id: "prj_ids",
     slug: "multi-class-intrusion-detection",
-    title: "Multi-Class Intrusion Detection",
+    title: "AI-Based Intrusion Detection System",
     summary:
-      "A classifier that identifies which attack is happening, not just that one is — 99.7% accuracy across 40 attack types on NSL-KDD and CIC-IDS2017.",
-    body: `Most machine learning work on intrusion detection answers a binary question: is this traffic malicious? That is the wrong question if you want to *respond*. Knowing an intrusion is underway tells a defender to look; knowing it is a probe rather than a denial-of-service tells them what to do. The gap between detection and prevention is the gap between those two answers.
-
-So the target was multi-class classification across the 40 distinct attack types in the NSL-KDD and CIC-IDS2017 datasets, using Random Forest and Gradient Boosting.
-
-**The real problem was not the model.** It was class imbalance, and it is the problem in this entire domain. Common attacks have abundant data. The rare ones — which are the ones you most want to catch, because rarity often means targeted — have so few samples that the model learns to ignore them. Optimising for overall accuracy actively rewards that behaviour, which makes the headline metric a trap.
-
-**What worked.** Fifteen of the forty types had enough data to learn as distinct classes. The remaining twenty-five were too sparse, so rather than dropping them — which is what most pipelines quietly do — they went into a sixteenth class, "Other". Sixteen output classes covering all forty attack types, with the rare ones still detected as anomalous even where the model can't name them. Then hyperparameter tuning, standardised features, and dimensionality reduction via recursive feature elimination — with tree depth capped deliberately, because an unconstrained forest on this data memorises rather than generalises.
-
-**Result.** 99.7% accuracy across sixteen classes covering all forty attack types, 25% less training time, and a 15% improvement in rare-threat detection — which is the number I actually care about, because it is the one that moves when the preprocessing is right rather than when the model is bigger.`,
+      "A machine-learning Intrusion Detection System classifying multi-class network attacks.",
+    body: `Developed an AI-driven Network Intrusion Detection System (NIDS) designed to analyze network traffic and identify sophisticated cyber threats. Unlike traditional security frameworks that only issue generic binary alerts, this system utilizes multi-class classification to pinpoint the exact type of intrusion.`,
     highlights: [
-      "99.7% accuracy across 40 attack types on NSL-KDD and CIC-IDS2017",
-      "25% reduction in training time through hyperparameter tuning and constrained tree depth",
-      "15% improvement in rare-threat detection by folding 25 sparse attack types into a sixteenth class rather than discarding them",
-      "Recursive feature elimination and StandardScaler normalisation in the preprocessing pipeline",
+      "Developed an Intrusion Detection System achieving 99.7% accuracy in classifying multi-class network attacks across the NSL-KDD and CIC-IDS2017 datasets by training Random Forest and Gradient Boosting models.",
+      "Reduced training time by 25% and enhanced rare threat detection by 15% through hyperparameter tuning, StandardScaler feature standardization, and dimensionality reduction via Recursive Feature Elimination.",
+      "Overcame the limitations of standard security frameworks by engineering the model to classify the specific type of cyber attack rather than just its overall presence, enabling precise and informed mitigation strategies.",
     ],
     skillIds: [
       "skl_ml_security",
@@ -108,120 +241,40 @@ So the target was multi-class classification across the 40 distinct attack types
       "skl_pandas",
       "skl_network_security",
     ],
-    links: [],
-    status: "shipped",
+    links: [
+      {
+        kind: "report",
+        url: "https://drive.google.com/uc?export=download&id=1_m88xsv854b77clMqebVGE_KJmtQc0hL",
+        label: "Project report",
+      },
+      {
+        kind: "github",
+        url: "https://github.com/Devils-Ghost/AI-Based-Intrusion-Detection-System",
+        label: "",
+      },
+    ],
+    status: "archived",
     date: { start: { year: 2024, month: 8 }, end: { year: 2024, month: 12 } },
     context: { kind: "academic" },
+    phaseId: "phase_masters",
     featured: true,
-    order: 3,
+    order: 7,
     visibility: "public",
   },
-  {
-    id: "prj_cloud_poc",
-    slug: "containerised-migration-proof-of-concept",
-    title: "Containerised Migration — Proof of Concept",
-    summary:
-      "A benchmarked design for moving an on-prem financial application to containers and serverless. Approved, then overtaken by an enterprise vendor decision.",
-    body: `One of the financial applications I managed ran across multiple on-premises servers — one for the web app, one for the backend microservices, one for the batch jobs. Most were underutilised, and each carried its own patching and provisioning burden. The technical debt was not any single server; it was that the architecture assumed a server per concern.
 
-My team was evaluating cloud providers, so I built a proof of concept to benchmark what a containerised architecture would actually give us, rather than assuming.
-
-**The design.** Rather than lifting the monolith onto virtual machines, I decoupled it. Web application and Spring Boot microservice containerised with Docker and orchestrated on a Kubernetes cluster, with resource requests and limits defined and a horizontal pod autoscaler watching CPU utilisation. Readiness probes so the router only sent traffic to a pod once its Spring context and database connections were actually up — the failure mode otherwise is a pod that is running but not ready, which looks like an intermittent error to everyone downstream.
-
-A single shared application load balancer with path-based ingress routing rather than one per service, because the point of the exercise was reducing waste, not relocating it.
-
-**The batch jobs were the interesting decision.** They were short-lived and event-driven, and I verified they completed well inside fifteen minutes. A persistent container is the wrong unit for a workload like that — you pay for idle time to host something that runs for ninety seconds. They went to serverless functions instead, invoked by the existing on-premises scheduler so the change did not require the rest of the enterprise to move with us.
-
-**What happened.** I presented the PoC with benchmark data on idle compute and patching overhead. The design and the migration were approved.
-
-The production migration then went to Azure instead, because of enterprise vendor contracts — a decision made well above this work. What eventually shipped was a phased lift-and-shift to Azure VMs, which I led.
-`,
-    highlights: [
-      "Decoupled architecture benchmarked against the existing on-prem estate",
-      "Horizontal pod autoscaling with explicit resource requests, limits and readiness probes",
-      "Single shared load balancer with path-based ingress rather than one per service",
-      "Batch jobs moved to serverless after verifying sub-15-minute runtimes, invoked from the existing scheduler",
-    ],
-    skillIds: [
-      "skl_kubernetes",
-      "skl_aws",
-      "skl_docker",
-      "skl_spring_boot",
-      "skl_java",
-      "skl_cloud_migration",
-      "skl_system_design",
-      "skl_autosys",
-    ],
-    links: [],
-    status: "archived",
-    date: { start: { year: 2022, month: 6 }, end: { year: 2022, month: 10 } },
-    context: { kind: "professional", experienceId: "exp_ubs_swe" },
-    featured: false,
-    order: 4,
-    visibility: "public",
-  },
-  {
-    id: "prj_portfolio",
-    slug: "this-portfolio",
-    title: "This Site",
-    summary:
-      "A content-driven portfolio on Next.js 16 with a custom CMS, a typed content graph, and an experimental 3D experience corridor.",
-    body: `The site you are reading. It is here because building it was more interesting than filling in a template, and because a portfolio that cannot be updated without a deploy is a portfolio that stops being true.
-
-**The graph, not the pages.** Every skill, project, role, award and story is a typed entity with a stable ID. Skills are referenced by ID and never by name, so the relationships between them are guaranteed rather than maintained by hand. Click a skill and it tells you honestly where it was used — because that answer is computed from the same data, not written twice.
-
-**The architecture.** Next.js 16 App Router with React 19, server-rendered by default so the content is real HTML rather than a JavaScript shell. Content sits behind a repository interface with two implementations — local TypeScript modules and Firestore — which meant the entire restructure happened offline before a database existed. Zod validates at the boundary, because Firestore has no schema and a typo should fail loudly.
-
-**The CMS.** A custom admin panel rather than a hosted one: auth-gated CRUD, drag-to-order featured content, draft/publish, and Next 16's cache tags so a save is live within seconds.
-
-**What's next.** An experimental 3D corridor for the experience timeline — a scroll-driven camera flight past doors representing each chapter. Built as a toggle over a conventional timeline that is never removed, because a canvas contains no text and my work history should be readable by a crawler and a screen reader.
-
-Every animation here is one-shot on entry and honours reduced-motion. That constraint is the whole design brief: cinematic, but never in the way of reading.`,
-    highlights: [
-      "Typed content graph with ID-referenced relationships and computed reverse lookups",
-      "Repository pattern with local and Firestore implementations behind one interface",
-      "Custom auth-gated CMS with on-demand cache invalidation",
-      "Server-rendered by default; reduced-motion honoured throughout",
-    ],
-    skillIds: [
-      "skl_typescript",
-      "skl_nextjs",
-      "skl_react",
-      "skl_firebase",
-      "skl_system_design",
-    ],
-    links: [
-      { kind: "live", url: "https://dhaval-tanna.eternalglitch.com", label: "Live site" },
-    ],
-    status: "in-progress",
-    date: { start: { year: 2026, month: 6 }, end: null },
-    context: { kind: "personal" },
-    featured: false,
-    order: 5,
-    visibility: "public",
-  },
+  // ── PHASE: UNDERGRAD ─────────────────────────────────────────────
   {
     id: "prj_smart_society",
     slug: "iot-smart-society",
     title: "IoT Smart Society",
     summary:
-      "An automated disaster detection system on constrained hardware — published research showing a 47% reduction in emergency reporting delay.",
-    body: `Emergency response has a bottleneck that is not technological: a human has to notice, decide it is serious, and call someone. That sequence is where the minutes go.
-
-The system detects hazards — fire, flood, gas — across a residential society using six environmental sensors on an ATmega16 microcontroller, and removes the human from the reporting step entirely.
-
-**The interesting constraint was the free tier.** ThingSpeak's free account rate-limits ingestion to one update every fifteen seconds. Six sensors reporting independently would have blown that immediately. So the microcontroller aggregates all six readings into a single batched payload transmitted exactly on the fifteen-second boundary — which turns the rate limit from a problem into the system's clock.
-
-**The pipeline.** ThingSpeak triggers a Java service that ingests the payload and writes to a Firebase realtime database, which pushes notifications to a React web application and an Android app simultaneously.
-
-**Validating it honestly.** A system like this is easy to claim and hard to prove. We ran manual disaster simulations, recorded automated detection times, and cross-referenced against published statistics on human reporting delay — which gave a defensible 47% reduction in overall response delay rather than a number pulled from a demo. The architecture and benchmarks were published in IJARIIT.
-
-Undergraduate work, and still the project I point at when someone asks what I did before the security turn. It has the shape of everything I have built since: a constraint that looks like a limitation, treated as a design input.`,
+      "an integrated IoT and cloud-messaging platform that automates residential safety and resource management, delivering real-time emergency alerts directly to users' mobile devices.",
+    body: `To modernize residential infrastructure and eliminate the risks of manual oversight, this project introduces an automated, IoT-driven "Smart Society" platform. Powered by an ATmega-16 microcontroller and a network of environmental sensors, the system continuously monitors for hazards like fires, basement floods, and unauthorized entries. By routing this telemetry through a custom cloud-based processing pipeline directly to a dedicated mobile app, the platform ensures residents receive real-time, actionable alerts during critical events.`,
     highlights: [
-      "Six-sensor aggregation into batched payloads to work within a 15-second API rate limit",
-      "Full telemetry pipeline: ATmega16 → ThingSpeak → Java service → Firebase → React and Android clients",
-      "47% reduction in emergency response delay, validated against published human-reporting statistics",
-      "Published in IJARIIT, Volume 7 Issue 2",
+      "Reduced emergency response delays by 47% by engineering an automated disaster detection system on an ATmega16 microcontroller, validated against published human-reporting statistics through manual disaster simulations.",
+      "Built a full telemetry pipeline with a six-sensor aggregation scheme batching all readings into a single payload, integrating a Java service with ThingSpeak analytics and a Firebase realtime database.",
+      "Centralized facility management and emergency alerting by integrating ThingSpeak analytics with a Java service and Firebase realtime database, pushing simultaneous alerts to React web and Android applications in under 250 milliseconds.",
+      "Published the architecture and benchmarks in IJARIIT (Volume 7, Issue 2) as lead student author.",
     ],
     skillIds: [
       "skl_atmega",
@@ -242,8 +295,9 @@ Undergraduate work, and still the project I point at when someone asks what I di
     status: "shipped",
     date: { start: { year: 2020, month: 8 }, end: { year: 2021, month: 4 } },
     context: { kind: "academic" },
+    phaseId: "phase_undergrad",
     featured: false,
-    order: 6,
+    order: 9,
     visibility: "public",
   },
   {
@@ -251,26 +305,23 @@ Undergraduate work, and still the project I point at when someone asks what I di
     slug: "burger-builder",
     title: "Burger Builder",
     summary:
-      "A React single-page application with centralised state and Firebase-backed auth and order persistence. Still live, still running itself.",
-    body: `An order customisation SPA — pick ingredients, watch the price and the burger update, check out, track the order.
-
-Built to learn React properly rather than to solve a problem. Centralised state in a Redux store with a modular component architecture, which cut redundant re-renders substantially; Firebase Authentication and Realtime Database for identity and persistent order history; deployed via Firebase Hosting.
-
-I keep it listed because it is where the front-end half of my skill set started, and because the state-management lesson — that most re-render problems are actually state-ownership problems — is one I still apply.
-
-It has been live and working since 2020 with no maintenance. Not because it is impressive, but because it turns out a static front end on managed hosting genuinely does just keep running, which is a useful thing to have learned early.`,
+      "An interactive web application that allows users to custom-build a burger, view real-time pricing, and securely place and track their orders.",
+    body: `Everyone starts somewhere, and this was the very first application I built while learning React. It allows users to stack a burger ingredient by ingredient, place an order, and track it in their order history. Built to learn the framework properly rather than to solve a specific problem.`,
     highlights: [
-      "Centralised Redux store with modular components, reducing re-renders by ~37%",
-      "Firebase Authentication and Realtime Database for identity and order persistence",
-      "Production build deployed on Firebase Hosting",
+      "Built a React single-page application, managing state for customized user orders via a centralized Redux store and modular component architecture, optimizing state management and reducing component re-renders by 37%.",
+      "Accelerated application load times by 41%, ensured secure identity management, and maintained persistent order tracking by integrating Firebase Authentication and Realtime Database into a production build deployed via Firebase Hosting.",
     ],
     skillIds: ["skl_react", "skl_javascript", "skl_redux", "skl_firebase"],
-    links: [],
+    links: [
+      { kind: "live", url: "https://burgerbuilder.eternalglitch.com", label: "Live site" },
+      { kind: "github", url: "https://github.com/Devils-Ghost/Burger-Builder", label: "" }
+    ],
     status: "shipped",
     date: { start: { year: 2020, month: 9 }, end: { year: 2020, month: 12 } },
     context: { kind: "personal" },
+    phaseId: "phase_undergrad",
     featured: false,
-    order: 7,
+    order: 10,
     visibility: "public",
   },
   {
@@ -278,20 +329,20 @@ It has been live and working since 2020 with no maintenance. Not because it is i
     slug: "house-price-estimator",
     title: "House Price Estimator",
     summary:
-      "A comparison of linear and ensemble regression models for property valuation from constructional and demographic features.",
-    body: `A regression problem used as an excuse to work through the model-selection question properly: Lasso, Ridge and plain linear regression against Gradient Boosting and a Bagging regressor, on the same carefully preprocessed dataset.
-
-Most of the work was not modelling. It was preprocessing and visualisation in pandas, NumPy and matplotlib — handling missing values, encoding categoricals, and looking at distributions before assuming anything about them.
-
-The lesson that stuck: the gap between a well-preprocessed simple model and a poorly-preprocessed complex one is larger than the gap between model families. That has been true in every ML project I have done since, including the intrusion detection work.`,
-    highlights: [],
+      "A predictive machine learning project that analyzes construction and demographic data to forecast real estate prices, benchmarking five distinct regression models for optimal accuracy.",
+    body: `This project explores data-driven property valuation by predicting real estate prices based on construction and demographic features. It serves as an exercise in model selection, benchmarking standard linear algorithms against advanced ensemble techniques on a standardized dataset to determine the most accurate forecasting approach.`,
+    highlights: [
+      "Benchmarked the predictive accuracy of 5 distinct regression models (Lasso, Ridge, Linear, Gradient Boosting, Bagging) against a shared dataset to compare linear and ensemble property valuation methods.",
+      "Built a comprehensive data preprocessing and visualization pipeline utilizing pandas, NumPy, and matplotlib, executing rigorous categorical encoding and distribution analysis to ensure unbiased model selection.",
+    ],
     skillIds: ["skl_python", "skl_sklearn", "skl_pandas", "skl_ml_security"],
     links: [],
     status: "archived",
     date: { start: { year: 2020, month: 6 }, end: { year: 2020, month: 8 } },
     context: { kind: "personal" },
+    phaseId: "phase_undergrad",
     featured: false,
-    order: 8,
+    order: 11,
     visibility: "public",
   },
   {
@@ -299,18 +350,20 @@ The lesson that stuck: the gap between a well-preprocessed simple model and a po
     slug: "line-follower-bot",
     title: "Line Follower Bot",
     summary:
-      "A competition line-following robot built on Arduino Nano with a 7-bit IR sensor array.",
-    body: `Built for the Mindspark competition: a Cytron 7-bit IR sensor array feeding a control loop written in C on an Arduino Nano.
-
-The instructive part was tuning. A line follower that works on the practice track under fluorescent light does not necessarily work on the competition floor, and the sensor thresholds turn out to be the whole game. First real encounter with the idea that a system's behaviour is a property of its environment, not just its code.`,
-    highlights: [],
+      "An autonomous, Arduino-powered line-following robot engineered with dynamically tuned IR sensors to adapt to unpredictable competitive environments.",
+    body: `Developed for the Mindspark robotics competition, this autonomous line-following robot utilizes an Arduino Nano and a Cytron 7-bit IR sensor array. The core engineering challenge lay in real-world adaptability: programming a C-based control loop and dynamically tuning sensor thresholds to ensure flawless tracking across varying surface frictions and unpredictable competition lighting.`,
+    highlights: [
+      "Built an autonomous line-following robot for a competitive environment, integrating a Cytron 7-bit IR sensor array with an Arduino Nano using a custom C-based control loop.",
+      "Maximized tracking reliability across unpredictable track conditions by tuning sensor thresholds, ensuring the hardware performed flawlessly outside of controlled practice environments.",
+    ],
     skillIds: ["skl_atmega", "skl_c_cpp"],
     links: [],
     status: "archived",
     date: { start: { year: 2018, month: 8 }, end: { year: 2018, month: 12 } },
     context: { kind: "personal" },
+    phaseId: "phase_undergrad",
     featured: false,
-    order: 9,
+    order: 12,
     visibility: "public",
   },
 ];
