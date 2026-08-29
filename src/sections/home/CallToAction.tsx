@@ -1,5 +1,6 @@
 import ContactCallout from "./ContactCallout";
 import { getRepository } from "@/content/repository";
+import { socialUrl } from "@/content/selectors";
 
 /**
  * Call to Action — `site.availability` (§7.1 1.9).
@@ -10,7 +11,12 @@ import { getRepository } from "@/content/repository";
  * modal follow, rather than drifting apart.
  */
 export default async function CallToAction() {
-  const { availability } = await getRepository().getSiteContent();
+  const { availability, socials } = await getRepository().getSiteContent();
 
-  return <ContactCallout availability={availability} />;
+  return (
+    <ContactCallout
+      availability={availability}
+      emailHref={socialUrl(socials, "email") ?? "mailto:"}
+    />
+  );
 }

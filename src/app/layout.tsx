@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { getRepository } from "@/content/repository";
 
 // Exposed as a CSS variable rather than applied via inter.className, so
 // globals.css can point --font-sans at it and `font-sans` utilities finally
@@ -11,11 +12,20 @@ const inter = Inter({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Dhaval Tanna | Full-Stack Software Engineer",
-  description:
-    "Enterprise Software Engineer building secure, scalable systems.",
-};
+/**
+ * Title and description come from `site.seo` rather than being written here,
+ * so the one thing this page exists to do — be found — is editable from the
+ * content layer along with everything else (PROJECT_PLAN.md §D1).
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const { seo } = await getRepository().getSiteContent();
+
+  return {
+    title: seo.title,
+    description: seo.description,
+    ...(seo.ogImage ? { openGraph: { images: [seo.ogImage] } } : {}),
+  };
+}
 
 /**
  * The document shell, and nothing else. Route groups nest their own layouts

@@ -11,6 +11,7 @@ import { useState } from "react";
 import { Menu, X, MessageSquare } from "lucide-react";
 import HireMeModal from "@/components/modals/HireMeModal";
 import { SocialMark } from "@/components/icons/SocialIcons";
+import { socialUrl } from "@/content/selectors";
 import type { SocialLink } from "@/content/types";
 
 export default function Navbar({ socials }: { socials: SocialLink[] }) {
@@ -146,7 +147,11 @@ export default function Navbar({ socials }: { socials: SocialLink[] }) {
       </button>
 
       {/* Shared Modal Overlay */}
-      <HireMeModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
+      <HireMeModal
+        isOpen={isModalOpen}
+        setIsOpen={setIsModalOpen}
+        emailHref={socialUrl(socials, "email") ?? "mailto:"}
+      />
     </>
   );
 }

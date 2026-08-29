@@ -18,8 +18,10 @@ import type { SiteContent } from "@/content/types";
  */
 export default function ContactCallout({
   availability,
+  emailHref,
 }: {
   availability: SiteContent["availability"];
+  emailHref: string;
 }) {
   const containerRef = useRef<HTMLElement>(null);
 
@@ -93,7 +95,11 @@ export default function ContactCallout({
         </button>
       </motion.div>
 
-      <HireMeModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
+      <HireMeModal
+        isOpen={isModalOpen}
+        setIsOpen={setIsModalOpen}
+        emailHref={emailHref}
+      />
     </section>
   );
 }
