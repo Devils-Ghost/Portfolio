@@ -15,7 +15,7 @@ export const softSkills: SoftSkill[] = [
     slug: "leadership",
     label: "Leadership",
     description:
-      "I stepped in to take over an at-risk cloud migration mid-flight, driving it forward without formal authority by anchoring the team to a well-defined, data-backed execution plan. Beyond technical delivery, I co-ran my department's cultural committee — managing budgets, organizing events, and cultivating an environment where people actively wanted to work.",
+      "I stepped in to take over an at-risk cloud migration mid-flight, driving it forward without formal authority by anchoring the team to a well-defined, data-backed execution plan. Beyond technical delivery, I co-ran my department's cultural committee, managing budgets, organizing events, and cultivating an environment where people actively wanted to work.",
     evidenceStoryIds: ["story_halted_the_vendor"],
     evidenceExperienceIds: ["exp_ubs_swe"],
     evidenceEngagementIds: ["eng_ubs_cultural"],
@@ -40,7 +40,7 @@ export const softSkills: SoftSkill[] = [
     slug: "cross-functional-collaboration",
     label: "Cross-Functional Collaboration",
     description:
-      "Enterprise products aren't built by one team. They're built by many, across departments that share neither a manager nor a deadline, and most of the work is bridging technical and non-technical groups to align on a shared outcome. Cultivating that alignment happens both inside and outside the standup — whether it is steering multi-team technical initiatives or organizing office events, building cross-organizational trust is how complex work actually gets done.",
+      "Enterprise products aren't built by one team. They're built by many, across departments that share neither a manager nor a deadline, and most of the work is bridging technical and non-technical groups to align on a shared outcome. Cultivating that alignment happens both inside and outside the standup, whether it is steering multi-team technical initiatives or organizing office events, building cross-organizational trust is how complex work actually gets done.",
     evidenceStoryIds: ["story_halted_the_vendor"],
     evidenceExperienceIds: ["exp_ubs_swe"],
     evidenceEngagementIds: ["eng_ubs_cultural", "eng_ai_elections"],
@@ -53,7 +53,7 @@ export const softSkills: SoftSkill[] = [
     slug: "crisis-management-under-pressure",
     label: "Crisis Management & Debugging Under Pressure",
     description:
-      "What started as a necessity for responding to critical production incidents has become my default approach to any high-pressure situation — a live exam breaking mid-session, or something with nothing to do with work at all. Different stakes, same approach: stay calm, analyze the situation, and solve the problem systematically, one step at a time.",
+      "What started as a necessity for responding to critical production incidents has become my default approach to any high-pressure situation, a live exam breaking mid-session, or something with nothing to do with work at all. Different stakes, same approach: stay calm, analyze the situation, and solve the problem systematically, one step at a time.",
     evidenceStoryIds: ["story_cipher_suite", "story_sandbox_crashed"],
     evidenceExperienceIds: ["exp_ubs_swe", "exp_asu_ta"],
     iconName: "shield",
@@ -77,7 +77,7 @@ export const softSkills: SoftSkill[] = [
     slug: "ownership-and-accountability",
     label: "Ownership & Accountability",
     description:
-      "I take end-to-end responsibility for the work I pick — from the first commit through production and whatever comes after it ships. If I take something on, I see it through to completion.",
+      "I take end-to-end responsibility for the work I pick, from the first commit through production and whatever comes after it ships. If I take something on, I see it through to completion.",
     evidenceStoryIds: [
       "story_account_service",
       "story_pipeline_not_app",

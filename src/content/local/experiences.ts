@@ -18,10 +18,10 @@ export const experiences: Experience[] = [
     location: "Remote",
     date: { start: { year: 2026, month: 6 }, end: null },
     summary:
-      "Testing whether decompiler choice changes an LLM agent's ability to find real vulnerabilities — extending a university benchmark from measuring decompiler accuracy to measuring decompiler usefulness.",
+      "Testing whether decompiler choice changes an LLM agent's ability to find real vulnerabilities; extending a university benchmark from measuring decompiler accuracy to measuring decompiler usefulness.",
     body: `- Designed and ran controlled experiments measuring whether decompiler choice affects an MCP-connected LLM agent's ability to independently discover vulnerabilities in binaries.
 - Achieved 100% ground-truth consistency across decompilers by designing an address-anchored system to normalize output with incompatible naming conventions.
-- Reduced experimental data processing time by 89% through an automated Python pipeline to parse 100,000+ session log lines and compute discovery-efficiency metrics — context efficiency ratio, tool-call efficiency, and address recall — across dozens of experimental runs.
+- Reduced experimental data processing time by 89% through an automated Python pipeline to parse 100,000+ session log lines and compute discovery-efficiency metrics, context efficiency ratio, tool-call efficiency, and address recall, across dozens of experimental runs.
 - Resolved inconsistent vulnerability classifications across identical runs by designing a three-axis grading rubric separating localization, classification, and exploitation.
 - Established baseline LLM performance metrics through a 5-run pilot study, demonstrating agent localization accuracy consistently outperforms classification accuracy.`,
     achievements: [],
@@ -51,7 +51,7 @@ export const experiences: Experience[] = [
     location: "Tempe, AZ",
     date: { start: { year: 2026, month: 7 }, end: { year: 2026, month: 8 } },
     summary:
-      "Built a React/TypeScript observability dashboard for a multi-agent AI system, then resolved the Kubernetes, Helm, and telemetry pipeline failures keeping it from showing real data.",
+      "Built an observability dashboard for a multi-agent AI system",
     body: `- Built a comprehensive observability UI for a multi-service AI system (FastAPI, LangGraph, OpenTelemetry), integrating React/TypeScript front-end panels with backend services to render 20 live metric tiles tracking drift-detection and model quality.
 - Resolved critical infrastructure pipeline failures by debugging Helm configurations and tracing a cluster-wide Docker/cri-dockerd symlink resolution gap in DaemonSet volume mounts via direct Kubernetes node log inspection.
 - Restored end-to-end telemetry data flow by rectifying Collector processing rules and fixing a backend SQL data-normalization defect, recovering 40% of drift-detection metrics.`,
@@ -133,7 +133,7 @@ export const experiences: Experience[] = [
     location: "Pune, India",
     date: { start: { year: 2021, month: 7 }, end: { year: 2024, month: 6 } },
     summary:
-      "Three years modernizing and defending financial applications under a 99.9% availability SLA — backend architecture, cloud migration, and security hardening.",
+      "Modernizing and defending financial applications, building backend architecture, migratinf to cloud migration, and hardening application security.",
     body: `- Modernized Java application architecture and minimized operational errors by 99% through Drools workflow refactoring and decoupling Spring Web MVC monoliths into distributed React and Spring Boot microservices.
 - Led infrastructure migrations to Azure and ensured business continuity, maintaining 99.9% availability through rapid incident response for critical production outages, Unix server management, and GitLab pipeline engineering.
 - Boosted service performance by 53% and accelerated data processing by consolidating REST API requests and optimizing SQL queries for MySQL and Postgres databases.
@@ -189,7 +189,7 @@ export const experiences: Experience[] = [
     location: "Pune, India",
     date: { start: { year: 2020, month: 6 }, end: { year: 2021, month: 1 } },
     summary:
-      "Built enterprise business forms and live web applications integrating SOAP and REST services — the internship that became a full-time offer.",
+      "Built samrt business forms and live web applications integrating SOAP and REST services, the internship that became a full-time role.",
     body: `- Designed and managed smart business forms using AEM Forms Designer, improving user experience and reducing document processing time by 25%.
 - Engineered live web applications with Java and React, integrating with SOAP and REST APIs, resulting in a 20% increase in performance.`,
     achievements: [],
@@ -234,7 +234,7 @@ export const experiences: Experience[] = [
     location: "Pune, India",
     date: { start: { year: 2017, month: 7 }, end: { year: 2018, month: 5 } },
     summary:
-      "Built competition robotics on Arduino for Robocon and Mindspark — servo actuation, sensor integration, and custom optical encoders.",
+      "Built robots on Arduino for Robocon and Mindspark competitions.",
     body: `- Developed robotics projects on Arduino microcontrollers for competitions including Robocon and Mindspark.
 - Designed and programmed a four-legged robotic horse driven by servo motors on an Arduino microcontroller.
 - Built a line-following robot using a Cytron 7-bit IR sensor and Arduino Nano.
@@ -264,7 +264,7 @@ export const experiences: Experience[] = [
     summary:
       "Taught object-oriented programming in C++ and 8085 microcontroller assembly to senior high school students.",
     body: `- Tutored a cohort of 10–15 senior high school students in C++ and object-oriented programming over 17 months.
-- Taught computer architecture and assembly-level programming on the 8085 microprocessor — a historical predecessor to modern x86 — building students' foundation in low-level systems programming.
+- Taught computer architecture and assembly-level programming on 8085 microprocessor, building students' foundation in low-level systems programming.
 - Authored and graded examinations across the C++ and assembly curricula to assess student performance.`,
     achievements: [],
     skillIds: ["skl_c_cpp", "skl_mentorship", "skl_x86_asm"],

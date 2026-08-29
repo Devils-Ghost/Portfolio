@@ -21,7 +21,7 @@ export const projects: Project[] = [
     highlights: [
       "Designed and ran controlled experiments measuring whether decompiler choice affects an MCP-connected LLM agent's ability to independently discover vulnerabilities in binaries.",
       "Achieved 100% ground-truth consistency across decompilers by designing an address-anchored system to normalize output with incompatible naming conventions.",
-      "Reduced experimental data processing time by 89% through an automated Python pipeline to parse 100,000+ session log lines and compute discovery-efficiency metrics — context efficiency ratio, tool-call efficiency, and address recall — across dozens of experimental runs.",
+      "Reduced experimental data processing time by 89% through an automated Python pipeline to parse 100,000+ session log lines and compute discovery-efficiency metrics, context efficiency ratio, tool-call efficiency, and address recall, across dozens of experimental runs.",
       "Resolved inconsistent vulnerability classifications across identical runs by designing a three-axis grading rubric separating localization, classification, and exploitation.",
       "Established baseline LLM performance metrics through a 5-run pilot study, demonstrating agent localization accuracy consistently outperforms classification accuracy.",
     ],
@@ -50,7 +50,7 @@ export const projects: Project[] = [
     title: "Performance AI — Observability Dashboard",
     summary:
       "An observability platform monitoring a multi-agent AI application for model drift, resource usage, and behavioral quality in real time.",
-    body: `A research proof-of-concept for the ASU CIPS-AI Lab, deployed on Kubernetes with an OpenTelemetry pipeline. The dashboard displays drift-detection, resource monitors and model-quality indicators for a multi-agent AI chat system — the kind of visibility you need before you can trust an agent in production.`,
+    body: `A research proof-of-concept for the ASU CIPS-AI Lab, deployed on Kubernetes with an OpenTelemetry pipeline. The dashboard displays drift-detection, resource monitors and model-quality indicators for a multi-agent AI chat system, the kind of visibility you need before you can trust an agent in production.`,
     highlights: [
       "Built a comprehensive observability UI for a multi-service AI system (FastAPI, LangGraph, OpenTelemetry), integrating React/TypeScript front-end panels with backend services to render 20 live metric tiles tracking drift-detection and model quality.",
       "Resolved critical infrastructure pipeline failures by debugging Helm configurations and tracing a cluster-wide Docker/cri-dockerd symlink resolution gap in DaemonSet volume mounts via direct Kubernetes node log inspection.",
@@ -82,8 +82,8 @@ export const projects: Project[] = [
     slug: "eternal-glitch-hub",
     title: "Eternal Glitch Hub",
     summary:
-      "A shared-domain project router replacing hard-to-remember subdomains with one live directory — built on a $0 infrastructure budget.",
-    body: `eternalglitch.com is a shared personal domain acting as a centralized routing hub for two independent developers to showcase their projects. Instead of forcing users to memorize fragmented subdomains, it functions as a unified directory and full-stack portal. Powered by an authenticated CMS and custom data visualizations, the platform allows both owners to instantly publish and manage links without triggering redeploys—all while running flawlessly on $0 infrastructure.`,
+      "A shared-domain project router replacing hard-to-remember subdomains with one live directory, built on a $0 infrastructure budget.",
+    body: `eternalglitch.com is a shared personal domain acting as a centralized routing hub for two independent developers to showcase their projects. Instead of forcing users to memorize fragmented subdomains, it functions as a unified directory and full-stack portal. Powered by an authenticated CMS and custom data visualizations, the platform allows both owners to instantly publish and manage links without triggering redeploys, all while running flawlessly on $0 infrastructure.`,
     highlights: [
       "Engineered a zero-cost production environment by architecting a Next.js 16/TypeScript multi-tenant routing hub, utilizing Incremental Static Regeneration (ISR) to instantly propagate CMS updates while keeping Firestore reads below 1% of daily quotas.",
       "Eliminated client-side attack vectors by implementing a zero-trust backend model with deny-all Firestore rules, enforcing 100% server-mediated writes through custom JWT verification that bypassed complex ESM/CommonJS dependency conflicts.",
@@ -190,7 +190,7 @@ export const projects: Project[] = [
     highlights: [
       "Achieved 100% traceability for forensic disk and memory assets by designing a Docker-containerized decentralized system using Hyperledger Fabric, CouchDB, and Go smart contracts to manage the digital evidence lifecycle.",
       "Established immutable audit trails for extracted artifacts by implementing a dual-write logging strategy, and secured multi-organizational network communication with TLS.",
-      "Modeled the complete custody lifecycle — acquisition, transfer, analysis, and release — as chaincode transactions, making evidence history independently reconstructible by any participating organization.",
+      "Modeled the complete custody lifecycle: acquisition, transfer, analysis, and release, as chaincode transactions, making evidence history independently reconstructible by any participating organization.",
     ],
     skillIds: [
       "skl_hyperledger",

@@ -9,14 +9,14 @@ export const engagements: Engagement[] = [
     type: "competition",
     date: { start: { year: 2026, month: 1 }, end: { year: 2026, month: 1 } },
     summary:
-      "Fourth overall and second among ASU teams at Sandia's incident-response exercise — my second run at it.",
+      "Fourth overall and second among ASU teams at Sandia's incident-response exercise, my second run at it.",
     body: `My second Tracer Fire, fifteen months after the first. We finished fourth overall and second among the ASU teams.
 
-What changed between the two was where the time went. The first time, most of my effort went into the toolchain — learning what Velociraptor collects, what Malcolm shows you that a packet capture doesn't, and how to make Kibana answer the question I actually had.
+What changed between the two was where the time went. The first time, most of my effort went into the toolchain, learning what Velociraptor collects, what Malcolm shows you that a packet capture doesn't, and how to make Kibana answer the question I actually had.
 
 This time, those tools were already muscle memory. What I picked up instead was Kusto Query Language (KQL) for interrogating the cloud environment. I spent my time digging through cloud logs to identify exactly who logged in, tracking service principals, and tracing specific usernames across the tenant.
 
-With the interface out of the way, we could focus on the actual breach. We used KQL and our forensics toolkit to reconstruct the attacker's entire playbook step by step. We tracked exactly how they found their entry point, whose compromised credentials they used, and how they escalated privileges to hijack the cloud environment. It wasn't just about reading alerts—it was about rebuilding the crime scene, from the very first suspicious login down to the hidden rootkits they left behind.`,
+With the interface out of the way, we could focus on the actual breach. We used KQL and our forensics toolkit to reconstruct the attacker's entire playbook step by step. We tracked exactly how they found their entry point, whose compromised credentials they used, and how they escalated privileges to hijack the cloud environment. It wasn't just about reading alerts, it was about rebuilding the crime scene, from the very first suspicious login down to the hidden rootkits they left behind.`,
     iconName: "search",
     skillIds: [
       "skl_digital_forensics",
@@ -42,7 +42,7 @@ With the interface out of the way, we could focus on the actual breach. We used 
 
 The process requires gathering detailed evidence across four distinct systems: Kibana (logs), Malcolm (network traffic), Velociraptor (endpoints), and Autopsy (disk analysis). Together, they provide a comprehensive view of the entire attack surface.
 
-The most remarkable part of the experience was seeing how real forensics works in practice. Even a massive breach leaves microscopic traces. By pulling at the smallest details — a weird log entry, a subtle timestamp anomaly, or a file that shouldn't exist — you can rebuild a complete, undeniable account of the adversary's every move.
+The most remarkable part of the experience was seeing how real forensics works in practice. Even a massive breach leaves microscopic traces. By pulling at the smallest details, a weird log entry, a subtle timestamp anomaly, or a file that shouldn't exist, you can rebuild a complete, undeniable account of the adversary's every move.
 
 We finished fifth overall and first among the ASU teams.`,
     iconName: "search",

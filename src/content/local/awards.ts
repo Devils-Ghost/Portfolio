@@ -31,8 +31,8 @@ export const awards: Award[] = [
     issuer: "UBS",
     date: { year: 2022, month: 8 },
     summary:
-      "Awarded for becoming a core part of the team within my first year — building financial applications, resolving production incidents, and engineering inventive solutions to complex problems.",
-    body: `Awarded for becoming a core part of the team within my first year at UBS, straight out of university — building and maintaining financial applications, resolving production incidents, and engineering inventive solutions to complex problems.`,
+      "Awarded for becoming a core part of the team within my first year, building financial applications, resolving production incidents, and engineering inventive solutions to complex problems.",
+    body: `Awarded for becoming a core part of the team within my first year at UBS, straight out of university, building and maintaining financial applications, resolving production incidents, and engineering inventive solutions to complex problems.`,
     sourceExperienceId: "exp_ubs_swe",
     storyId: "story_reverse_routing",
     skillIds: [
@@ -58,7 +58,7 @@ export const awards: Award[] = [
     date: { year: 2022, month: 12 },
     summary:
       "For leadership and coordination across cultural activities, celebrations and sports tournaments.",
-    body: `Awarded for leadership across the departmental cultural committees — budget management, logistics, and running events from planning through execution. It built genuine strong relationships across the workplace, and made the office more fun to work at.`,
+    body: `Awarded for leadership across the departmental cultural committees: budget management, logistics, and running events from planning through execution. It built genuine strong relationships across the workplace, and made the office more fun to work at.`,
     sourceExperienceId: "exp_ubs_swe",
     skillIds: ["skl_mentorship"],
     iconName: "handshake",
@@ -130,7 +130,7 @@ export const awards: Award[] = [
     rank: "Finalist",
     summary:
       "Selected as a finalist to present the Smart Society project at IoT Challenge 2020, IIT Bombay.",
-    body: `Selected as a finalist to present the Smart Society project — an automated disaster-detection system that cut emergency response delays by 47% — at i3indya's IoT Challenge 2020, hosted at IIT Bombay. The final round never happened; the event was cancelled by the pandemic but it was a valuable experience.`,
+    body: `Selected as a finalist to present the Smart Society project, an automated disaster-detection system that cut emergency response delays by 47%, at i3indya's IoT Challenge 2020, hosted at IIT Bombay. The final round never happened; the event was cancelled by the pandemic but it was a valuable experience.`,
     sourceProjectIds: ["prj_smart_society"],
     skillIds: [
       "skl_atmega",
