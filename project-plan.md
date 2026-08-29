@@ -908,17 +908,24 @@ The un-glamorous phase that makes everything after it possible.
 
 ### Phase 1 — Content layer _(6–10h)_ · nothing visible changes
 
-- [ ] Write `content/types.ts` (§3.2 verbatim) and `content/schema.ts` (Zod mirrors)
-- [ ] Write `content/selectors.ts` (§3.4)
-- [ ] **Build the skill taxonomy first.** Every skill you'll ever reference, with IDs. Do this before anything else — it's the vocabulary everything else speaks.
-- [ ] Migrate all hardcoded arrays into `content/local/*.ts`, replacing skill strings with `skillIds` and date strings with `DateRange`
-- [ ] **Correct the inaccurate project/experience data** while you're in here — you flagged it, and this is the one pass where you touch every record
-- [ ] Icons → `iconName` + `lib/icons.ts` registry
-- [ ] Implement `LocalRepository`; wire every section to it
-- [ ] Convert sections to Server Components; push `"use client"` down to animated leaves
-- [ ] Assert: zero literal content strings left in any component
+- [x] Write `content/types.ts` (§3.2 verbatim) and `content/schema.ts` (Zod mirrors)
+- [x] Write `content/selectors.ts` (§3.4)
+- [x] **Build the skill taxonomy first.** Every skill you'll ever reference, with IDs. Do this before anything else — it's the vocabulary everything else speaks.
+- [x] Migrate all hardcoded arrays into `content/local/*.ts`, replacing skill strings with `skillIds` and date strings with `DateRange`
+- [x] **Correct the inaccurate project/experience data** while you're in here — you flagged it, and this is the one pass where you touch every record
+- [x] Icons → `iconName` + `lib/icons.ts` registry
+- [x] Implement `LocalRepository`; wire every section to it
+- [x] Convert sections to Server Components; push `"use client"` down to animated leaves
+- [x] Assert: zero literal content strings left in any component
 
-**Exit:** site is visually identical, every section renders from the repository, `usagesOfSkill()` returns correct results in a test, homepage HTML contains your project titles when JS is disabled.
+**Exit:** site is visually identical, every section renders from the repository, `usagesOfSkill()` returns correct results in a test, homepage HTML contains your project titles when JS is disabled. ✅ **Met.**
+
+**Four notes from executing this phase:**
+
+1. **The section split that D4 actually produces.** Six of nine home sections became plain Server Components. The other three — Technical Arsenal, Featured Work, Certifications — kept a client view (`SkillsArsenal`, `ProjectsBoard`, `CredentialsGrid`) because each drives its whole section off _one_ `useScroll` taken on its own element. Splitting those onto the leaves would replace a composed entrance with per-element visibility triggers, which is a visible downgrade. The server parent fetches and selects; the client view only animates. That's D4's own escape clause and it's the right line.
+2. **`react-hooks/static-components` rejects the obvious icon-registry call site.** `const Icon = ICONS[name]` inside a component is indistinguishable, to the React Compiler, from defining a component during render. Both registries are therefore reached through a wrapper that uses `createElement` — `components/ui/ContentIcon` for `iconName`, `SocialMark` for social kinds. Worth knowing before Phase 2 adds more icon-driven UI.
+3. **Two `FEATURED_LIMITS` disagree with §7.1's table**, which was written before the taxonomy existed. §7.1 says 8 skills and 4 soft skills; the constants say 12 and 5, and the constants win — §3.3 makes them the single place a section's count is decided. `check:content` warns that 13 skills and 7 soft skills are flagged `featured` against those limits, which is the mechanism working as designed: the extras are simply not shown.
+4. **`npm run format:check` was failing on all twelve files under `src/content/` before this phase started** — the hand-formatted data files had never been through Prettier, and CI runs that step. Formatting them was unavoidable, so `src/content/local/stories.ts` is reformatted too. No wording changed anywhere.
 
 ---
 
@@ -1041,7 +1048,7 @@ See §8. Fully optional, fully isolated, zero risk to the rest of the site.
 - [ ] Lighthouse pass — target ≥95 across the board on `/`
 - [ ] Full keyboard traversal; axe clean; visible focus rings; verify `prefers-reduced-motion` end to end
 - [ ] Vercel Analytics + Speed Insights (free)
-- [ ] Résumé PDF served from `/resume` with a tracked download
+- [ ] Résumé PDF served from `/resume` with a tracked download — **the route exists as of Phase 1**: `app/(site)/resume/route.ts` 307-redirects to the file's current Google Drive home, so `site.hero.resumeUrl` points at something real today. Replace the redirect with a served PDF plus tracking; the redirect is deliberately temporary, not 308, so no browser has it cached
 - [ ] Custom domain
 - [ ] Real-device check: iOS Safari, Android Chrome, Firefox
 
@@ -1213,8 +1220,11 @@ All six are settled. Recorded here so a future you (or a future chat) doesn't re
 
 ### Still open (smaller, decide during the phase they land in)
 
-1. **The hero headline.** You liked _"I break systems to learn how to build them better."_ Parked for Phase 1 — it needs to be decided against the typography, not in the abstract, and it's currently doing duty in the About card. Using it in both places would be repetitive; one of them needs a new line.
-2. **Awards section visual treatment.** Compact chip strip is my recommendation (§7.1); final look is a Phase 5 design call.
+1. **The hero headline.** You liked _"I break systems to learn how to build them better."_ **Re-parked for Phase 5 during Phase 1.** The hero now reads from `site.hero.headlines`, and both variants were kept as the wording already on screen so wiring changed nothing visible. The open question is unchanged: that line is currently doing duty in the About card, using it in both places would be repetitive, and it needs deciding against the typography rather than in the abstract. Decide it when the About page is designed.
+
+   One mechanic worth knowing before you edit those strings. The hero renders its **closing sentence** in the blue-to-cyan gradient, and `headlines` stores each headline as one whole string — so `Hero.tsx` derives the split at the last `". "`. Everything before it is plain, the rest is accented. A single-sentence headline is therefore entirely gradient. If a future headline needs the break somewhere else, that's the function to change (`splitHeadline`), not the data.
+
+2. **Awards section visual treatment.** ~~Compact chip strip is my recommendation (§7.1); final look is a Phase 5 design call.~~ **Built in Phase 1 as the recommended compact chip strip**, sitting between Experience and Leadership & Engagement per §7.1. It's a wrapping grid of `AwardChip`s, all server-rendered, showing `featured(awards, FEATURED_LIMITS.awards)`. Restyling it is still a Phase 5 call — but it's a CSS change now, not a build.
 3. **Whether soft skills stay four items.** Once they're clickable and backed by stories, you may want six. Layout is a wrapping list, so it's free.
 
 ---

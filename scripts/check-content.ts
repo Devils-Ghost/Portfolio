@@ -27,40 +27,59 @@ const content: Content = {
 const r = checkIntegrity(content);
 let failed = false;
 
-const fail = (msg: string) => { failed = true; console.error(`✗ ${msg}`); };
+const fail = (msg: string) => {
+  failed = true;
+  console.error(`✗ ${msg}`);
+};
 const warn = (msg: string) => console.warn(`⚠ ${msg}`);
 const ok = (msg: string) => console.log(`✓ ${msg}`);
 
 console.log(
   `\nContent: ${content.skills.length} skills · ${content.projects.length} projects · ` +
-  `${content.experiences.length} roles · ${content.stories.length} stories · ` +
-  `${content.awards.length} awards · ${content.engagements.length} engagements\n`,
+    `${content.experiences.length} roles · ${content.stories.length} stories · ` +
+    `${content.awards.length} awards · ${content.engagements.length} engagements\n`,
 );
 
 // Hard failures — these render as broken UI
 r.danglingSkillRefs.length
-  ? r.danglingSkillRefs.forEach((d) => fail(`${d.entity} "${d.id}" → unknown skills: ${d.badRefs.join(", ")}`))
+  ? r.danglingSkillRefs.forEach((d) =>
+      fail(`${d.entity} "${d.id}" → unknown skills: ${d.badRefs.join(", ")}`),
+    )
   : ok("No dangling skill references");
 
 r.danglingEntityRefs.length
-  ? r.danglingEntityRefs.forEach((d) => fail(`${d.entity} "${d.id}" → unknown entities: ${d.badRefs.join(", ")}`))
+  ? r.danglingEntityRefs.forEach((d) =>
+      fail(`${d.entity} "${d.id}" → unknown entities: ${d.badRefs.join(", ")}`),
+    )
   : ok("No dangling entity references");
 
 r.featuredOrphanSkills.length
-  ? r.featuredOrphanSkills.forEach((s) => fail(`Featured skill "${s.name}" has zero usages — opens an empty modal on the home page`))
+  ? r.featuredOrphanSkills.forEach((s) =>
+      fail(
+        `Featured skill "${s.name}" has zero usages — opens an empty modal on the home page`,
+      ),
+    )
   : ok("Every featured skill resolves to real usages");
 
 r.unevidencedSoftSkills.length
-  ? r.unevidencedSoftSkills.forEach((s) => fail(`Soft skill "${s.label}" has no evidence — opens an empty modal`))
+  ? r.unevidencedSoftSkills.forEach((s) =>
+      fail(`Soft skill "${s.label}" has no evidence — opens an empty modal`),
+    )
   : ok("Every soft skill has evidence");
 
 // Warnings — legitimate, but worth seeing
 r.orphanSkills.length
-  ? warn(`${r.orphanSkills.length} skill(s) used by nothing: ${r.orphanSkills.map((s) => s.name).join(", ")}`)
+  ? warn(
+      `${r.orphanSkills.length} skill(s) used by nothing: ${r.orphanSkills.map((s) => s.name).join(", ")}`,
+    )
   : ok("No orphan skills");
 
 r.overFeatured.length
-  ? r.overFeatured.forEach((o) => warn(`${o.section}: ${o.flagged} flagged featured, layout shows ${o.limit}`))
+  ? r.overFeatured.forEach((o) =>
+      warn(
+        `${o.section}: ${o.flagged} flagged featured, layout shows ${o.limit}`,
+      ),
+    )
   : ok("Featured counts within section limits");
 
 console.log("");
