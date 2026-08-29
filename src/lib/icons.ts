@@ -62,8 +62,5 @@ type _NoStrayIcons = keyof typeof ICONS extends IconName ? true : never;
 const _iconKeysAreIconNames: _NoStrayIcons = true;
 void _iconKeysAreIconNames;
 
-/** Resolve a stored `iconName` to the component that draws it. */
-export const iconFor = (name: IconName): LucideIcon => ICONS[name];
-
 /** Every name the admin panel's icon picker can offer. */
 export const ICON_NAMES = Object.keys(ICONS) as IconName[];

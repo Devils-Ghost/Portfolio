@@ -1,13 +1,20 @@
-"use client";
-
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-// import professionalImage from '../../assets/Professional-Profile-Picture,jpg';
 import Image from "next/image";
-import aboutData from "@/data/about.json";
+import ScrollReveal from "@/components/motion/ScrollReveal";
+import { getRepository } from "@/content/repository";
 
-export default function AboutSection() {
+/**
+ * About card — `site.about.greeting` + `site.about.short` (§7.1 1.2).
+ *
+ * A Server Component: the hanging ID card and the text slide-in are the only
+ * animated parts, and both are `whileInView` wrappers around otherwise static
+ * markup, so they become ScrollReveal boundaries rather than making the whole
+ * section client (PROJECT_PLAN.md §D4).
+ */
+export default async function AboutSection() {
+  const { about } = await getRepository().getSiteContent();
+
   return (
     <section
       id="about"
@@ -16,7 +23,7 @@ export default function AboutSection() {
       <div className="flex flex-col md:flex-row gap-16 items-center">
         {/* ================= THE STABLE CONTAINER (The Sensor) ================= */}
         {/* We move whileInView to this parent container so the scroll trigger is calculated accurately */}
-        <motion.div
+        <ScrollReveal
           initial="hidden"
           whileInView="visible"
           // amount: 0.4 means 40% of the container must be in view before it triggers
@@ -24,7 +31,7 @@ export default function AboutSection() {
           className="w-full md:w-1/3 relative flex justify-center mt-12 md:mt-0 perspective-1000"
         >
           {/* ================= THE HANGING ID CARD (The Moving Part) ================= */}
-          <motion.div
+          <ScrollReveal
             variants={{
               hidden: { y: -300, rotate: 15, opacity: 0 },
               visible: {
@@ -89,11 +96,11 @@ export default function AboutSection() {
                 </div>
               </div>
             </div>
-          </motion.div>
-        </motion.div>
+          </ScrollReveal>
+        </ScrollReveal>
 
         {/* ================= TEXT SLIDE IN ================= */}
-        <motion.div
+        <ScrollReveal
           initial={{ opacity: 0, x: 100 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-100px" }}
@@ -101,10 +108,10 @@ export default function AboutSection() {
           className="w-full md:w-2/3"
         >
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
-            {aboutData.greeting}
+            {about.greeting}
           </h2>
           <p className="text-gray-400 text-lg leading-relaxed mb-6">
-            {aboutData.description}
+            {about.short}
           </p>
           <Link
             href="/about"
@@ -116,7 +123,7 @@ export default function AboutSection() {
               className="group-hover:translate-x-1 transition-transform"
             />
           </Link>
-        </motion.div>
+        </ScrollReveal>
       </div>
     </section>
   );

@@ -34,7 +34,12 @@ export function formatDateMark(d: DateMark): string {
 
 export function formatDateRange(r: DateRange): string {
   const start = formatDateMark(r.start);
-  return r.end ? `${start} – ${formatDateMark(r.end)}` : `${start} – Present`;
+  if (!r.end) return `${start} – Present`;
+  const end = formatDateMark(r.end);
+  // A one-month engagement — a hackathon, a two-day workshop — stores an
+  // identical start and end because the model has no shorter unit. Printing
+  // "Jan 2026 – Jan 2026" would just be reporting that fact at the reader.
+  return start === end ? start : `${start} – ${end}`;
 }
 
 const markValue = (d: DateMark) => d.year * 12 + d.month;
