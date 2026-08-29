@@ -1,10 +1,32 @@
 import type {
-  ID, Content, Skill, Project, Experience, Engagement, Story, Award,
-  SoftSkill, DateRange, DateMark,
+  ID,
+  Content,
+  Skill,
+  Project,
+  Experience,
+  Engagement,
+  Story,
+  Award,
+  SoftSkill,
+  DateRange,
+  DateMark,
 } from "./types";
 
 // ─── Dates ───────────────────────────────────────────────────────
-const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 export function formatDateMark(d: DateMark): string {
   return `${MONTHS[d.month - 1]} ${d.year}`;
@@ -18,11 +40,40 @@ export function formatDateRange(r: DateRange): string {
 const markValue = (d: DateMark) => d.year * 12 + d.month;
 const rangeEndValue = (r: DateRange) => (r.end ? markValue(r.end) : Infinity);
 
-export function byDateDesc(a: { date: DateRange | DateMark }, b: { date: DateRange | DateMark }) {
+export function byDateDesc(
+  a: { date: DateRange | DateMark },
+  b: { date: DateRange | DateMark },
+) {
   const val = (d: DateRange | DateMark) =>
     "start" in d ? rangeEndValue(d) : markValue(d);
   return val(b.date) - val(a.date);
 }
+
+// ─── Display labels ──────────────────────────────────────────────
+/**
+ * Enum value → badge text. The values are stored kebab-case so they sort and
+ * query cleanly; these are the only place the human-readable form exists, so
+ * a card and a filter chip can never disagree about what "open-source" is
+ * called.
+ */
+export const EXPERIENCE_TYPE_LABELS: Record<Experience["type"], string> = {
+  "full-time": "Full-Time",
+  "part-time": "Part-Time",
+  internship: "Internship",
+  academic: "Academic",
+  research: "Research",
+  volunteer: "Volunteer",
+  contract: "Contract",
+};
+
+export const ENGAGEMENT_TYPE_LABELS: Record<Engagement["type"], string> = {
+  competition: "Competition",
+  hackathon: "Hackathon",
+  "open-source": "Open Source",
+  leadership: "Leadership",
+  community: "Community",
+  sport: "Sport",
+};
 
 // ─── Featured selection ──────────────────────────────────────────
 /** Section limits live here, never in the data. See PROJECT_PLAN.md §3.3. */
@@ -48,7 +99,9 @@ export function featured<T extends { featured: boolean; order: number }>(
 }
 
 /** Public items only — drafts never reach the site. */
-export function published<T extends { visibility?: "public" | "draft" }>(items: T[]): T[] {
+export function published<T extends { visibility?: "public" | "draft" }>(
+  items: T[],
+): T[] {
   return items.filter((i) => i.visibility !== "draft");
 }
 
@@ -70,7 +123,10 @@ export const childrenOfSkill = (skillId: ID, skills: Skill[]): Skill[] =>
   skills.filter((s) => s.parentId === skillId);
 
 /** The umbrella a skill sits under, if any. */
-export const parentOfSkill = (skill: Skill, skills: Skill[]): Skill | undefined =>
+export const parentOfSkill = (
+  skill: Skill,
+  skills: Skill[],
+): Skill | undefined =>
   skill.parentId ? skills.find((s) => s.id === skill.parentId) : undefined;
 
 /**
@@ -102,10 +158,18 @@ export function usagesOfSkill(skillId: ID, c: Content): SkillUsage[] {
   const hit = (refs: ID[] | undefined) => (refs ?? []).some((r) => ids.has(r));
 
   return [
-    ...published(c.projects).filter((p) => hit(p.skillIds)).map((item) => ({ kind: "project" as const, item })),
-    ...published(c.experiences).filter((e) => hit(e.skillIds)).map((item) => ({ kind: "experience" as const, item })),
-    ...published(c.engagements).filter((e) => hit(e.skillIds)).map((item) => ({ kind: "engagement" as const, item })),
-    ...published(c.stories).filter((s) => hit(s.skillIds)).map((item) => ({ kind: "story" as const, item })),
+    ...published(c.projects)
+      .filter((p) => hit(p.skillIds))
+      .map((item) => ({ kind: "project" as const, item })),
+    ...published(c.experiences)
+      .filter((e) => hit(e.skillIds))
+      .map((item) => ({ kind: "experience" as const, item })),
+    ...published(c.engagements)
+      .filter((e) => hit(e.skillIds))
+      .map((item) => ({ kind: "engagement" as const, item })),
+    ...published(c.stories)
+      .filter((s) => hit(s.skillIds))
+      .map((item) => ({ kind: "story" as const, item })),
   ].sort((a, b) => byDateDesc(a.item, b.item));
 }
 
@@ -117,12 +181,21 @@ export type Evidence =
 
 export function evidenceFor(soft: SoftSkill, c: Content): Evidence[] {
   const pick = <T extends { id: ID }>(ids: ID[] | undefined, pool: T[]) =>
-    (ids ?? []).map((id) => pool.find((x) => x.id === id)).filter((x): x is T => Boolean(x));
+    (ids ?? [])
+      .map((id) => pool.find((x) => x.id === id))
+      .filter((x): x is T => Boolean(x));
 
   return [
-    ...pick(soft.evidenceStoryIds, published(c.stories)).map((item) => ({ kind: "story" as const, item })),
-    ...pick(soft.evidenceExperienceIds, published(c.experiences)).map((item) => ({ kind: "experience" as const, item })),
-    ...pick(soft.evidenceEngagementIds, published(c.engagements)).map((item) => ({ kind: "engagement" as const, item })),
+    ...pick(soft.evidenceStoryIds, published(c.stories)).map((item) => ({
+      kind: "story" as const,
+      item,
+    })),
+    ...pick(soft.evidenceExperienceIds, published(c.experiences)).map(
+      (item) => ({ kind: "experience" as const, item }),
+    ),
+    ...pick(soft.evidenceEngagementIds, published(c.engagements)).map(
+      (item) => ({ kind: "engagement" as const, item }),
+    ),
   ].sort((a, b) => byDateDesc(a.item, b.item));
 }
 
@@ -164,14 +237,17 @@ export function searchSkills(query: string, skills: Skill[]): Skill[] {
   // returns Azure, AWS, Docker and Kubernetes, not just the parent.
   const direct = skills.filter(matches);
   const parentIds = new Set(direct.map((s) => s.id));
-  return skills.filter((s) => matches(s) || (s.parentId && parentIds.has(s.parentId)));
+  return skills.filter(
+    (s) => matches(s) || (s.parentId && parentIds.has(s.parentId)),
+  );
 }
 
 export function searchProjects(query: string, c: Content): Project[] {
   const q = query.trim().toLowerCase();
   const pool = published(c.projects);
   if (!q) return pool;
-  const skillName = (id: ID) => c.skills.find((s) => s.id === id)?.name.toLowerCase() ?? "";
+  const skillName = (id: ID) =>
+    c.skills.find((s) => s.id === id)?.name.toLowerCase() ?? "";
   return pool.filter(
     (p) =>
       p.title.toLowerCase().includes(q) ||
@@ -212,7 +288,9 @@ export function checkIntegrity(c: Content): IntegrityReport {
     if (bad.length) danglingSkillRefs.push({ entity, id, badRefs: bad });
   };
   const scanEntities = (entity: string, id: ID, refs: (ID | undefined)[]) => {
-    const bad = refs.filter((r): r is ID => r !== undefined && !entityIds.has(r));
+    const bad = refs.filter(
+      (r): r is ID => r !== undefined && !entityIds.has(r),
+    );
     if (bad.length) danglingEntityRefs.push({ entity, id, badRefs: bad });
   };
 
@@ -222,7 +300,9 @@ export function checkIntegrity(c: Content): IntegrityReport {
   });
   c.experiences.forEach((e) => scanSkills("experience", e.id, e.skillIds));
   c.engagements.forEach((e) => scanSkills("engagement", e.id, e.skillIds));
-  c.certifications.forEach((x) => scanSkills("certification", x.id, x.skillIds));
+  c.certifications.forEach((x) =>
+    scanSkills("certification", x.id, x.skillIds),
+  );
   c.publications.forEach((x) => scanSkills("publication", x.id, x.skillIds));
   c.stories.forEach((s) => {
     scanSkills("story", s.id, s.skillIds);
@@ -249,7 +329,8 @@ export function checkIntegrity(c: Content): IntegrityReport {
 
   // An umbrella isn't an orphan if any descendant is used — it resolves via roll-up.
   const resolves = (s: Skill): boolean =>
-    used.has(s.id) || c.skills.some((child) => child.parentId === s.id && resolves(child));
+    used.has(s.id) ||
+    c.skills.some((child) => child.parentId === s.id && resolves(child));
   const orphanSkills = c.skills.filter((s) => !resolves(s));
 
   const overFeatured = (
@@ -266,7 +347,8 @@ export function checkIntegrity(c: Content): IntegrityReport {
   )
     .map(([section, items, limit]) => ({
       section,
-      flagged: (items as { featured: boolean }[]).filter((i) => i.featured).length,
+      flagged: (items as { featured: boolean }[]).filter((i) => i.featured)
+        .length,
       limit,
     }))
     .filter((r) => r.flagged > r.limit);
@@ -278,9 +360,11 @@ export function checkIntegrity(c: Content): IntegrityReport {
     danglingEntityRefs,
     unevidencedSoftSkills: c.softSkills.filter(
       (s) =>
-        !(s.evidenceStoryIds?.length ||
+        !(
+          s.evidenceStoryIds?.length ||
           s.evidenceExperienceIds?.length ||
-          s.evidenceEngagementIds?.length),
+          s.evidenceEngagementIds?.length
+        ),
     ),
     overFeatured,
   };

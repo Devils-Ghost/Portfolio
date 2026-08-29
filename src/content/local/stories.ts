@@ -19,8 +19,7 @@ export const stories: Story[] = [
     star: {
       situation:
         "Two months out of undergrad, first team, first real task: migrate an internal service from a SOAP contract to a REST API. Scoped at one week. The contract was nearly unchanged, so the expectation was a Spring RestTemplate and some object remapping.",
-      task:
-        "Execute the migration and configure SSL for the new endpoints — with no enterprise Java experience, meeting Spring's inversion of control, singleton beans, autowiring and certificate chains all at once.",
+      task: "Execute the migration and configure SSL for the new endpoints — with no enterprise Java experience, meeting Spring's inversion of control, singleton beans, autowiring and certificate chains all at once.",
       action:
         "I could have copied from an existing service and probably hit the deadline. I read the Spring documentation until I understood how the framework manages dependency injection instead, and traced the SSL handshake until I knew which certificates needed generating and why.",
       result:
@@ -92,8 +91,7 @@ The depth was right. The silence was the mistake.`,
     star: {
       situation:
         "A weekend certificate rotation broke single sign-on between an external vendor, an internal routing microservice and a backend service. The old certificates were already revoked, so rollback was gone. The lead developer worked it through the weekend without success, then left for mandatory leave. By Monday it was a Sev-1 blocking customer access.",
-      task:
-        "I was pulled in with one colleague, partly because of SSL work I'd done earlier that year. We needed to find the actual failure and get back to service.",
+      task: "I was pulled in with one colleague, partly because of SSL work I'd done earlier that year. We needed to find the actual failure and get back to service.",
       action:
         "Tracing the handshake in the network logs showed the new certificates validating fine — the failure came later, during cipher suite negotiation. A legacy SOAP integration couldn't speak the encryption standards the new certificates required. The lead developer, still on leave, suggested pulling forward a backlog item to migrate that integration to REST. I verified it would actually solve the failure I'd found and pitched it Tuesday morning. My supervisor approved a proof of concept in QA and took the stakeholder conversations off us. I rewrote the routing microservice; my colleague updated the backend.",
       result:
@@ -175,8 +173,7 @@ The version of this where I'm the hero is a worse story and it isn't true.`,
     star: {
       situation:
         "We were decoupling a legacy Spring Web MVC monolith into a React front end and a Spring Boot backend. Leadership imposed a constraint: the enterprise load balancer mappings couldn't change. Because a React SPA is normally the entry point, that forced an inverted architecture.",
-      task:
-        "Build a routing solution where the backend stayed the entry point and manually routed traffic back up to React, without breaking the user experience.",
+      task: "Build a routing solution where the backend stayed the entry point and manually routed traffic back up to React, without breaking the user experience.",
       action:
         "Weeks of work — custom interceptors resolving conflicts between the React router and the Spring router, deep-linking and state preserved. It worked, and it passed every functional QA test.",
       result:
@@ -316,8 +313,7 @@ The move that mattered wasn't the fix. It was spending five minutes on "why did 
     star: {
       situation:
         "One of our backend services was violating its SLA. The bottleneck traced to a legacy identity service used by hundreds of applications across the firm — declared end-of-life, with its original maintainers fully moved onto building the replacement. Unowned and unsupported.",
-      task:
-        "It was slated for deprecation eventually, but hundreds of applications were breaching SLA now. I took over a codebase that wasn't mine and that I'd never seen.",
+      task: "It was slated for deprecation eventually, but hundreds of applications were breaching SLA now. I took over a codebase that wasn't mine and that I'd never seen.",
       action:
         "Profiled the whole execution flow, timing every external REST call and stored procedure. That surfaced a REST call fetching identity data twice in the same workflow, against data that never changed in between. I checked with the team building the replacement that the second call wasn't encoding something I couldn't see. It wasn't.",
       result:
@@ -394,8 +390,7 @@ It's also the one I've had to learn to manage. Picking up an orphaned problem me
     star: {
       situation:
         "The department was adapting applications to support a new organisational platform while still running the legacy one. The team's plan was to add a filtering column across the database, requiring updates to nearly every query and Java data structure. Four weeks.",
-      task:
-        "I was assigned to execute it, and I thought the architecture was unnecessarily invasive.",
+      task: "I was assigned to execute it, and I thought the architecture was unnecessarily invasive.",
       action:
         "Before writing code I traced the data flow and asked where the document IDs actually originate. The backend entry points controlled the flow to the front end completely — so I added the column to one core table and filtered at the entry points, which meant nothing downstream needed to know the column existed.",
       result:
@@ -435,7 +430,12 @@ The whole story is the question, not the code. The implementation was unremarkab
 
 What made the difference was spending an hour on "where does this data come from" before spending four weeks on "how do I filter it everywhere." When a solution is invasive, that's usually a symptom — you're working at the wrong layer, and the fix is upstream of where you're standing.`,
     relatedExperienceIds: ["exp_ubs_swe"],
-    skillIds: ["skl_java", "skl_sql", "skl_system_design", "skl_perf_optimization"],
+    skillIds: [
+      "skl_java",
+      "skl_sql",
+      "skl_system_design",
+      "skl_perf_optimization",
+    ],
     iconName: "compass",
     readingMinutes: 3,
     featured: false,
@@ -455,8 +455,7 @@ What made the difference was spending an hour on "where does this data come from
     star: {
       situation:
         "Core financial applications under a 99.9% availability SLA had been throwing intermittent HTTP 500s in production for over a year, across handoffs between multiple engineering teams. Nobody had found the cause, so each team had added a workaround to bypass the failure whenever it fired.",
-      task:
-        "Workarounds on a high-availability financial application are an operational risk pretending to be a fix. I wanted to find what was actually happening.",
+      task: "Workarounds on a high-availability financial application are an operational risk pretending to be a fix. I wanted to find what was actually happening.",
       action:
         "Two weeks isolating conditions during error spikes with DevOps, then tracing execution paths through production logs. The application wasn't the problem — an overnight batch job was writing state the application then read incorrectly, working from a stale in-memory copy and throwing a NullPointerException. Before reaching for locking, I sat with business stakeholders to find out what precision the domain actually needed. Neither millisecond nor second-level.",
       result:
@@ -528,8 +527,7 @@ The lesson isn't about concurrency. It's that "what should I build" is the secon
     star: {
       situation:
         "After a year reassigned elsewhere during an organisational restructuring, I came back to my original application just as its cloud migration approached its production release date. The migration was in bad shape — the vendor team lacked domain knowledge, QA was fundamentally failing, several legacy services were broken. The vendor was reporting green and holding the date.",
-      task:
-        "A failed release would have hit every enterprise team consuming our APIs. I had no formal authority over the vendor and had been back for a matter of weeks.",
+      task: "A failed release would have hit every enterprise team consuming our APIs. I had no formal authority over the vendor and had been back for a matter of weeks.",
       action:
         "Instead of raising a concern, I audited the QA environment and compiled hard data on what was actually failing, then took it to the product and business owners and formally advised halting the date. I also took architectural ownership from the vendor and replaced their big-bang deployment with a phased one — batch jobs first, backend services next, the web app last.",
       result:
@@ -602,8 +600,7 @@ What I'd tell a younger version of myself: you almost never need permission to b
     star: {
       situation:
         "A department-wide mandate required every application to move secrets out of codebases and environment variables into an enterprise vault. I was assigned to lead our integration, with no prior exposure to enterprise secrets management and no internal blueprints — nobody on the team had done it either.",
-      task:
-        "Not just make the application read passwords from somewhere else, but design an access model that was actually defensible, from nothing.",
+      task: "Not just make the application read passwords from somewhere else, but design an access model that was actually defensible, from nothing.",
       action:
         "I spent real time in the documentation understanding the vault structure and RBAC model before writing code, because the access model determined everything downstream. Migrating the keys wasn't enough: if the development team could still read production secrets, all we'd done was move where they were stored. So I built strict application profiles with read-only access and separated human access entirely, leaving production secrets with Production Support alone, then handled certificate generation so transit was encrypted end to end.",
       result:
@@ -672,8 +669,7 @@ Least privilege is easy to state and uncomfortable to implement, because impleme
     star: {
       situation:
         "By the end of my time at UBS I understood our core application end to end. It had been built before me without coding standards or documentation; I'd spent three years refactoring it toward standards and writing what documentation existed. Most of what I knew about its behaviour still lived only in my head, because I'd learned it by hitting it.",
-      task:
-        "I was leaving for my Master's, and a successor team was inheriting it.",
+      task: "I was leaving for my Master's, and a successor team was inheriting it.",
       action:
         "Spent my notice period on the handover rather than winding down. Documented the hidden services nobody knew were running, the behaviours you only find by encountering them, the post-migration infrastructure, and a full map of consumers and providers — each with emergency contacts and the exact scope of its integration. Then ran knowledge-transfer sessions with the team.",
       result:
@@ -749,8 +745,7 @@ The last useful thing I could do was make what I knew not depend on me.`,
     star: {
       situation:
         "ASU's software security course runs hands-on exams where students exploit real vulnerabilities. The platform gave each student their own container and handled isolation between students. My job was inside that boundary: make sure a student could exploit exactly what the exercise intended and nothing else.",
-      task:
-        "A security challenge is a deliberate hole. The intended hole has to be reachable while everything around it stays locked, on a machine the student has full access to. Too loose and they solve it by a route that teaches nothing; too tight and they can't solve it at all.",
+      task: "A security challenge is a deliberate hole. The intended hole has to be reachable while everything around it stays locked, on a machine the student has full access to. Too loose and they solve it by a route that teaches nothing; too tight and they can't solve it at all.",
       action:
         "Restricted the environment with landrun, controlling which directories a student could reach and what each service could touch. The harder part was the services — a challenge ran several processes on different ports, and exposing them directly would let a student step outside the intended attack surface, so I proxied them to sandboxed instances instead. I also tracked flag submission timestamps and analysed logs for collaboration patterns.",
       result:
@@ -822,11 +817,11 @@ That's a real isolation problem at a smaller layer, and it's where I first felt 
     star: {
       situation:
         "First live exam on the environment I'd built. Everything had passed functional testing. Under real concurrent load — the whole class at once, mid-exam — it didn't hold, and students started getting errors during something they were being graded on.",
-      task:
-        "Two problems, and the second was worse. Fix the environment. But the exam was also burned: students had seen the challenges, so it couldn't be re-run. We needed a fresh exam, and the schedule gave us about two days.",
+      task: "Two problems, and the second was worse. Fix the environment. But the exam was also burned: students had seen the challenges, so it couldn't be re-run. We needed a fresh exam, and the schedule gave us about two days.",
       action:
         "Worked the fix and the replacement exam in parallel. The fix was straightforward once I understood the failure mode. The harder call was accepting the original exam was unrecoverable, since any salvage would have advantaged the students who'd seen more of it.",
-      result: "A new exam ran within two days on a fixed environment, and it held.",
+      result:
+        "A new exam ran within two days on a fixed environment, and it held.",
     },
     body: `First live exam on the environment I'd built.
 
@@ -866,7 +861,12 @@ I still don't know whether my container configuration drove the load that took t
 
 Load and concurrency are now things I plan for instead of things I find out about.`,
     relatedExperienceIds: ["exp_asu_ta"],
-    skillIds: ["skl_docker", "skl_linux", "skl_incident_response", "skl_system_design"],
+    skillIds: [
+      "skl_docker",
+      "skl_linux",
+      "skl_incident_response",
+      "skl_system_design",
+    ],
     iconName: "zap",
     readingMinutes: 3,
     featured: false,

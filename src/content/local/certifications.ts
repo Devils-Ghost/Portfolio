@@ -6,7 +6,12 @@ export const certifications: Certification[] = [
     name: "Ethical Hacking from Scratch",
     issuer: "zSecurity",
     issued: { year: 2020, month: 2 },
-    skillIds: ["skl_network_security", "skl_vuln_research", "skl_kernel_security", "skl_privacy"],
+    skillIds: [
+      "skl_network_security",
+      "skl_vuln_research",
+      "skl_kernel_security",
+      "skl_privacy",
+    ],
     featured: true,
     order: 1,
   },

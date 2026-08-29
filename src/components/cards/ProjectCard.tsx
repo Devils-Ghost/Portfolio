@@ -7,21 +7,20 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { GitBranch, ExternalLink } from "lucide-react";
 import Modal from "@/components/ui/Modal";
+import BodyText from "@/components/ui/BodyText";
+import ResourceLinks from "@/components/ui/ResourceLinks";
 import { cn } from "@/lib/utils";
-
-export interface ProjectData {
-  title: string;
-  desc: string;
-  fullDesc: string;
-  github?: string;
-  live?: string;
-  techStack: string[];
-}
+import type { Project, Skill } from "@/content/types";
 
 interface ProjectCardProps {
-  project: ProjectData;
+  project: Project;
+  /**
+   * Resolved by the section rather than looked up here — the card stays
+   * presentational and never needs the skill vocabulary. Phase 2 makes these
+   * chips clickable through to the skill modal.
+   */
+  skills: Skill[];
   index: number;
   onClick?: () => void; // Optional hook (e.g. analytics) - opening the modal is handled internally
   className?: string;
@@ -52,6 +51,7 @@ interface ProjectCardProps {
 
 export default function ProjectCard({
   project,
+  skills,
   index,
   onClick,
   className = "",
@@ -134,7 +134,7 @@ export default function ProjectCard({
           {project.title}
         </h3>
         <p className="text-gray-400 text-sm mb-8 md:mb-5 leading-relaxed flex-grow">
-          {project.desc}
+          {project.summary}
         </p>
 
         <button className="px-5 py-2.5 text-sm bg-blue-600 group-hover:bg-blue-500 text-white rounded-lg font-medium transition-colors w-full z-10 shadow-lg shadow-blue-900/20">
@@ -155,42 +155,22 @@ export default function ProjectCard({
         </h3>
 
         <div className="flex flex-wrap gap-2 mb-8">
-          {project.techStack.map((tech, i) => (
+          {skills.map((skill) => (
             <span
-              key={i}
+              key={skill.id}
               className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs text-blue-300 font-mono"
             >
-              {tech}
+              {skill.name}
             </span>
           ))}
         </div>
 
-        <p className="text-gray-300 leading-relaxed mb-10">
-          {project.fullDesc}
-        </p>
+        <BodyText
+          body={project.body}
+          className="text-gray-300 leading-relaxed mb-10"
+        />
 
-        <div className="flex gap-4">
-          {project.github && (
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium transition-colors"
-            >
-              <GitBranch size={18} /> Source Code
-            </a>
-          )}
-          {project.live && (
-            <a
-              href={project.live}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-colors"
-            >
-              <ExternalLink size={18} /> Live Demo
-            </a>
-          )}
-        </div>
+        <ResourceLinks links={project.links} />
       </Modal>
     </>
   );

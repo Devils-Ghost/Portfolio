@@ -74,7 +74,12 @@ The concept didn't make the final round, but the technical takeaway was invaluab
 
 Built with Saurabh Dusane and Ojas Deodhar.`,
     iconName: "users",
-    skillIds: ["skl_privacy", "skl_ml_security", "skl_system_design", "skl_threat_modeling"],
+    skillIds: [
+      "skl_privacy",
+      "skl_ml_security",
+      "skl_system_design",
+      "skl_threat_modeling",
+    ],
     phaseId: "phase_masters",
     featured: true,
     order: 3,

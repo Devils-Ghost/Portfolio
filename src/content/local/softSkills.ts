@@ -30,7 +30,11 @@ export const softSkills: SoftSkill[] = [
     description:
       "I'm committed to sharing what I know and elevating others alongside me. That has meant lifting a class average from 60% to 80% as a teaching assistant, and writing the documentation for an unconventional application so whoever inherited it had an easier time than I did.",
     evidenceStoryIds: ["story_stepping_stones", "story_handover"],
-    evidenceExperienceIds: ["exp_asu_ta", "exp_cisco_academy", "exp_instructional_assistant"],
+    evidenceExperienceIds: [
+      "exp_asu_ta",
+      "exp_cisco_academy",
+      "exp_instructional_assistant",
+    ],
     iconName: "graduation",
     featured: true,
     order: 2,

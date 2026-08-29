@@ -1,129 +1,272 @@
 export type ID = string;
 export type Slug = string;
 
-export interface DateMark { year: number; month: number; }
-export interface DateRange { start: DateMark; end: DateMark | null; }
+export interface DateMark {
+  year: number;
+  month: number;
+}
+export interface DateRange {
+  start: DateMark;
+  end: DateMark | null;
+}
 
 export type LinkKind =
-  | "github" | "live" | "video" | "report" | "paper" | "credential" | "external";
+  "github" | "live" | "video" | "report" | "paper" | "credential" | "external";
 
-export interface ResourceLink { kind: LinkKind; url: string; label?: string; }
+export interface ResourceLink {
+  kind: LinkKind;
+  url: string;
+  label?: string;
+}
 export type Visibility = "public" | "draft";
-export interface ImageRef { src: string; alt: string; width?: number; height?: number; }
+export interface ImageRef {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+}
 
 export type IconName =
-  | "flag" | "trophy" | "medal" | "star" | "award" | "code" | "shield"
-  | "bug" | "cloud" | "cpu" | "users" | "graduation" | "wrench"
-  | "search" | "lock" | "zap" | "compass" | "handshake";
+  | "flag"
+  | "trophy"
+  | "medal"
+  | "star"
+  | "award"
+  | "code"
+  | "shield"
+  | "bug"
+  | "cloud"
+  | "cpu"
+  | "users"
+  | "graduation"
+  | "wrench"
+  | "search"
+  | "lock"
+  | "zap"
+  | "compass"
+  | "handshake";
 
 export type SkillCategory =
-  | "language" | "framework" | "platform" | "tool" | "domain" | "practice";
+  "language" | "framework" | "platform" | "tool" | "domain" | "practice";
 export type SkillLevel = "core" | "working" | "familiar";
 
 export interface Skill {
-  id: ID; slug: Slug; name: string;
-  category: SkillCategory; level: SkillLevel;
-  featured: boolean; order: number;
-  blurb?: string; aliases?: string[]; parentId?: ID;
+  id: ID;
+  slug: Slug;
+  name: string;
+  category: SkillCategory;
+  level: SkillLevel;
+  featured: boolean;
+  order: number;
+  blurb?: string;
+  aliases?: string[];
+  parentId?: ID;
 }
 
 export type ProjectStatus = "shipped" | "in-progress" | "archived" | "concept";
 export type ProjectContextKind =
-  | "personal" | "academic" | "professional" | "hackathon" | "research";
+  "personal" | "academic" | "professional" | "hackathon" | "research";
 
 export interface Project {
-  id: ID; slug: Slug; title: string;
-  summary: string; body: string; highlights?: string[];
-  skillIds: ID[]; links: ResourceLink[];
-  status: ProjectStatus; date: DateRange;
+  id: ID;
+  slug: Slug;
+  title: string;
+  summary: string;
+  body: string;
+  highlights?: string[];
+  skillIds: ID[];
+  links: ResourceLink[];
+  status: ProjectStatus;
+  date: DateRange;
   context?: { kind: ProjectContextKind; experienceId?: ID };
   /** Life phase this project belongs to — groups projects on the experience timeline. */
   phaseId?: ID;
   coverImage?: ImageRef;
-  featured: boolean; order: number; visibility: Visibility;
+  featured: boolean;
+  order: number;
+  visibility: Visibility;
 }
 
 export type ExperienceType =
-  | "full-time" | "internship" | "academic" | "research" | "volunteer"
-  | "contract" | "part-time";
+  | "full-time"
+  | "internship"
+  | "academic"
+  | "research"
+  | "volunteer"
+  | "contract"
+  | "part-time";
 export type WorkMode = "onsite" | "hybrid" | "remote";
 
 export interface Experience {
-  id: ID; slug: Slug; role: string; org: string; orgUrl?: string;
-  type: ExperienceType; mode?: WorkMode; location: string; date: DateRange;
-  summary: string; body: string; achievements?: string[];
-  skillIds: ID[]; links: ResourceLink[]; phaseId: ID;
-  featured: boolean; order: number; visibility: Visibility;
+  id: ID;
+  slug: Slug;
+  role: string;
+  org: string;
+  orgUrl?: string;
+  type: ExperienceType;
+  mode?: WorkMode;
+  location: string;
+  date: DateRange;
+  summary: string;
+  body: string;
+  achievements?: string[];
+  skillIds: ID[];
+  links: ResourceLink[];
+  phaseId: ID;
+  featured: boolean;
+  order: number;
+  visibility: Visibility;
 }
 
 export type EngagementType =
-  | "competition" | "hackathon" | "open-source" | "leadership" | "community" | "sport";
+  | "competition"
+  | "hackathon"
+  | "open-source"
+  | "leadership"
+  | "community"
+  | "sport";
 
 export interface Engagement {
-  id: ID; slug: Slug; title: string; org: string;
-  type: EngagementType; date: DateRange;
-  summary: string; body?: string; iconName: IconName;
-  skillIds?: ID[]; links?: ResourceLink[]; phaseId?: ID;
-  featured: boolean; order: number; visibility: Visibility;
+  id: ID;
+  slug: Slug;
+  title: string;
+  org: string;
+  type: EngagementType;
+  date: DateRange;
+  summary: string;
+  body?: string;
+  iconName: IconName;
+  skillIds?: ID[];
+  links?: ResourceLink[];
+  phaseId?: ID;
+  featured: boolean;
+  order: number;
+  visibility: Visibility;
 }
 
 export interface Story {
-  id: ID; slug: Slug; title: string; headline: string;
-  org?: string; type: string; date: DateMark;
+  id: ID;
+  slug: Slug;
+  title: string;
+  headline: string;
+  org?: string;
+  type: string;
+  date: DateMark;
   star?: { situation: string; task: string; action: string; result: string };
   body: string;
-  relatedProjectIds?: ID[]; relatedExperienceIds?: ID[]; skillIds?: ID[];
-  iconName: IconName; readingMinutes?: number;
-  featured: boolean; order: number; visibility: Visibility;
+  relatedProjectIds?: ID[];
+  relatedExperienceIds?: ID[];
+  skillIds?: ID[];
+  iconName: IconName;
+  readingMinutes?: number;
+  featured: boolean;
+  order: number;
+  visibility: Visibility;
 }
 
 export interface Award {
-  id: ID; slug: Slug; title: string; issuer: string;
-  date: DateMark; rank?: string; summary: string; body?: string;
-  sourceExperienceId?: ID; sourceProjectIds?: ID[]; storyId?: ID;
-  skillIds?: ID[]; links?: ResourceLink[]; iconName: IconName;
-  featured: boolean; order: number; visibility: Visibility;
+  id: ID;
+  slug: Slug;
+  title: string;
+  issuer: string;
+  date: DateMark;
+  rank?: string;
+  summary: string;
+  body?: string;
+  sourceExperienceId?: ID;
+  sourceProjectIds?: ID[];
+  storyId?: ID;
+  skillIds?: ID[];
+  links?: ResourceLink[];
+  iconName: IconName;
+  featured: boolean;
+  order: number;
+  visibility: Visibility;
 }
 
 export interface SoftSkill {
-  id: ID; slug: Slug; label: string; description?: string;
-  evidenceStoryIds?: ID[]; evidenceExperienceIds?: ID[]; evidenceEngagementIds?: ID[];
-  iconName?: IconName; featured: boolean; order: number;
+  id: ID;
+  slug: Slug;
+  label: string;
+  description?: string;
+  evidenceStoryIds?: ID[];
+  evidenceExperienceIds?: ID[];
+  evidenceEngagementIds?: ID[];
+  iconName?: IconName;
+  featured: boolean;
+  order: number;
 }
 
 export interface Certification {
-  id: ID; name: string; issuer: string;
-  issued: DateMark; expires?: DateMark | null;
-  credentialUrl?: string; credentialId?: string;
-  skillIds?: ID[]; featured: boolean; order: number;
+  id: ID;
+  name: string;
+  issuer: string;
+  issued: DateMark;
+  expires?: DateMark | null;
+  credentialUrl?: string;
+  credentialId?: string;
+  skillIds?: ID[];
+  featured: boolean;
+  order: number;
 }
 
 export interface LifePhase {
-  id: ID; slug: Slug; label: string; subtitle?: string;
-  date: DateRange; order: number; accent?: string;
+  id: ID;
+  slug: Slug;
+  label: string;
+  subtitle?: string;
+  date: DateRange;
+  order: number;
+  accent?: string;
 }
 
 export interface Publication {
-  id: ID; slug: Slug; title: string; venue: string; authors: string[];
-  date: DateMark; summary: string; links: ResourceLink[];
-  relatedProjectIds?: ID[]; skillIds?: ID[];
-  featured: boolean; order: number;
+  id: ID;
+  slug: Slug;
+  title: string;
+  venue: string;
+  authors: string[];
+  date: DateMark;
+  summary: string;
+  links: ResourceLink[];
+  relatedProjectIds?: ID[];
+  skillIds?: ID[];
+  featured: boolean;
+  order: number;
 }
 
 export interface SiteContent {
-  hero: { headlines: string[]; roleLines: string[]; statuses: string[]; resumeUrl?: string };
+  hero: {
+    headlines: string[];
+    roleLines: string[];
+    statuses: string[];
+    resumeUrl?: string;
+  };
   about: {
-    greeting: string; short: string; long: string;
+    greeting: string;
+    short: string;
+    long: string;
     journey: { heading: string; body: string }[];
   };
-  socials: { kind: "github" | "linkedin" | "email" | "x" | "scholar"; url: string; label: string }[];
+  socials: {
+    kind: "github" | "linkedin" | "email" | "x" | "scholar";
+    url: string;
+    label: string;
+  }[];
   availability: { open: boolean; label: string; location: string };
   seo: { title: string; description: string; ogImage?: string };
 }
 
 export interface Content {
-  skills: Skill[]; projects: Project[]; experiences: Experience[];
-  engagements: Engagement[]; stories: Story[]; awards: Award[];
-  softSkills: SoftSkill[]; certifications: Certification[];
-  publications: Publication[]; phases: LifePhase[]; site: SiteContent;
+  skills: Skill[];
+  projects: Project[];
+  experiences: Experience[];
+  engagements: Engagement[];
+  stories: Story[];
+  awards: Award[];
+  softSkills: SoftSkill[];
+  certifications: Certification[];
+  publications: Publication[];
+  phases: LifePhase[];
+  site: SiteContent;
 }

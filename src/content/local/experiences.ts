@@ -50,8 +50,7 @@ export const experiences: Experience[] = [
     mode: "onsite",
     location: "Tempe, AZ",
     date: { start: { year: 2026, month: 7 }, end: { year: 2026, month: 8 } },
-    summary:
-      "Built an observability dashboard for a multi-agent AI system",
+    summary: "Built an observability dashboard for a multi-agent AI system",
     body: `- Built a comprehensive observability UI for a multi-service AI system (FastAPI, LangGraph, OpenTelemetry), integrating React/TypeScript front-end panels with backend services to render 20 live metric tiles tracking drift-detection and model quality.
 - Resolved critical infrastructure pipeline failures by debugging Helm configurations and tracing a cluster-wide Docker/cri-dockerd symlink resolution gap in DaemonSet volume mounts via direct Kubernetes node log inspection.
 - Restored end-to-end telemetry data flow by rectifying Collector processing rules and fixing a backend SQL data-normalization defect, recovering 40% of drift-detection metrics.`,
@@ -112,8 +111,16 @@ export const experiences: Experience[] = [
       "skl_flask",
     ],
     links: [
-      { kind: "external", url: "https://pwn.college/cse545-fc25~dc4e237e/", label: "Course modules — Fall 2025" },
-      { kind: "external", url: "https://pwn.college/cse545-sc26~7ec2f341/", label: "Course modules — Spring 2026" },
+      {
+        kind: "external",
+        url: "https://pwn.college/cse545-fc25~dc4e237e/",
+        label: "Course modules — Fall 2025",
+      },
+      {
+        kind: "external",
+        url: "https://pwn.college/cse545-sc26~7ec2f341/",
+        label: "Course modules — Spring 2026",
+      },
     ],
     phaseId: "phase_masters",
     featured: true,
@@ -193,7 +200,13 @@ export const experiences: Experience[] = [
     body: `- Designed and managed smart business forms using AEM Forms Designer, improving user experience and reducing document processing time by 25%.
 - Engineered live web applications with Java and React, integrating with SOAP and REST APIs, resulting in a 20% increase in performance.`,
     achievements: [],
-    skillIds: ["skl_java", "skl_react", "skl_javascript", "skl_rest_soap", "skl_microservices"],
+    skillIds: [
+      "skl_java",
+      "skl_react",
+      "skl_javascript",
+      "skl_rest_soap",
+      "skl_microservices",
+    ],
     links: [],
     phaseId: "phase_ubs",
     featured: false,
@@ -233,8 +246,7 @@ export const experiences: Experience[] = [
     mode: "onsite",
     location: "Pune, India",
     date: { start: { year: 2017, month: 7 }, end: { year: 2018, month: 5 } },
-    summary:
-      "Built robots on Arduino for Robocon and Mindspark competitions.",
+    summary: "Built robots on Arduino for Robocon and Mindspark competitions.",
     body: `- Developed robotics projects on Arduino microcontrollers for competitions including Robocon and Mindspark.
 - Designed and programmed a four-legged robotic horse driven by servo motors on an Arduino microcontroller.
 - Built a line-following robot using a Cytron 7-bit IR sensor and Arduino Nano.
@@ -243,9 +255,21 @@ export const experiences: Experience[] = [
     achievements: [],
     skillIds: ["skl_atmega", "skl_c_cpp"],
     links: [
-      { kind: "github", url: "https://github.com/DhavalDDT/auto-bot2K19", label: "auto-bot2K19" },
-      { kind: "github", url: "https://github.com/DhavalDDT/MR1-Traversal", label: "MR1-Traversal" },
-      { kind: "github", url: "https://github.com/DhavalDDT/botwot", label: "botwot" },
+      {
+        kind: "github",
+        url: "https://github.com/DhavalDDT/auto-bot2K19",
+        label: "auto-bot2K19",
+      },
+      {
+        kind: "github",
+        url: "https://github.com/DhavalDDT/MR1-Traversal",
+        label: "MR1-Traversal",
+      },
+      {
+        kind: "github",
+        url: "https://github.com/DhavalDDT/botwot",
+        label: "botwot",
+      },
     ],
     phaseId: "phase_undergrad",
     featured: false,

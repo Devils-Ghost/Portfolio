@@ -102,7 +102,11 @@ export const projects: Project[] = [
     ],
     links: [
       { kind: "live", url: "https://eternalglitch.com", label: "Live site" },
-      { kind: "github", url: "https://github.com/Devils-Ghost/eternal-glitch-hub", label: "" },
+      {
+        kind: "github",
+        url: "https://github.com/Devils-Ghost/eternal-glitch-hub",
+        label: "",
+      },
     ],
     status: "shipped",
     date: { start: { year: 2026, month: 6 }, end: null },
@@ -132,8 +136,16 @@ export const projects: Project[] = [
       "skl_system_design",
     ],
     links: [
-      { kind: "live", url: "https://dhaval-tanna.eternalglitch.com", label: "Live site" },
-      { kind: "github", url: "https://github.com/Devils-Ghost/Portfolio", label: "" },
+      {
+        kind: "live",
+        url: "https://dhaval-tanna.eternalglitch.com",
+        label: "Live site",
+      },
+      {
+        kind: "github",
+        url: "https://github.com/Devils-Ghost/Portfolio",
+        label: "",
+      },
     ],
     status: "in-progress",
     date: { start: { year: 2026, month: 6 }, end: null },
@@ -285,12 +297,36 @@ export const projects: Project[] = [
       "skl_c_cpp",
     ],
     links: [
-      { kind: "live", url: "https://smartsociety.eternalglitch.com", label: "Live site" },
-      { kind: "github", url: "https://github.com/Devils-Ghost/Smart-Society-Software", label: "Web app source" },
-      { kind: "github", url: "https://github.com/Devils-Ghost/Smart-Society-Hardware", label: "Hardware source" },
-      { kind: "video", url: "https://youtu.be/l7T70eZS7-4", label: "Demo video" },
-      { kind: "video", url: "https://youtu.be/XFRKeFaI02s", label: "Prototype video" },
-      { kind: "paper", url: "https://www.ijariit.com/manuscript/internet-of-things-based-smart-society/", label: "Published paper" },
+      {
+        kind: "live",
+        url: "https://smartsociety.eternalglitch.com",
+        label: "Live site",
+      },
+      {
+        kind: "github",
+        url: "https://github.com/Devils-Ghost/Smart-Society-Software",
+        label: "Web app source",
+      },
+      {
+        kind: "github",
+        url: "https://github.com/Devils-Ghost/Smart-Society-Hardware",
+        label: "Hardware source",
+      },
+      {
+        kind: "video",
+        url: "https://youtu.be/l7T70eZS7-4",
+        label: "Demo video",
+      },
+      {
+        kind: "video",
+        url: "https://youtu.be/XFRKeFaI02s",
+        label: "Prototype video",
+      },
+      {
+        kind: "paper",
+        url: "https://www.ijariit.com/manuscript/internet-of-things-based-smart-society/",
+        label: "Published paper",
+      },
     ],
     status: "shipped",
     date: { start: { year: 2020, month: 8 }, end: { year: 2021, month: 4 } },
@@ -313,8 +349,16 @@ export const projects: Project[] = [
     ],
     skillIds: ["skl_react", "skl_javascript", "skl_redux", "skl_firebase"],
     links: [
-      { kind: "live", url: "https://burgerbuilder.eternalglitch.com", label: "Live site" },
-      { kind: "github", url: "https://github.com/Devils-Ghost/Burger-Builder", label: "" }
+      {
+        kind: "live",
+        url: "https://burgerbuilder.eternalglitch.com",
+        label: "Live site",
+      },
+      {
+        kind: "github",
+        url: "https://github.com/Devils-Ghost/Burger-Builder",
+        label: "",
+      },
     ],
     status: "shipped",
     date: { start: { year: 2020, month: 9 }, end: { year: 2020, month: 12 } },
