@@ -5,16 +5,16 @@ export const site: SiteContent = {
     // Two genuinely different framings — see CONTENT_DECISIONS.md §B.
     headlines: [
       "I break systems to learn how to build them better.",
-      "Most bugs aren't where anyone is looking.",
+      "Building scalable software. Breaking it to make it secure.",
     ],
     roleLines: [
-      "> Software Engineer  |  > Systems & Security",
+      "> Software Engineer  |  > System Design & Security",
       "> Reverse Engineering  |  > Secure Architecture",
     ],
     statuses: [
-      "Open to Software & Security Engineering roles",
+      "Interviewing for Software & Security Engineering roles",
       "Researching LLM-assisted vulnerability discovery in binaries",
-      "Building and shipping independent projects",
+      "Building and shipping independent projects to sharpen the craft",
     ],
     resumeUrl: "/resume",
   },
@@ -25,32 +25,32 @@ export const site: SiteContent = {
     // Home page card — kept close to the version you approved, with the
     // financial-infrastructure specifics sharpened.
     short:
-      "I'm Dhaval — a software engineer who spent three years keeping financial systems running at 99.9% availability, then went back to school to understand what was happening underneath them. Now I work at the intersection: building software with a security engineer's instincts, and taking things apart to find out what they actually do rather than what the design document says.",
+      "Hi, I'm Dhaval. I'm a full-stack software engineer and systems architect who breaks systems to learn how to build them better. After years of engineering critical financial infrastructure, I approach complex challenges with a research mindset and a solid work ethic. At my core, I am a highly collaborative, innovative and curious soul driven to build and automate secure, scalable technology.",
 
     // /about page opener
     long:
-      "I'm a software engineer with three years building high-availability backend systems in finance, and a Master's in Computer Engineering from Arizona State University specialising in systems and security.\n\nAt UBS I worked across the full lifecycle on financial applications carrying a 99.9% availability SLA — Java and Spring Boot backends, but also the DevOps pipelines, the Unix infrastructure, and the Azure migration. I was usually one of the people pulled into production incidents. What I came to like about that wasn't the firefighting. It was that incidents are where you find out what your system actually does, as opposed to what the design doc says it does.\n\nThat gap is what pulled me toward the Master's. I wanted to understand the layers underneath the application — memory, the kernel, how things really fail. I spent a year as a teaching assistant for ASU's software security course, writing exploitation challenges and hardening the environment 150 students used to run attack code.\n\nWhat I want now is to work on harder systems problems: the kind where the challenge is how something holds up, not just whether it works.",
+      "I'm a software engineer with three years of experience building high-availability backend systems in finance, and a Master's in Computer Engineering from Arizona State University specializing in systems and security.\n\nAt UBS, I worked across the full development lifecycle of financial applications: Java and Spring Boot development, DevOps pipelines, Unix infrastructure, and the Azure migration of legacy systems. I was usually one of the people pulled into production incidents. The one thing I liked about that was how it revealed what a system actually does, as opposed to what the design doc says it does.\n\nThat gap is what pulled me toward my Master's. I wanted to understand the layers beneath the application: memory, the kernel, how things actually work, and how they fail. I spent a year as a teaching assistant for ASU's software security course, writing CTF-style exploitation challenges and building a secure, sandboxed exam environment for over 150 students to run attack code on.\n\nWhat I want now is to work on harder systems problems: the kind where the challenge is how something holds up under pressure, not just whether it works.",
 
     journey: [
       {
         heading: "Where it started",
-        body: "Competition robotics, before I wrote anything that ran on a server. A four-legged walker driven by servos, a line follower built around an IR array, an optical encoder for measuring speed. What robotics teaches that coursework cannot is that a broken machine doesn't throw an exception — it just sits there, and you reason backwards from physical behaviour to cause. Learning to debug something with no stack trace turned out to be the most transferable thing I took from those years.",
+        body: "I started programming journey in high school, and from those very first days, I knew it was the field I wanted to pursue. I began with C and C++, building everything from a simple \"Hello World\" program, to robots, to complete IoT and ML systems. I was fascinated by the idea of building something from scratch and watching it come to life. That passion led me to a degree in Computer Engineering, where I built on those early instincts with real depth in software development and system design.",
       },
       {
         heading: "Three years in finance",
-        body: "I joined UBS as a graduate engineer and left as the person the team routed ambiguous problems to. The work spanned backend Java and Spring Boot, GitLab pipelines, Unix servers, and a cloud migration — under a 99.9% availability SLA, on applications other enterprise teams consumed through APIs.\n\nThe pattern I noticed in myself was a stubbornness about layers. A year of intermittent 500s that turned out to be a stale in-memory object. Six months of deployment failures that were never in the application code at all. Both were found the same way: by refusing to accept that a problem lives where it surfaces.",
+        body: "After my bachelor's, I joined UBS as a software engineer. The first quarter was rough, but I found my footing and started contributing to high-availability backend systems. I encountered my first production incident where I achieved my first award as well as a taste of working overtime. Over the next three years, I worked across the full spectrum of enterprise software development. I built innovative solutions, optimized performance for applications that belonged to me as well as for applications that did not belong to me. I moved across different applications, earning multiple awards along the way, took ownership of the cloud migration of a legacy product, collaborated with multiple teams, and eventually managed a small migration team of my own. I earned unofficial recognition from the team and became known as its \"wild card\" contributor. By the end, I'd gone from a student developer to an enterprise engineer, someone who took responsibility and ownership, and worked toward something bigger than himself.",  
       },
       {
         heading: "The turn toward security",
-        body: "Three years of building on top of infrastructure and mostly treating it as a black box that worked. The Master's ruined that in a useful way.\n\nOnce you've spent a year on memory corruption, reverse engineering and sandbox escapes, a lot of sentences you used to read past stop sounding routine. The abstraction is not the system. There is always another layer down, and it is often where the answer is — which is the same instinct that found those two production bugs, applied one level deeper.",
+        body: "During my time as a software engineer at UBS, I developed a deeper curiosity about how systems worked under the hood, and the ways a system could be broken in order to make it secure. I started reading books on penetration testing, and my interest just kept getting deeper, which drove me to pursue my Master's at Arizona State University, focused on systems and security. At ASU, though my major was Computer Engineering, I focused entirely on cybersecurity classes, starting small, learning about web and network security, reverse engineering, and simple buffer overflows, and working my way up to mastering the kernel, corrupting memory, and diving all the way down to microarchitecture exploitation, all through hands-on Capture-the-Flag (CTF) challenges. Though I was breaking (hacking) systems, what I really learned along the way was how something as simple as transistors and metal give rise to the systems we work on. One of the achievements I'm most proud of is taking the most difficult security class at ASU and completing it with an A+.",
       },
       {
         heading: "Teaching it",
-        body: "As a TA for ASU's software security course I built exploitation challenges and the hardened environment they ran in — Docker containers constrained with landrun, services proxied to sandboxed ports, integrity detection layered on top of prevention.\n\nThe part I didn't expect to care about was the teaching. The default move when a student is stuck is to show them a working solution; I stopped doing it and started debugging their broken code with them instead. Much slower, and the only version where anything transfers. The class average moved from below 60% to around 80%.",
+        body: "As a wise man once said, \"The best way to learn is to teach.\" I worked as a Teaching Assistant for the graduate-level Software Security course (CSE 545), under Professor Erik Trikel (hats off to him), where I started building the very CTF challenges I used to break while learning. This time, instead of breaking the machines, I was making them secure. Building a secure exam environment was itself a defensive systems design course for me: building a restricted environment over a platform with limited flexibility, and securing it so students had only one attack surface and limited ability to access their homework. In fact, this experience made me question not just the correctness of a system, but its ability to hold up under load, when over 150 students tried to break it simultaneously. Today, in any project I build, scalability and security are part of the plan from the very beginning.",
       },
       {
         heading: "What I'm doing now",
-        body: "Volunteering on research evaluating how reliably language models find vulnerabilities in compiled binaries through decompiler tooling — partly because it's interesting, partly because the intended users are reverse engineers and bug hunters, who have a very low tolerance for tools that are usually right.\n\nAnd building things. This site is one of them. Nothing glamorous — just the habit of putting things on the internet and keeping them running.",
+        body: "I finished my Master's in May 2026 and walked into a slow market with a lot of uncertainty about how long the search would take. Open-ended waiting is a lot more difficult than solving a hard problem, since with a hard problem, you have your work cut out for you. So I decided early I wasn't going to go stale. I don't know yet how long it'll take to resolve. But I'd rather come out of it with more capability than I went in with, and that part is in my control. So I took on a research project with a professor at UGA, where I evaluate decompilers for their usefulness in helping LLMs independently detect vulnerabilities in binaries. I work on it partly because it's interesting, and partly because this research would directly benefit the community of reverse engineers and bug hunters. And I started building and shipping my own projects, learning current tech stacks by using them rather than reading about them. In fact, this portfolio was the first personal project I undertook to learn the latest enterprise frontend technologies.",
       },
     ],
   },
@@ -74,6 +74,6 @@ export const site: SiteContent = {
   seo: {
     title: "Dhaval Tanna — Software & Security Engineer",
     description:
-      "Software engineer with three years building high-availability financial systems and a Master's in systems security. Reverse engineering, secure architecture, and the layer underneath the application.",
+      "Software engineer with three years building high-availability financial systems and a Master's focused in systems security, reverse engineering and secure architecture.",
   },
 };
