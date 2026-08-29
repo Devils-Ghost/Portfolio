@@ -8,6 +8,7 @@ import type {
   Story,
   Award,
   SoftSkill,
+  SocialLink,
   DateRange,
   DateMark,
 } from "./types";
@@ -53,6 +54,13 @@ export function byDateDesc(
     "start" in d ? rangeEndValue(d) : markValue(d);
   return val(b.date) - val(a.date);
 }
+
+// ─── Site singletons ─────────────────────────────────────────────
+/** The URL for one social kind, or undefined if that link isn't listed. */
+export const socialUrl = (
+  socials: SocialLink[],
+  kind: SocialLink["kind"],
+): string | undefined => socials.find((s) => s.kind === kind)?.url;
 
 // ─── Display labels ──────────────────────────────────────────────
 /**

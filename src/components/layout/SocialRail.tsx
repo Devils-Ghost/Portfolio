@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { SOCIAL_LINKS } from "@/components/icons/SocialIcons";
+import { SocialMark } from "@/components/icons/SocialIcons";
+import type { SocialLink } from "@/content/types";
 
 /**
  * A quiet, persistent rail of social links pinned to the left edge of the
@@ -11,7 +12,7 @@ import { SOCIAL_LINKS } from "@/components/icons/SocialIcons";
  * Footer. Desktop only (see CustomScrollbar.tsx for the same reasoning:
  * touch devices already get these from the Footer and the mobile nav menu).
  */
-export default function SocialRail() {
+export default function SocialRail({ socials }: { socials: SocialLink[] }) {
   const [canRender, setCanRender] = useState(false);
   const [nearFooter, setNearFooter] = useState(false);
 
@@ -50,16 +51,16 @@ export default function SocialRail() {
       }}
     >
       <div className="group flex flex-col items-center gap-5 mb-4 opacity-50 hover:opacity-100 transition-opacity duration-300">
-        {SOCIAL_LINKS.map(({ icon: Icon, href, label }) => (
+        {socials.map(({ kind, url, label }) => (
           <Link
-            key={label}
-            href={href}
+            key={kind}
+            href={url}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={label}
             className="pointer-events-auto text-gray-400 hover:text-blue-400 hover:-translate-y-1 transition-all duration-300"
           >
-            <Icon className="w-[18px] h-[18px]" />
+            <SocialMark kind={kind} className="w-[18px] h-[18px]" />
           </Link>
         ))}
         <div className="w-px h-24 bg-white/15 group-hover:bg-white/25 transition-colors duration-300" />

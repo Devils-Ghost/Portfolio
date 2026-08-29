@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import { MapPin, ChevronRight, Terminal } from "lucide-react";
-import { SOCIAL_LINKS } from "@/components/icons/SocialIcons";
+import { SocialMark } from "@/components/icons/SocialIcons";
+import type { SocialLink } from "@/content/types";
 
-export default function Footer() {
+export default function Footer({ socials }: { socials: SocialLink[] }) {
   const currentYear = new Date().getFullYear();
-
-  const socialLinks = SOCIAL_LINKS;
 
   const quickLinks = [
     { name: "About", href: "/about" },
@@ -43,21 +42,21 @@ export default function Footer() {
             </div>
 
             <div className="flex items-center gap-4">
-              {socialLinks.map((social) => {
-                const Icon = social.icon;
-                return (
-                  <Link
-                    key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 hover:border-blue-500/30 transition-all duration-300 hover:-translate-y-1"
-                    aria-label={social.label}
-                  >
-                    <Icon className="w-[18px] h-[18px]" />
-                  </Link>
-                );
-              })}
+              {socials.map((social) => (
+                <Link
+                  key={social.kind}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 hover:border-blue-500/30 transition-all duration-300 hover:-translate-y-1"
+                  aria-label={social.label}
+                >
+                  <SocialMark
+                    kind={social.kind}
+                    className="w-[18px] h-[18px]"
+                  />
+                </Link>
+              ))}
             </div>
           </div>
 

@@ -10,9 +10,10 @@ import {
 import { useState } from "react";
 import { Menu, X, MessageSquare } from "lucide-react";
 import HireMeModal from "@/components/modals/HireMeModal";
-import { SOCIAL_LINKS } from "@/components/icons/SocialIcons";
+import { SocialMark } from "@/components/icons/SocialIcons";
+import type { SocialLink } from "@/content/types";
 
-export default function Navbar() {
+export default function Navbar({ socials }: { socials: SocialLink[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -117,16 +118,16 @@ export default function Navbar() {
 
               {/* Compact social row — phone visitors get these without scrolling to the Footer */}
               <div className="flex items-center gap-5 pt-1">
-                {SOCIAL_LINKS.map(({ icon: Icon, href, label }) => (
+                {socials.map(({ kind, url, label }) => (
                   <Link
-                    key={label}
-                    href={href}
+                    key={kind}
+                    href={url}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
                     className="text-gray-400 hover:text-blue-400 transition-colors"
                   >
-                    <Icon className="w-[18px] h-[18px]" />
+                    <SocialMark kind={kind} className="w-[18px] h-[18px]" />
                   </Link>
                 ))}
               </div>

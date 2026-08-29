@@ -14,6 +14,7 @@ import type {
   ResourceLink,
   SiteContent,
   Skill,
+  SocialLink,
   SoftSkill,
   Story,
 } from "./types";
@@ -366,6 +367,14 @@ export const socialKindSchema = z.enum([
   "scholar",
 ]);
 
+export const socialLinkSchema = z.object({
+  kind: socialKindSchema,
+  // `mailto:` is a legitimate social link, so this can't be `.url()`.
+  url: z.string().min(1),
+  label: z.string().min(1),
+});
+mirrors<z.infer<typeof socialLinkSchema>, SocialLink>(true);
+
 export const siteContentSchema = z.object({
   hero: z.object({
     headlines: z.array(z.string()).min(1),
@@ -381,14 +390,7 @@ export const siteContentSchema = z.object({
       z.object({ heading: z.string().min(1), body: z.string().min(1) }),
     ),
   }),
-  socials: z.array(
-    z.object({
-      kind: socialKindSchema,
-      // `mailto:` is a legitimate social link, so this can't be `.url()`.
-      url: z.string().min(1),
-      label: z.string().min(1),
-    }),
-  ),
+  socials: z.array(socialLinkSchema),
   availability: z.object({
     open: z.boolean(),
     label: z.string().min(1),

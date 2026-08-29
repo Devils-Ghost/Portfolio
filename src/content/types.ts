@@ -235,6 +235,14 @@ export interface Publication {
   order: number;
 }
 
+export type SocialKind = "github" | "linkedin" | "email" | "x" | "scholar";
+
+export interface SocialLink {
+  kind: SocialKind;
+  url: string;
+  label: string;
+}
+
 export interface SiteContent {
   hero: {
     headlines: string[];
@@ -248,11 +256,7 @@ export interface SiteContent {
     long: string;
     journey: { heading: string; body: string }[];
   };
-  socials: {
-    kind: "github" | "linkedin" | "email" | "x" | "scholar";
-    url: string;
-    label: string;
-  }[];
+  socials: SocialLink[];
   availability: { open: boolean; label: string; location: string };
   seo: { title: string; description: string; ogImage?: string };
 }

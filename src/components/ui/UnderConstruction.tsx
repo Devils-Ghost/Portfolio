@@ -4,19 +4,18 @@ import { useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, Mail, Terminal } from "lucide-react";
-import { SOCIAL_LINKS } from "@/components/icons/SocialIcons";
-
-// Reuse the site-wide contact address rather than inlining it a second time —
-// SOCIAL_LINKS is already the single source of truth for Footer, SocialRail
-// and the Navbar's mobile menu.
-const EMAIL_HREF =
-  SOCIAL_LINKS.find((l) => l.label === "Email")?.href ?? "mailto:";
 
 type Props = {
   /** Page name shown in the heading and terminal prompt, e.g. "Experience" */
   page: string;
   /** One-line, page-specific flavor text under the heading */
   tagline?: string;
+  /**
+   * Contact address, resolved from `site.socials` by the page rendering
+   * this. Passed in rather than looked up here so the address exists in the
+   * content layer only (PROJECT_PLAN.md §D1).
+   */
+  emailHref: string;
 };
 
 /**
@@ -25,7 +24,7 @@ type Props = {
  * site's existing CLI-flavored copy (see HeroSection's `> ... | > ...`
  * line) rather than generic road-cone construction imagery.
  */
-export default function UnderConstruction({ page, tagline }: Props) {
+export default function UnderConstruction({ page, tagline, emailHref }: Props) {
   const slug = page.toLowerCase().replace(/\s+/g, "-");
 
   const lines = useMemo(
@@ -172,7 +171,7 @@ export default function UnderConstruction({ page, tagline }: Props) {
           </Link>
 
           <a
-            href={EMAIL_HREF}
+            href={emailHref}
             className="inline-flex items-center gap-2 px-8 py-3 bg-white/5 text-white border border-white/10 rounded-full font-medium hover:bg-white/10 transition-colors"
           >
             <Mail size={18} />
