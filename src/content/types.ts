@@ -108,7 +108,14 @@ export interface Experience {
   location: string;
   date: DateRange;
   summary: string;
-  body: string;
+  /**
+   * Optional prose. Experience is written in resume register, so the bullets
+   * in `highlights` carry it; `body` is here for the rare role that needs a
+   * paragraph of context above them.
+   */
+  body?: string;
+  /** XYZ-format bullets, lifted straight from the résumé. */
+  highlights: string[];
   achievements?: string[];
   skillIds: ID[];
   links: ResourceLink[];

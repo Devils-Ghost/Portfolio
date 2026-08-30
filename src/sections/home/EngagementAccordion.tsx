@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { fadeUpDelayed } from "@/components/motion/variants";
 import EngagementCard from "@/components/cards/EngagementCard";
 import type { Engagement } from "@/content/types";
 
@@ -22,10 +23,7 @@ export default function EngagementAccordion({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+      {...fadeUpDelayed}
       className="flex flex-col md:flex-row w-full h-[600px] md:h-[450px] gap-4"
     >
       {engagements.map((engagement, index) => (

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import ScrollReveal from "@/components/motion/ScrollReveal";
+import { fadeUp } from "@/components/motion/variants";
 import ExperienceCard from "@/components/cards/ExperienceCard";
 import { getRepository } from "@/content/repository";
 import {
@@ -34,10 +35,7 @@ export default async function ExperienceSection() {
     <section className="w-full max-w-6xl mx-auto px-6 py-16 relative">
       {/* Animated Header with View All Link */}
       <ScrollReveal
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.6 }}
-        transition={{ duration: 0.5 }}
+        {...fadeUp}
         className="flex justify-between items-end mb-16"
       >
         <h2 className="text-3xl md:text-4xl font-bold">Experience</h2>

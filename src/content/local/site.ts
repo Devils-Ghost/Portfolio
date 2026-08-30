@@ -4,7 +4,7 @@ export const site: SiteContent = {
   hero: {
     // Two genuinely different framings — see CONTENT_DECISIONS.md §B.
     headlines: [
-      "Building Software that scales. Breaking it to make it secure",
+      "Building Software that scales. Breaking it to make it secure.",
       "Building scalable software. Breaking it to make it secure.",
     ],
     roleLines: [

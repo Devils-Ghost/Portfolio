@@ -5,9 +5,10 @@ import type { Project } from "../types";
  * `highlights` carries the resume-register XYZ bullets — impact, quantification,
  * and technologies, written so they can be lifted straight onto a résumé.
  *
- * `links` of kind "report" point at direct-download Drive URLs and should render
- * WITHOUT target="_blank" — the browser downloads and stays on the page.
- * Only "live" and "video" links navigate away.
+ * `links` of kind "report", "paper" and "credential" point at direct-download
+ * URLs and render WITHOUT target="_blank" — the browser downloads and stays
+ * on the page. Only "github", "live", "video" and "external" open a new tab.
+ * That mapping lives in components/ui/ResourceLinks.tsx.
  */
 export const projects: Project[] = [
   // ── PHASE: POST-MASTER'S ─────────────────────────────────────────
@@ -112,14 +113,14 @@ export const projects: Project[] = [
     date: { start: { year: 2026, month: 6 }, end: null },
     context: { kind: "personal" },
     phaseId: "phase_post_masters",
-    featured: false,
+    featured: true,
     order: 3,
     visibility: "public",
   },
   {
     id: "prj_portfolio",
     slug: "this-portfolio",
-    title: "Personal Portfolio - This Site",
+    title: "Personal Portfolio — This Site",
     summary:
       "A content-driven portfolio built on a typed content graph, where every skill, role, project and story is a linked entity.",
     body: `This platform serves as a living, comprehensive archive of my engineering career. Designed to be fast for recruiters to scan and deep enough for engineers to explore, the site seamlessly connects my technical capabilities with concrete proof of work. Built on Next.js 16, it features a custom content management system that allows me to document my entire professional history which also the site you are on right now.`,
@@ -162,7 +163,7 @@ export const projects: Project[] = [
     slug: "local-differential-privacy-attack-analysis",
     title: "Attacking Local Differential Privacy",
     summary:
-      "Analyzed Local Differential Privacy protocols against data-poisoning attacks, mathematically proving that stronger privacy protections make enterprise-scale data easier to manipulate.",
+      "Analyzed Local Differential Privacy protocols against data-poisoning attacks, proving that stronger privacy protections make enterprise data easier to manipulate.",
     body: `This research investigates the resilience of Local Differential Privacy (LDP) frequency estimation protocols against targeted data-poisoning attacks. The study demonstrates how attackers can use fake accounts to manipulate statistics, ultimately proving that strengthening user privacy inadvertently makes the entire system more vulnerable.`,
     highlights: [
       "Evaluated 3 primary data-privacy protocols (kRR, OUE, OLH) against simulated data-poisoning attacks to determine their resilience and security at an enterprise scale.",
@@ -188,7 +189,7 @@ export const projects: Project[] = [
     date: { start: { year: 2025, month: 8 }, end: { year: 2025, month: 12 } },
     context: { kind: "academic" },
     phaseId: "phase_masters",
-    featured: true,
+    featured: false,
     order: 5,
     visibility: "public",
   },

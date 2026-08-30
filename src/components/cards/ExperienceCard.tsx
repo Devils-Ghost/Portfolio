@@ -9,7 +9,7 @@ import {
   animate,
 } from "framer-motion";
 import Modal from "@/components/ui/Modal";
-import BodyText from "@/components/ui/BodyText";
+import HighlightList from "@/components/ui/HighlightList";
 import { EXPERIENCE_TYPE_LABELS, formatDateRange } from "@/content/selectors";
 import type { Experience, Skill } from "@/content/types";
 
@@ -185,7 +185,11 @@ export default function ExperienceCard({ exp, skills }: ExperienceCardProps) {
           ))}
         </div>
 
-        <BodyText body={exp.body} />
+        {exp.body && (
+          <p className="text-gray-300 leading-relaxed mb-6">{exp.body}</p>
+        )}
+
+        <HighlightList items={exp.highlights} />
       </Modal>
     </>
   );

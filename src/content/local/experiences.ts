@@ -1,8 +1,12 @@
 import type { Experience } from "../types";
 
 /**
- * Experience bodies are resume-register: XYZ-format bullets, impact first,
- * numbers where they exist. Narrative belongs in the stories.
+ * `highlights` carries the resume-register XYZ bullets: impact first, numbers
+ * where they exist, written so they can be lifted straight onto a résumé.
+ * Same split as Project. Narrative belongs in the stories.
+ *
+ * `body` is optional prose above the bullets and is unused today — no role
+ * has needed a paragraph of context yet.
  * `achievements` is retained for a distinct UI treatment.
  */
 export const experiences: Experience[] = [
@@ -18,12 +22,14 @@ export const experiences: Experience[] = [
     location: "Remote",
     date: { start: { year: 2026, month: 6 }, end: null },
     summary:
-      "Testing whether decompiler choice changes an LLM agent's ability to find real vulnerabilities; extending a university benchmark from measuring decompiler accuracy to measuring decompiler usefulness.",
-    body: `- Designed and ran controlled experiments measuring whether decompiler choice affects an MCP-connected LLM agent's ability to independently discover vulnerabilities in binaries.
-- Achieved 100% ground-truth consistency across decompilers by designing an address-anchored system to normalize output with incompatible naming conventions.
-- Reduced experimental data processing time by 89% through an automated Python pipeline to parse 100,000+ session log lines and compute discovery-efficiency metrics, context efficiency ratio, tool-call efficiency, and address recall, across dozens of experimental runs.
-- Resolved inconsistent vulnerability classifications across identical runs by designing a three-axis grading rubric separating localization, classification, and exploitation.
-- Established baseline LLM performance metrics through a 5-run pilot study, demonstrating agent localization accuracy consistently outperforms classification accuracy.`,
+      "Testing whether decompiler choice changes an LLM agent's ability to find real vulnerabilities.",
+    highlights: [
+      "Designed and ran controlled experiments measuring whether decompiler choice affects an MCP-connected LLM agent's ability to independently discover vulnerabilities in binaries.",
+      "Achieved 100% ground-truth consistency across decompilers by designing an address-anchored system to normalize output with incompatible naming conventions.",
+      "Reduced experimental data processing time by 89% through an automated Python pipeline to parse 100,000+ session log lines and compute discovery-efficiency metrics, context efficiency ratio, tool-call efficiency, and address recall, across dozens of experimental runs.",
+      "Resolved inconsistent vulnerability classifications across identical runs by designing a three-axis grading rubric separating localization, classification, and exploitation.",
+      "Established baseline LLM performance metrics through a 5-run pilot study, demonstrating agent localization accuracy consistently outperforms classification accuracy.",
+    ],
     achievements: [],
     skillIds: [
       "skl_reverse_engineering",
@@ -51,9 +57,11 @@ export const experiences: Experience[] = [
     location: "Tempe, AZ",
     date: { start: { year: 2026, month: 7 }, end: { year: 2026, month: 8 } },
     summary: "Built an observability dashboard for a multi-agent AI system",
-    body: `- Built a comprehensive observability UI for a multi-service AI system (FastAPI, LangGraph, OpenTelemetry), integrating React/TypeScript front-end panels with backend services to render 20 live metric tiles tracking drift-detection and model quality.
-- Resolved critical infrastructure pipeline failures by debugging Helm configurations and tracing a cluster-wide Docker/cri-dockerd symlink resolution gap in DaemonSet volume mounts via direct Kubernetes node log inspection.
-- Restored end-to-end telemetry data flow by rectifying Collector processing rules and fixing a backend SQL data-normalization defect, recovering 40% of drift-detection metrics.`,
+    highlights: [
+      "Built a comprehensive observability UI for a multi-service AI system (FastAPI, LangGraph, OpenTelemetry), integrating React/TypeScript front-end panels with backend services to render 20 live metric tiles tracking drift-detection and model quality.",
+      "Resolved critical infrastructure pipeline failures by debugging Helm configurations and tracing a cluster-wide Docker/cri-dockerd symlink resolution gap in DaemonSet volume mounts via direct Kubernetes node log inspection.",
+      "Restored end-to-end telemetry data flow by rectifying Collector processing rules and fixing a backend SQL data-normalization defect, recovering 40% of drift-detection metrics.",
+    ],
     achievements: [],
     skillIds: [
       "skl_react",
@@ -86,11 +94,13 @@ export const experiences: Experience[] = [
     location: "Tempe, AZ",
     date: { start: { year: 2025, month: 8 }, end: { year: 2026, month: 5 } },
     summary:
-      "Mentored 150+ graduate students in memory corruption and reverse engineering, and engineered the isolated CTF architecture their exams ran on.",
-    body: `- Mentored over 150 students in memory corruption and reverse engineering by developing hands-on CTF challenges in C, Python, and Bash, incorporating threat modeling to simulate real-life attack vectors on the pwn.college platform.
-- Maintained 100% exam security by engineering isolated CTF architectures in Docker, configuring Nginx reverse proxy, Python Flask authentication, and Landrun sandboxing to restrict IDE and terminal access, preventing unauthorized collaboration.
-- Enhanced student proficiency in Return Oriented Programming, secure coding practices, and web and system security through 7+ hours of weekly guidance, scripting with pwntools, GNU Debugger, IDA, Wireshark, and Burp Suite for dynamic and static analysis.
-- Lifted the class average from below 60% to approximately 80% by restructuring monolithic exploitation labs into progressive micro-challenges that isolated each concept before requiring composition.`,
+      "Mentored graduate students in systems security and reverse engineering, and built the isolated CTF architecture their exams ran on.",
+    highlights: [
+      "Mentored over 150 students in memory corruption and reverse engineering by developing hands-on CTF challenges in C, Python, and Bash, incorporating threat modeling to simulate real-life attack vectors on the pwn.college platform.",
+      "Maintained 100% exam security by engineering isolated CTF architectures in Docker, configuring Nginx reverse proxy, Python Flask authentication, and Landrun sandboxing to restrict IDE and terminal access, preventing unauthorized collaboration.",
+      "Enhanced student proficiency in Return Oriented Programming, secure coding practices, and web and system security through 7+ hours of weekly guidance, scripting with pwntools, GNU Debugger, IDA, Wireshark, and Burp Suite for dynamic and static analysis.",
+      "Lifted the class average from below 60% to approximately 80% by restructuring monolithic exploitation labs into progressive micro-challenges that isolated each concept before requiring composition.",
+    ],
     achievements: [],
     skillIds: [
       "skl_binary_exploitation",
@@ -140,12 +150,14 @@ export const experiences: Experience[] = [
     location: "Pune, India",
     date: { start: { year: 2021, month: 7 }, end: { year: 2024, month: 6 } },
     summary:
-      "Modernizing and defending financial applications, building backend architecture, migratinf to cloud migration, and hardening application security.",
-    body: `- Modernized Java application architecture and minimized operational errors by 99% through Drools workflow refactoring and decoupling Spring Web MVC monoliths into distributed React and Spring Boot microservices.
-- Led infrastructure migrations to Azure and ensured business continuity, maintaining 99.9% availability through rapid incident response for critical production outages, Unix server management, and GitLab pipeline engineering.
-- Boosted service performance by 53% and accelerated data processing by consolidating REST API requests and optimizing SQL queries for MySQL and Postgres databases.
-- Hardened system security by enforcing SSL/TLS encryption across API endpoints and implementing a least-privilege access model by migrating hardcoded credentials to an EVA Vault using RBAC profiles.
-- Improved batch application performance by 40% through targeted code refactoring, and migrated enterprise file transfer infrastructure from Tumbleweed to Axway.`,
+      "Modernizing and defending financial applications, building backend architecture, migrating to cloud migration, and hardening application security.",
+    highlights: [
+      "Modernized Java application architecture and minimized operational errors by 99% through Drools workflow refactoring and decoupling Spring Web MVC monoliths into distributed React and Spring Boot microservices.",
+      "Led infrastructure migrations to Azure and ensured business continuity, maintaining 99.9% availability through rapid incident response for critical production outages, Unix server management, and GitLab pipeline engineering.",
+      "Boosted service performance by 53% and accelerated data processing by consolidating REST API requests and optimizing SQL queries for MySQL and Postgres databases.",
+      "Hardened system security by enforcing SSL/TLS encryption across API endpoints and implementing a least-privilege access model by migrating hardcoded credentials to an EVA Vault using RBAC profiles.",
+      "Improved batch application performance by 40% through targeted code refactoring, and migrated enterprise file transfer infrastructure from Tumbleweed to Axway.",
+    ],
     achievements: [
       "Outstanding Contribution Award",
       "Engineering Excellence Award",
@@ -197,8 +209,10 @@ export const experiences: Experience[] = [
     date: { start: { year: 2020, month: 6 }, end: { year: 2021, month: 1 } },
     summary:
       "Built samrt business forms and live web applications integrating SOAP and REST services, the internship that became a full-time role.",
-    body: `- Designed and managed smart business forms using AEM Forms Designer, improving user experience and reducing document processing time by 25%.
-- Engineered live web applications with Java and React, integrating with SOAP and REST APIs, resulting in a 20% increase in performance.`,
+    highlights: [
+      "Designed and managed smart business forms using AEM Forms Designer, improving user experience and reducing document processing time by 25%.",
+      "Engineered live web applications with Java and React, integrating with SOAP and REST APIs, resulting in a 20% increase in performance.",
+    ],
     achievements: [],
     skillIds: [
       "skl_java",
@@ -226,9 +240,11 @@ export const experiences: Experience[] = [
     date: { start: { year: 2019, month: 7 }, end: { year: 2020, month: 5 } },
     summary:
       "Grew the campus networking cell as Division Head, recruiting and onboarding over 150 students through intra-division networking campaigns.",
-    body: `- Grew the campus networking cell as Division Head, recruiting and onboarding over 150 students through intra-division networking campaigns.
-- Mentored club members through the CCNA certification track, troubleshooting hands-on networking challenges and guiding them to course completion.
-- Recognized by department faculty for driving technical domain awareness and advancing the club's core growth objectives across the 2019–2020 academic year.`,
+    highlights: [
+      "Grew the campus networking cell as Division Head, recruiting and onboarding over 150 students through intra-division networking campaigns.",
+      "Mentored club members through the CCNA certification track, troubleshooting hands-on networking challenges and guiding them to course completion.",
+      "Recognized by department faculty for driving technical domain awareness and advancing the club's core growth objectives across the 2019–2020 academic year.",
+    ],
     achievements: [],
     skillIds: ["skl_network_security", "skl_mentorship"],
     links: [],
@@ -247,11 +263,13 @@ export const experiences: Experience[] = [
     location: "Pune, India",
     date: { start: { year: 2017, month: 7 }, end: { year: 2018, month: 5 } },
     summary: "Built robots on Arduino for Robocon and Mindspark competitions.",
-    body: `- Developed robotics projects on Arduino microcontrollers for competitions including Robocon and Mindspark.
-- Designed and programmed a four-legged robotic horse driven by servo motors on an Arduino microcontroller.
-- Built a line-following robot using a Cytron 7-bit IR sensor and Arduino Nano.
-- Contributed to development of a custom optical encoder for real-time bot speed detection.
-- Collaborated with a team to design, test, and optimize robotic systems, ensuring high performance and reliability in competitive environments.`,
+    highlights: [
+      "Developed robotics projects on Arduino microcontrollers for competitions including Robocon and Mindspark.",
+      "Designed and programmed a four-legged robotic horse driven by servo motors on an Arduino microcontroller.",
+      "Built a line-following robot using a Cytron 7-bit IR sensor and Arduino Nano.",
+      "Contributed to development of a custom optical encoder for real-time bot speed detection.",
+      "Collaborated with a team to design, test, and optimize robotic systems, ensuring high performance and reliability in competitive environments.",
+    ],
     achievements: [],
     skillIds: ["skl_atmega", "skl_c_cpp"],
     links: [
@@ -287,9 +305,11 @@ export const experiences: Experience[] = [
     date: { start: { year: 2019, month: 8 }, end: { year: 2020, month: 12 } },
     summary:
       "Taught object-oriented programming in C++ and 8085 microcontroller assembly to senior high school students.",
-    body: `- Tutored a cohort of 10–15 senior high school students in C++ and object-oriented programming over 17 months.
-- Taught computer architecture and assembly-level programming on 8085 microprocessor, building students' foundation in low-level systems programming.
-- Authored and graded examinations across the C++ and assembly curricula to assess student performance.`,
+    highlights: [
+      "Tutored a cohort of 10–15 senior high school students in C++ and object-oriented programming over 17 months.",
+      "Taught computer architecture and assembly-level programming on 8085 microprocessor, building students' foundation in low-level systems programming.",
+      "Authored and graded examinations across the C++ and assembly curricula to assess student performance.",
+    ],
     achievements: [],
     skillIds: ["skl_c_cpp", "skl_mentorship", "skl_x86_asm"],
     links: [],
@@ -309,8 +329,10 @@ export const experiences: Experience[] = [
     date: { start: { year: 2019, month: 6 }, end: { year: 2019, month: 7 } },
     summary:
       "Designed system administration solutions for customer relationship management on the Salesforce platform.",
-    body: `- Designed Salesforce workflow automations to manage lead follow-up, replacing manual tracking with system-triggered task assignments.
-- Configured automated email sequences within Salesforce to maintain consistent follow-up communication, over a one-month internship.`,
+    highlights: [
+      "Designed Salesforce workflow automations to manage lead follow-up, replacing manual tracking with system-triggered task assignments.",
+      "Configured automated email sequences within Salesforce to maintain consistent follow-up communication, over a one-month internship.",
+    ],
     achievements: [],
     skillIds: ["skl_system_design"],
     links: [],

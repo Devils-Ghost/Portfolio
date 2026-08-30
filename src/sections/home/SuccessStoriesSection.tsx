@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import ScrollReveal from "@/components/motion/ScrollReveal";
+import { fadeUp } from "@/components/motion/variants";
 import SuccessStoriesShowcase from "./SuccessStoriesShowcase";
 import { getRepository } from "@/content/repository";
 import { FEATURED_LIMITS, featured, published } from "@/content/selectors";
@@ -24,10 +25,7 @@ export default async function SuccessStoriesSection() {
     <section className="w-full max-w-6xl mx-auto px-6 py-16 relative overflow-visible">
       {/* Animated Header */}
       <ScrollReveal
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
+        {...fadeUp}
         className="flex justify-between items-end mb-10 md:mb-16"
       >
         <h2 className="text-3xl md:text-4xl font-bold">Success Stories</h2>
