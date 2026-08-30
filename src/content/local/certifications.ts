@@ -1,0 +1,63 @@
+import type { Certification } from "../types";
+
+export const certifications: Certification[] = [
+  {
+    id: "cert_ethical_hacking",
+    name: "Ethical Hacking from Scratch",
+    issuer: "zSecurity",
+    issued: { year: 2020, month: 2 },
+    skillIds: [
+      "skl_network_security",
+      "skl_vuln_research",
+      "skl_kernel_security",
+      "skl_privacy",
+    ],
+    featured: true,
+    order: 1,
+  },
+  {
+    id: "cert_ccna_connecting",
+    name: "CCNA R&S: Connecting Networks",
+    issuer: "Cisco Networking Academy",
+    issued: { year: 2020, month: 9 },
+    skillIds: ["skl_network_security"],
+    featured: true,
+    order: 2,
+  },
+  {
+    id: "cert_nvidia_dli",
+    name: "Fundamentals of Deep Learning for Computer Vision",
+    issuer: "NVIDIA Deep Learning Institute",
+    issued: { year: 2020, month: 5 },
+    skillIds: ["skl_ml_security", "skl_python"],
+    featured: true,
+    order: 3,
+  },
+  {
+    id: "cert_ccna_scaling",
+    name: "CCNA R&S: Scaling Networks",
+    issuer: "Cisco Networking Academy",
+    issued: { year: 2020, month: 8 },
+    skillIds: ["skl_network_security"],
+    featured: false,
+    order: 4,
+  },
+  {
+    id: "cert_ccna_routing",
+    name: "CCNA R&S: Routing and Switching Essentials",
+    issuer: "Cisco Networking Academy",
+    issued: { year: 2020, month: 6 },
+    skillIds: ["skl_network_security"],
+    featured: false,
+    order: 5,
+  },
+  {
+    id: "cert_ccna_intro",
+    name: "CCNA R&S: Introduction to Networks",
+    issuer: "Cisco Networking Academy",
+    issued: { year: 2019, month: 12 },
+    skillIds: ["skl_network_security"],
+    featured: false,
+    order: 6,
+  },
+];

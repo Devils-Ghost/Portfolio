@@ -9,19 +9,18 @@ import {
   animate,
 } from "framer-motion";
 import Modal from "@/components/ui/Modal";
-
-export interface ExperienceData {
-  role: string;
-  org: string;
-  type: string;
-  date: string;
-  shortDesc: string;
-  fullDesc: string;
-  techStack: string[];
-}
+import HighlightList from "@/components/ui/HighlightList";
+import { EXPERIENCE_TYPE_LABELS, formatDateRange } from "@/content/selectors";
+import type { Experience, Skill } from "@/content/types";
 
 interface ExperienceCardProps {
-  exp: ExperienceData;
+  exp: Experience;
+  /**
+   * Resolved by the section, not looked up here: the card is presentational
+   * and shouldn't need the whole skill vocabulary to render one row of chips.
+   * Phase 2 makes these chips clickable through to the skill modal.
+   */
+  skills: Skill[];
 }
 
 // Vertical fade applied to each bracket's own shape — solid through the
@@ -29,7 +28,9 @@ interface ExperienceCardProps {
 const BRACKET_FADE_MASK =
   "linear-gradient(to bottom, transparent, black 25%, black 75%, transparent)";
 
-export default function ExperienceCard({ exp }: ExperienceCardProps) {
+export default function ExperienceCard({ exp, skills }: ExperienceCardProps) {
+  const typeLabel = EXPERIENCE_TYPE_LABELS[exp.type];
+  const dateLabel = formatDateRange(exp.date);
   const cardRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -128,17 +129,17 @@ export default function ExperienceCard({ exp }: ExperienceCardProps) {
               <div className="flex flex-wrap items-center gap-2 text-sm">
                 <span className="text-blue-400 font-medium">{exp.org}</span>
                 <span className="text-gray-600 hidden md:inline">•</span>
-                <span className="text-gray-500 font-mono">{exp.date}</span>
+                <span className="text-gray-500 font-mono">{dateLabel}</span>
               </div>
             </div>
             {/* Job Type Badge */}
             <span className="text-gray-400 bg-white/5 px-3 py-1 rounded text-xs border border-white/10 uppercase tracking-wider self-start md:mt-1 group-hover:border-blue-500/30 group-hover:text-blue-300 transition-colors duration-500">
-              {exp.type}
+              {typeLabel}
             </span>
           </div>
 
           <p className="text-gray-400 text-base mb-8 leading-relaxed">
-            {exp.shortDesc}
+            {exp.summary}
           </p>
 
           <button className="px-6 py-2.5 text-sm bg-blue-600 group-hover:bg-blue-500 text-white rounded-lg font-medium transition-colors shadow-lg shadow-blue-900/20">
@@ -165,26 +166,30 @@ export default function ExperienceCard({ exp }: ExperienceCardProps) {
               <span className="text-blue-400 font-medium text-lg">
                 {exp.org}
               </span>
-              <span className="text-gray-500 font-mono">• {exp.date}</span>
+              <span className="text-gray-500 font-mono">• {dateLabel}</span>
             </div>
           </div>
           <span className="text-gray-400 bg-white/5 px-3 py-1 rounded text-xs border border-white/10 uppercase tracking-wider">
-            {exp.type}
+            {typeLabel}
           </span>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-8">
-          {exp.techStack.map((tech, i) => (
+          {skills.map((skill) => (
             <span
-              key={i}
+              key={skill.id}
               className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs text-blue-300 font-mono"
             >
-              {tech}
+              {skill.name}
             </span>
           ))}
         </div>
 
-        <p className="text-gray-300 leading-relaxed">{exp.fullDesc}</p>
+        {exp.body && (
+          <p className="text-gray-300 leading-relaxed mb-6">{exp.body}</p>
+        )}
+
+        <HighlightList items={exp.highlights} />
       </Modal>
     </>
   );

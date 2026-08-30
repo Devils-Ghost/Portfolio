@@ -1,22 +1,10 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { type LucideIcon } from "lucide-react";
-
-export interface StoryData {
-  title: string;
-  org: string;
-  type: string;
-  date: string;
-  desc: string;
-  // A component reference for now. Phase 1 replaces this with a string
-  // `iconName` resolved through lib/icons.ts, because a React component can't
-  // be serialized out of Firestore or across a server/client boundary.
-  icon: LucideIcon;
-}
+import type { Story } from "@/content/types";
 
 interface SuccessStoryListItemProps {
-  story: StoryData;
+  story: Story;
   isActive: boolean;
   onHover: () => void;
   onClick: () => void;
@@ -54,7 +42,7 @@ export default function SuccessStoryListItem({
       <div
         className={`flex items-center gap-3 mt-1.5 font-mono text-sm transition-all duration-300 ${isActive ? "text-blue-400" : "text-gray-600"}`}
       >
-        <span>{story.org}</span>
+        <span>{story.org ?? story.type}</span>
       </div>
     </motion.div>
   );

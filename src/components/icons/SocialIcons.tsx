@@ -1,5 +1,11 @@
+import { createElement, type ComponentType } from "react";
+import { AtSign, GraduationCap } from "lucide-react";
+import type { SocialKind } from "@/content/types";
+
 // Shared brand SVGs — used by Footer, SocialRail, and Navbar's mobile menu
 // so all three stay visually identical without duplicating markup.
+
+type SocialIcon = ComponentType<{ className?: string }>;
 
 export const GithubIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -19,16 +25,38 @@ export const GmailIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export const SOCIAL_LINKS = [
-  {
-    icon: LinkedinIcon,
-    href: "https://www.linkedin.com/in/dhaval-tanna-604762159/",
-    label: "LinkedIn",
-  },
-  {
-    icon: GithubIcon,
-    href: "https://github.com/Devils-Ghost",
-    label: "GitHub",
-  },
-  { icon: GmailIcon, href: "mailto:dtanna2@asu.edu", label: "Email" },
-];
+/**
+ * `SocialKind` → the mark that draws it.
+ *
+ * The links themselves live in `site.socials` and reach these components as
+ * props — this file is presentation only, so the URL for GitHub exists in
+ * exactly one place (PROJECT_PLAN.md §D1). The three kinds actually in use
+ * get hand-drawn brand marks; `x` and `scholar` are modelled but unused, and
+ * fall back to generic lucide glyphs rather than to brand marks invented
+ * here. Swap them for real SVGs the day either link is added.
+ */
+export const SOCIAL_ICONS = {
+  linkedin: LinkedinIcon,
+  github: GithubIcon,
+  email: GmailIcon,
+  x: AtSign,
+  scholar: GraduationCap,
+} as const satisfies Record<SocialKind, SocialIcon>;
+
+/**
+ * Draws the mark for a social link's `kind`.
+ *
+ * Same reason as ContentIcon: `const Icon = SOCIAL_ICONS[kind]` inside a
+ * `.map()` reads to the React Compiler as a component defined during render,
+ * and `react-hooks/static-components` rejects it. `createElement` says what
+ * is really happening — pick an existing component out of a frozen table.
+ */
+export function SocialMark({
+  kind,
+  className,
+}: {
+  kind: SocialKind;
+  className?: string;
+}) {
+  return createElement(SOCIAL_ICONS[kind], { className });
+}

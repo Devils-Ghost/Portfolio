@@ -908,17 +908,38 @@ The un-glamorous phase that makes everything after it possible.
 
 ### Phase 1 — Content layer _(6–10h)_ · nothing visible changes
 
-- [ ] Write `content/types.ts` (§3.2 verbatim) and `content/schema.ts` (Zod mirrors)
-- [ ] Write `content/selectors.ts` (§3.4)
-- [ ] **Build the skill taxonomy first.** Every skill you'll ever reference, with IDs. Do this before anything else — it's the vocabulary everything else speaks.
-- [ ] Migrate all hardcoded arrays into `content/local/*.ts`, replacing skill strings with `skillIds` and date strings with `DateRange`
-- [ ] **Correct the inaccurate project/experience data** while you're in here — you flagged it, and this is the one pass where you touch every record
-- [ ] Icons → `iconName` + `lib/icons.ts` registry
-- [ ] Implement `LocalRepository`; wire every section to it
-- [ ] Convert sections to Server Components; push `"use client"` down to animated leaves
-- [ ] Assert: zero literal content strings left in any component
+- [x] Write `content/types.ts` (§3.2 verbatim) and `content/schema.ts` (Zod mirrors)
+- [x] Write `content/selectors.ts` (§3.4)
+- [x] **Build the skill taxonomy first.** Every skill you'll ever reference, with IDs. Do this before anything else — it's the vocabulary everything else speaks.
+- [x] Migrate all hardcoded arrays into `content/local/*.ts`, replacing skill strings with `skillIds` and date strings with `DateRange`
+- [x] **Correct the inaccurate project/experience data** while you're in here — you flagged it, and this is the one pass where you touch every record
+- [x] Icons → `iconName` + `lib/icons.ts` registry
+- [x] Implement `LocalRepository`; wire every section to it
+- [x] Convert sections to Server Components; push `"use client"` down to animated leaves
+- [x] Assert: zero literal content strings left in any component
 
-**Exit:** site is visually identical, every section renders from the repository, `usagesOfSkill()` returns correct results in a test, homepage HTML contains your project titles when JS is disabled.
+**Exit:** site is visually identical, every section renders from the repository, `usagesOfSkill()` returns correct results in a test, homepage HTML contains your project titles when JS is disabled. ✅ **Met.**
+
+**Four notes from executing this phase:**
+
+1. **The section split that D4 actually produces.** ~~Six of nine home sections became plain Server Components. The other three — Technical Arsenal, Featured Work, Certifications — kept a client view (`SkillsArsenal`, `ProjectsBoard`, `CredentialsGrid`) because each drives its whole section off _one_ `useScroll` taken on its own element.~~ **Superseded by note 6.** Technical Arsenal and Featured Work converted to play-once entrances during the phase's review pass and lost their client views entirely (`SkillsArsenal`, `ProjectsBoard` are gone). Only `CredentialsGrid` still holds a section-level `useScroll` — its scrubbed entrance was a deliberate keep, not an oversight — so it's the one section where D4's escape clause (client parent, only for the animation) still applies. Seven of nine home sections are now plain Server Components; the other two — `CredentialsGrid`, plus `EngagementAccordion`/`SuccessStoriesShowcase`/`ContactCallout` for state rather than animation — are covered in note 6.
+2. **`react-hooks/static-components` rejects the obvious icon-registry call site.** `const Icon = ICONS[name]` inside a component is indistinguishable, to the React Compiler, from defining a component during render. Both registries are therefore reached through a wrapper that uses `createElement` — `components/ui/ContentIcon` for `iconName`, `SocialMark` for social kinds. Worth knowing before Phase 2 adds more icon-driven UI.
+3. **Two `FEATURED_LIMITS` disagree with §7.1's table**, which was written before the taxonomy existed. §7.1 says 8 skills and 4 soft skills; the constants say 12 and 5, and the constants win — §3.3 makes them the single place a section's count is decided. `check:content` warns that 13 skills and 7 soft skills are flagged `featured` against those limits, which is the mechanism working as designed: the extras are simply not shown.
+4. **`npm run format:check` was failing on all twelve files under `src/content/` before this phase started** — the hand-formatted data files had never been through Prettier, and CI runs that step. Formatting them was unavoidable, so `src/content/local/stories.ts` is reformatted too. No wording changed anywhere.
+
+**Four more, from the review pass at the end of the phase:**
+
+5. **`ProjectCard`'s `variant: "pinned" | "grid"` was removed.** It was written ahead of the `/projects` page and no call site ever passed `"grid"`, so every branch it guarded — a second hover treatment, a second sizing rule, force-disabling `baseRotation` and the entrance — was dead code that still had to be read and reasoned about on every edit. The card is unconditionally the pinned treatment now. Bring the split back when `/projects` is actually designed (§7.5), by which point the grid card's real requirements will be known rather than guessed.
+6. **Entrance animations play once; they no longer scrub.** Technical Arsenal and Featured Work were scrubbed by the scrollbar, so scrolling back up ran them in reverse — the page visibly undoing itself, and inconsistent with every other section, which already used `whileInView` with `once: true`.
+
+   Two things fell out of that. The Technical Arsenal **bug** disappeared: each pill's window was `0.1 + index * 0.08` wide by `0.2`, measured against the section's scroll progress, so past about ten pills the last few had windows starting at 0.98 or beyond — they arrived at partial opacity, or never arrived at all. A time-based `staggerChildren` has no such ceiling, whatever `FEATURED_LIMITS.skills` grows to. And both sections lost their client halves (`SkillsArsenal`, `ProjectsBoard`), which existed only to hold the `ref` that `useScroll` needed.
+
+   The remaining client components under `sections/home/` are there for **state**, not animation: `EngagementAccordion` (which card is open), `SuccessStoriesShowcase` (which story is selected, plus a genuinely scroll-linked carousel indicator), and `ContactCallout` / `CredentialsGrid`, whose scrubbed entrances were deliberately kept.
+
+7. **Motion settings moved to `components/motion/variants.ts`** (`fadeUp`, `fadeUpDelayed`, `staggerParent`, `staggerItem`), per §4. Ten call sites were about to repeat the same four props; retuning the easing is now one edit, and a section added later can't quietly arrive at a different speed.
+8. **Experience gained `highlights`, and `body` became optional** — the same split Project already had. Every experience body was a list of `- ` bullets pretending to be prose. `components/ui/HighlightList` renders them for both entities, and `BodyText` — which existed only to tell those two shapes apart — was deleted; project bodies are one paragraph each, so the modal renders a `<p>`. Phase 2's engagement modals have four-paragraph bodies and will want a real renderer, which Phase 5's MDX work supersedes anyway.
+
+   `ResourceLink` rendering also split by kind while this was open: `github`, `live`, `video` and `external` open a new tab; `report`, `paper` and `credential` are direct-download URLs and must not, because `target="_blank"` on a download opens a tab that immediately goes blank and sits there.
 
 ---
 
@@ -1041,7 +1062,7 @@ See §8. Fully optional, fully isolated, zero risk to the rest of the site.
 - [ ] Lighthouse pass — target ≥95 across the board on `/`
 - [ ] Full keyboard traversal; axe clean; visible focus rings; verify `prefers-reduced-motion` end to end
 - [ ] Vercel Analytics + Speed Insights (free)
-- [ ] Résumé PDF served from `/resume` with a tracked download
+- [ ] Résumé PDF served from `/resume` with a tracked download — **the route exists as of Phase 1**: `app/(site)/resume/route.ts` 307-redirects to the file's current Google Drive home, so `site.hero.resumeUrl` points at something real today. Replace the redirect with a served PDF plus tracking; the redirect is deliberately temporary, not 308, so no browser has it cached
 - [ ] Custom domain
 - [ ] Real-device check: iOS Safari, Android Chrome, Firefox
 
@@ -1074,23 +1095,29 @@ Mapped to the numbering in your brief, so you can check nothing was dropped.
 
 ### 7.1 Home — `/`
 
-| §        | Section                           | Decision                                                                                                   |
-| -------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| 0        | Splash                            | Keep. Add `sessionStorage` skip on repeat visits.                                                          |
-| 1.1      | Hero                              | Keep. Two notes below.                                                                                     |
-| 1.2      | About card                        | Keep. Content from `site.about.short`.                                                                     |
-| 1.3      | Technical Arsenal                 | `featured(skills, 8)`. Pills open `SkillDetailModal`.                                                      |
-| 1.4      | Featured Work                     | `featured(projects, 3)`. Card → `ProjectDetailModal`.                                                      |
-| 1.5      | Experience                        | `featured(experiences, 3)`. Card → `ExperienceDetailModal`.                                                |
-| 1.6      | Leadership & Engagement           | `featured(engagements, 3)`. **Now clickable** → `EngagementModalBody` (you're writing `body` for each).    |
-| 1.7      | Success Stories                   | `featured(stories, 3)`. Card → `StoryPreviewBody`; "Read full story" → `/blog/[slug]`.                     |
-| 1.8      | Certifications / Beyond the Code  | `featured(certifications, 3)` + `featured(softSkills, 4)`. **Soft skills now clickable** → evidence modal. |
-| **1.10** | **Achievements & Awards** _(new)_ | `featured(awards, 4–6)`. Each links to its source project/experience, and to its STAR story if written.    |
-| 1.9      | Call to Action                    | Keep. Button dispatches `{kind:"contact"}` — same modal as the navbar.                                     |
+| §        | Section                           | Decision                                                                                                                                                               |
+| -------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0        | Splash                            | Keep. Add `sessionStorage` skip on repeat visits.                                                                                                                      |
+| 1.1      | Hero                              | Keep. Two notes below.                                                                                                                                                 |
+| 1.2      | About card                        | Keep. Content from `site.about.short`.                                                                                                                                 |
+| 1.3      | Technical Arsenal                 | `featured(skills, 8)`. Pills open `SkillDetailModal`.                                                                                                                  |
+| 1.4      | Featured Work                     | `featured(projects, 3)`. Card → `ProjectDetailModal`.                                                                                                                  |
+| 1.5      | Experience                        | `featured(experiences, 3)`. Card → `ExperienceDetailModal`.                                                                                                            |
+| 1.6      | Leadership & Engagement           | `featured(engagements, 3)`. **Now clickable** → `EngagementModalBody` (you're writing `body` for each).                                                                |
+| 1.7      | Success Stories                   | `featured(stories, 3)`. Card → `StoryPreviewBody`; "Read full story" → `/blog/[slug]`.                                                                                 |
+| 1.8      | Certifications / Beyond the Code  | `featured(certifications, 3)` + `featured(softSkills, N)`. **Soft skills now clickable** → evidence modal.                                                             |
+| **1.10** | **Achievements & Awards** _(new)_ | `featured(awards, 4–6)`. Third panel of the 1.8 group, not its own section — see below. Each links to its source project/experience, and to its STAR story if written. |
+| 1.9      | Call to Action                    | Keep. Button dispatches `{kind:"contact"}` — same modal as the navbar.                                                                                                 |
 
-**Placement of the new Awards section.** It should sit **between Experience (1.5) and Leadership & Engagement (1.6)**, not at the bottom. Reasoning: awards are proof-of-work, and proof lands hardest immediately after the claim it supports. Right now the page runs claim → claim → claim → proof-at-the-end. Experience → Awards → Engagement reads as _"here's where I worked, here's what that produced, here's who I am outside it."_
+**Placement of the new Awards section.** ~~It should sit between Experience (1.5) and Leadership & Engagement (1.6), not at the bottom.~~ **Superseded in Phase 1.** It was built there first, and the argument above still holds in the abstract — proof lands hardest right after the claim it supports — but it lost to a stronger one on the page: Certifications, Beyond the Code and Awards are all _credentials_, and reading them as one group beats reading awards as an interruption between Experience and Engagement.
 
-Design it as a **wrapping strip of compact chips**, not full cards — six awards as six cards would out-weigh the three Featured Work cards above them, and awards are supporting evidence, not headline content. Compact also means the count is never layout-locked.
+So 1.8 and 1.10 are now **one section**, `CertificationsSection`, rendering three sibling panels in one grid: Certifications and Beyond the Code side by side, Achievements & Awards centred beneath them. A triangle, not a stack.
+
+They share a grid rather than sitting in two adjacent sections because two sections each carry `py-16`, which put ~8rem between the top pair and the awards panel against the 2rem gap between the pair themselves — far too much air for an arrangement whose only job is to say "these three belong together."
+
+**Design.** ~~A wrapping strip of compact chips, not full cards.~~ The chip strip shipped and looked like scaffolding next to the two polished modules beside it: inconsistent type scale, plain boxes, awards rendering smaller than the heading above them. Replaced with the panel treatment its siblings already used. All three now compose from one `components/ui/ModulePanel` — gradient, top accent line, icon tile, title — differing only in accent hue (blue / indigo / cyan) and contents, so they stay siblings as they're edited rather than by anyone remembering to keep them matched.
+
+The section itself carries the title **"Credentials & Caliber"** — the one homepage section that had shipped without one, which left a bare gap between Success Stories and the panels. No "View all" link on any of the three panels: `/experience`, where the full award and certification lists will live (§10 Q2), is still an `UnderConstruction` placeholder. Add the link to all three when that page is real.
 
 **Two small notes on the hero, take or leave:**
 
@@ -1213,8 +1240,11 @@ All six are settled. Recorded here so a future you (or a future chat) doesn't re
 
 ### Still open (smaller, decide during the phase they land in)
 
-1. **The hero headline.** You liked _"I break systems to learn how to build them better."_ Parked for Phase 1 — it needs to be decided against the typography, not in the abstract, and it's currently doing duty in the About card. Using it in both places would be repetitive; one of them needs a new line.
-2. **Awards section visual treatment.** Compact chip strip is my recommendation (§7.1); final look is a Phase 5 design call.
+1. **The hero headline.** You liked _"I break systems to learn how to build them better."_ **Re-parked for Phase 5 during Phase 1.** The hero now reads from `site.hero.headlines`, and both variants were kept as the wording already on screen so wiring changed nothing visible. The open question is unchanged: that line is currently doing duty in the About card, using it in both places would be repetitive, and it needs deciding against the typography rather than in the abstract. Decide it when the About page is designed.
+
+   One mechanic worth knowing before you edit those strings. The hero renders its **closing sentence** in the blue-to-cyan gradient, and `headlines` stores each headline as one whole string — so `Hero.tsx` derives the split at the last `". "`. Everything before it is plain, the rest is accented. A single-sentence headline is therefore entirely gradient. If a future headline needs the break somewhere else, that's the function to change (`splitHeadline`), not the data.
+
+2. **Awards section visual treatment.** ~~Compact chip strip is my recommendation (§7.1); final look is a Phase 5 design call.~~ **Closed in Phase 1.** The chip strip was built, looked like scaffolding beside the two finished modules next to it, and was replaced the same phase with the third panel of the credentials triangle. See §7.1. Not deferred to Phase 5 after all — a live site shouldn't carry a section that reads as unfinished.
 3. **Whether soft skills stay four items.** Once they're clickable and backed by stories, you may want six. Layout is a wrapping list, so it's free.
 
 ---

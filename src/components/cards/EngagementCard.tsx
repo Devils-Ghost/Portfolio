@@ -1,23 +1,19 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Calendar, type LucideIcon } from "lucide-react";
-
-export interface EngagementData {
-  title: string;
-  org: string;
-  type: string;
-  date: string;
-  desc: string;
-  // A component reference for now. Phase 1 replaces this with a string
-  // `iconName` resolved through lib/icons.ts, because a React component can't
-  // be serialized out of Firestore or across a server/client boundary.
-  icon: LucideIcon;
-  number: string;
-}
+import { Calendar } from "lucide-react";
+import ContentIcon from "@/components/ui/ContentIcon";
+import { ENGAGEMENT_TYPE_LABELS, formatDateRange } from "@/content/selectors";
+import type { Engagement } from "@/content/types";
 
 interface EngagementCardProps {
-  exp: EngagementData;
+  exp: Engagement;
+  /**
+   * The big translucent numeral behind the card. Positional, so it's derived
+   * from where the card sits in the row rather than stored — a record that
+   * carried its own "03" would be wrong the moment the order changed.
+   */
+  number: string;
   isActive: boolean;
   onHover: () => void;
   onClick: () => void;
@@ -25,11 +21,12 @@ interface EngagementCardProps {
 
 export default function EngagementCard({
   exp,
+  number,
   isActive,
   onHover,
   onClick,
 }: EngagementCardProps) {
-  const Icon = exp.icon;
+  const typeLabel = ENGAGEMENT_TYPE_LABELS[exp.type];
 
   return (
     <motion.div
@@ -45,7 +42,7 @@ export default function EngagementCard({
       <div
         className={`absolute -bottom-6 -right-2 md:-bottom-10 md:-right-4 text-[100px] md:text-[150px] font-bold tracking-tighter leading-none transition-all duration-700 pointer-events-none ${isActive ? "text-white/[0.03]" : "text-white/[0.02]"}`}
       >
-        {exp.number}
+        {number}
       </div>
 
       {/* ================= INACTIVE STATE (Spine) ================= */}
@@ -57,11 +54,15 @@ export default function EngagementCard({
         }`}
       >
         <div className="w-12 h-12 md:w-14 md:h-14 shrink-0 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 group-hover:text-blue-400 group-hover:border-blue-500/30 group-hover:bg-blue-500/10 transition-all duration-300">
-          <Icon size={20} className="md:w-6 md:h-6" />
+          <ContentIcon
+            name={exp.iconName}
+            size={20}
+            className="md:w-6 md:h-6"
+          />
         </div>
         <div className="md:hidden flex flex-col ml-4 overflow-hidden">
           <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest mb-0.5">
-            {exp.type}
+            {typeLabel}
           </span>
           <h3 className="text-white font-bold text-base truncate">
             {exp.title}
@@ -80,14 +81,18 @@ export default function EngagementCard({
         <div className="flex flex-col gap-3 md:gap-4 max-w-lg">
           <div className="flex flex-wrap items-center gap-3 md:gap-4">
             <div className="flex items-center gap-2 text-blue-400 bg-blue-500/10 px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg border border-blue-500/20">
-              <Icon size={12} className="md:w-3.5 md:h-3.5" />
+              <ContentIcon
+                name={exp.iconName}
+                size={12}
+                className="md:w-3.5 md:h-3.5"
+              />
               <span className="text-[10px] md:text-xs uppercase tracking-wider font-semibold">
-                {exp.type}
+                {typeLabel}
               </span>
             </div>
             <div className="flex items-center gap-1.5 md:gap-2 text-gray-400 text-xs md:text-sm font-mono">
               <Calendar size={12} className="md:w-3.5 md:h-3.5" />
-              {exp.date}
+              {formatDateRange(exp.date)}
             </div>
           </div>
           <div>
@@ -99,7 +104,7 @@ export default function EngagementCard({
             </span>
           </div>
           <p className="text-gray-400 leading-relaxed text-xs md:text-base line-clamp-3 md:line-clamp-none">
-            {exp.desc}
+            {exp.summary}
           </p>
         </div>
       </div>

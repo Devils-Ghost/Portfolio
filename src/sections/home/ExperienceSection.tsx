@@ -1,76 +1,41 @@
-"use client";
-
-import { useRef } from "react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import ExperienceCard, {
-  ExperienceData,
-} from "@/components/cards/ExperienceCard";
+import ScrollReveal from "@/components/motion/ScrollReveal";
+import { fadeUp } from "@/components/motion/variants";
+import ExperienceCard from "@/components/cards/ExperienceCard";
+import { getRepository } from "@/content/repository";
+import {
+  FEATURED_LIMITS,
+  featured,
+  published,
+  resolveSkills,
+} from "@/content/selectors";
 
-export default function ExperienceSection() {
-  const containerRef = useRef<HTMLElement>(null);
+/**
+ * Experience — `featured(experiences, FEATURED_LIMITS.experiences)`.
+ *
+ * Fully a Server Component (PROJECT_PLAN.md §D4): the only animation it owns
+ * is the heading's `whileInView`, which lives in `ScrollReveal`, and each
+ * card is already its own animated client leaf. The section itself just
+ * fetches, filters and positions.
+ */
+export default async function ExperienceSection() {
+  const repo = getRepository();
+  const [allExperiences, skills] = await Promise.all([
+    repo.getExperiences(),
+    repo.getSkills(),
+  ]);
 
-  const experiences: ExperienceData[] = [
-    {
-      role: "Research Volunteer",
-      org: "SEFCOM Lab",
-      type: "Volunteer",
-      date: "Jul 2026 - Present",
-      shortDesc:
-        "Focusing on systems engineering and vulnerability research within the SEFCOM environment.",
-      fullDesc:
-        "Engaged in specialized systems engineering and vulnerability research. This role involves deep technical analysis, contributing to ongoing security investigations, and developing novel approaches to identifying and mitigating complex system vulnerabilities.",
-      techStack: [
-        "Vulnerability Research",
-        "Systems Engineering",
-        "Security Analysis",
-      ],
-    },
-    {
-      role: "Graduate Teaching Assistant",
-      org: "Arizona State University",
-      type: "Academic",
-      date: "Aug 2025 - Present",
-      shortDesc:
-        "Mentoring 150+ students in Software Security (CSE 545) and developing custom CTF challenges.",
-      fullDesc:
-        "Serving as the primary Graduate Teaching Assistant for CSE 545 (Software Security) under Professor Erik Trickel. Responsibilities include mentoring over 150 graduate students, grading complex security assignments, and actively developing custom Capture The Flag (CTF) challenges focusing on offensive security concepts.",
-      techStack: [
-        "Offensive Security",
-        "CTF Development",
-        "Binary Exploitation",
-        "Reverse Engineering",
-      ],
-    },
-    {
-      role: "Software Engineer II",
-      org: "UBS",
-      type: "Full-Time",
-      date: "Jul 2021 - Jun 2024",
-      shortDesc:
-        "Engineered enterprise-scale software solutions within the financial sector.",
-      fullDesc:
-        "Promoted from Software Engineer I to Software Engineer II. Designed, developed, and maintained highly resilient enterprise software solutions. Focused heavily on the intersection of systems engineering and robust security practices within a strictly regulated financial environment.",
-      techStack: [
-        "Enterprise Architecture",
-        "Systems Engineering",
-        "Secure SDLC",
-      ],
-    },
-  ];
+  const experiences = featured(
+    published(allExperiences),
+    FEATURED_LIMITS.experiences,
+  );
 
   return (
-    <section
-      ref={containerRef}
-      className="w-full max-w-6xl mx-auto px-6 py-16 relative"
-    >
+    <section className="w-full max-w-6xl mx-auto px-6 py-16 relative">
       {/* Animated Header with View All Link */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.6 }}
-        transition={{ duration: 0.5 }}
+      <ScrollReveal
+        {...fadeUp}
         className="flex justify-between items-end mb-16"
       >
         <h2 className="text-3xl md:text-4xl font-bold">Experience</h2>
@@ -84,11 +49,15 @@ export default function ExperienceSection() {
             className="group-hover:translate-x-1 transition-transform"
           />
         </Link>
-      </motion.div>
+      </ScrollReveal>
 
       <div className="flex flex-col gap-12">
-        {experiences.map((exp, index) => (
-          <ExperienceCard key={index} exp={exp} />
+        {experiences.map((exp) => (
+          <ExperienceCard
+            key={exp.id}
+            exp={exp}
+            skills={resolveSkills(exp.skillIds, skills)}
+          />
         ))}
       </div>
     </section>

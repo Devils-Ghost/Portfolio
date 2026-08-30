@@ -6,6 +6,12 @@ import Modal from "@/components/ui/Modal";
 type Props = {
   isOpen: boolean;
   setIsOpen: (val: boolean) => void;
+  /**
+   * The "email me directly instead" address, resolved from `site.socials` by
+   * whoever mounts this. Passed in rather than inlined so the address lives
+   * in the content layer only (PROJECT_PLAN.md §D1).
+   */
+  emailHref: string;
 };
 
 const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -16,7 +22,7 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
   );
 };
 
-export default function HireMeModal({ isOpen, setIsOpen }: Props) {
+export default function HireMeModal({ isOpen, setIsOpen, emailHref }: Props) {
   return (
     <Modal
       isOpen={isOpen}
@@ -75,7 +81,7 @@ export default function HireMeModal({ isOpen, setIsOpen }: Props) {
       </div>
 
       <a
-        href="mailto:dtanna2@asu.edu"
+        href={emailHref}
         className="w-full py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 hover:text-white rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
       >
         <Mail size={16} /> Send customized email instead
