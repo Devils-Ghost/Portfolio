@@ -24,7 +24,7 @@ export default function ContactFormBody({ content }: ModalBodyProps) {
 
   return (
     <div>
-      <h3 className="text-xl font-bold text-white tracking-tight mb-4 pr-8">
+      <h3 className="text-xl font-bold text-white tracking-tight mb-4">
         Let&apos;s Connect
       </h3>
 

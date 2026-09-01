@@ -28,8 +28,6 @@ export default function ExperienceModalBody({ id, content }: ModalBodyProps) {
 
   return (
     <div>
-      <div className="w-12 h-1 bg-blue-500 rounded-full mb-6" />
-
       <div className="mb-6 flex flex-col md:flex-row md:justify-between md:items-start gap-4">
         <div>
           <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">

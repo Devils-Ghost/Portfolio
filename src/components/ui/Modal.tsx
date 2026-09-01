@@ -162,32 +162,45 @@ export default function Modal({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5 }}
             className={cn(
-              "relative w-full max-h-[90vh] overflow-y-auto bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl p-8 z-10 focus:outline-none",
+              "relative w-full max-h-[90vh] overflow-y-auto bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl z-10 focus:outline-none",
               className,
             )}
           >
-            {/* Standardized Close Button */}
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close dialog"
-              className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors z-20"
-            >
-              <X size={24} />
-            </button>
+            {/*
+              Header: the accent bar, then Back/Close in a row beneath it —
+              all in normal flow. Every kind gets the bar (it used to be each
+              body's own first element, which put it at the same absolute
+              top-6 row as Back and Close and they overlapped). Its own
+              padding, separate from the body's below, so nothing here has to
+              reason about how tall Back/Close end up.
+            */}
+            <div className="px-8 pt-8 pb-6">
+              <div className="w-12 h-1 bg-blue-500 rounded-full mb-4" />
+              <div className="flex items-center justify-between">
+                {onBack ? (
+                  <button
+                    type="button"
+                    onClick={onBack}
+                    aria-label="Back"
+                    className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors"
+                  >
+                    <ArrowLeft size={18} /> Back
+                  </button>
+                ) : (
+                  <span />
+                )}
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close dialog"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+            </div>
 
-            {onBack && (
-              <button
-                type="button"
-                onClick={onBack}
-                aria-label="Back"
-                className="absolute top-6 left-6 flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors z-20"
-              >
-                <ArrowLeft size={18} /> Back
-              </button>
-            )}
-
-            {children}
+            <div className="px-8 pb-8">{children}</div>
           </motion.div>
         </div>
       )}

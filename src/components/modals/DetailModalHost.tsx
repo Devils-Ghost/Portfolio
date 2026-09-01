@@ -77,6 +77,13 @@ function sameTarget(a: DetailTarget | null, b: DetailTarget | null): boolean {
 }
 
 /**
+ * One width for every modal kind, rather than `MODAL_REGISTRY` choosing per
+ * kind — see that file's comment. Revisit as a per-entry `width` field if a
+ * kind genuinely needs to differ.
+ */
+const MODAL_WIDTH = "max-w-2xl";
+
+/**
  * The one global modal layer (PROJECT_PLAN.md §3.5, §D5). State lives in the
  * `?d=` query param, so a modal is shareable and reopens on a hard refresh.
  *
@@ -109,17 +116,19 @@ export default function DetailModalHost({
   // How many modal-only history entries deep the current session is, since
   // the last time no modal was open. `open()` increments it; a `popstate`
   // (the browser's own Back button, or our `back()` calling `router.back()`)
-  // decrements it. This is what lets the Back affordance know there's a
-  // previous modal to return to, rather than this being a modal opened
-  // straight off a deep link with nothing behind it — "push on open, pop on
-  // back, clear on close" (PROJECT_PLAN.md §3.5).
+  // decrements it. `canGoBack` only turns on past depth 1: the first modal
+  // opened from a bare page has nothing behind it but that page, so Back
+  // and Close would do the same thing — the affordance is reserved for a
+  // genuine previous *modal* (skill → project → back to skill), not just
+  // "a modal is open" — "push on open, pop on back, clear on close"
+  // (PROJECT_PLAN.md §3.5).
   const depthRef = useRef(0);
   const [canGoBack, setCanGoBack] = useState(false);
 
   useEffect(() => {
     function onPopState() {
       depthRef.current = Math.max(0, depthRef.current - 1);
-      setCanGoBack(depthRef.current > 0);
+      setCanGoBack(depthRef.current > 1);
     }
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
@@ -128,7 +137,7 @@ export default function DetailModalHost({
   const open = useCallback(
     (next: DetailTarget) => {
       depthRef.current += 1;
-      setCanGoBack(true);
+      setCanGoBack(depthRef.current > 1);
       router.push(`${pathname}?d=${serializeTarget(next)}`, {
         scroll: false,
       });
@@ -143,7 +152,7 @@ export default function DetailModalHost({
   }, [pathname, router]);
 
   const back = useCallback(() => {
-    if (depthRef.current > 0) {
+    if (depthRef.current > 1) {
       router.back();
     } else {
       close();
@@ -206,16 +215,21 @@ function ModalRenderer({
   // was tracking — adjusted during render rather than in an effect, per
   // React's documented pattern for "adjusting state when a prop changes"
   // (react.dev/learn/you-might-not-need-an-effect). `prevTarget` only exists
-  // to detect that change; nothing else reads it.
+  // to detect that change; nothing else reads it. This only ever touches
+  // `renderedTarget`, which is this component's own state — `canGoBack`
+  // belongs to the host above, and a *different* component's state can't be
+  // set during this component's render (React errors on exactly that: "Cannot
+  // update a component while rendering a different component"). That one
+  // goes through the effect below instead.
   const [prevTarget, setPrevTarget] = useState<DetailTarget | null>(null);
   if (!sameTarget(target, prevTarget)) {
     setPrevTarget(target);
-    if (target === null) {
-      setCanGoBack(false);
-    } else {
-      setRenderedTarget(target);
-    }
+    if (target) setRenderedTarget(target);
   }
+
+  useEffect(() => {
+    if (target === null) setCanGoBack(false);
+  }, [target, setCanGoBack]);
 
   const entry = renderedTarget
     ? MODAL_REGISTRY[renderedTarget.kind]
@@ -228,7 +242,7 @@ function ModalRenderer({
       isOpen={target !== null && Boolean(entry)}
       onClose={close}
       onBack={canGoBack ? back : undefined}
-      className={entry?.width}
+      className={MODAL_WIDTH}
       label={entry?.label(id, content) ?? ""}
     >
       {entry && <entry.Body id={id} content={content} />}
