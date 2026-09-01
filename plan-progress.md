@@ -177,4 +177,77 @@ name didn't hold up under the question.
    "video embed + skill chips") against `experience` at `max-w-2xl`. No video
    embed shipped this phase (not in the §6 Phase 2 checklist), but the width
    now matches the settled spec regardless, so the class doesn't need to
-   change again the day a video embed does.
+   change again the day a video embed does. **Superseded a few days later —
+   see note 10.**
+9. **`ClientWrapper` collapsed; `MainLayout` split into its own file.**
+   `ClientWrapper` had shrunk to a pure pass-through — `IntroProvider`
+   wrapping a `MainLayout` function, forwarding `socials` — after
+   `DetailModalHost` took over the actual provider-composition role at the
+   top of the tree. `(site)/layout.tsx` now composes `DetailModalHost` and
+   `IntroProvider` directly (there are exactly two `(site)`-scoped
+   providers, and nothing on the roadmap adds a third — Phase 3/4's
+   additions are server-only or `(admin)`-scoped), and `MainLayout` — the
+   splash/navbar/footer/scrollbar/rail chrome that consumes `IntroContext` —
+   moved to its own `components/layout/MainLayout.tsx`. Not a §3.5
+   requirement; a straightforward simplification once `ClientWrapper` had
+   nothing left to justify its own file.
+10. **Per-kind modal width dropped for one shared `MODAL_WIDTH` constant.**
+    §3.5's `REGISTRY` sketch gives each kind its own width (`project` at
+    `max-w-3xl`, `skill`/`softskill`/`contact` at `max-w-lg`, the rest at
+    `max-w-2xl`); note 8 above initially followed that. Changed to one
+    `max-w-2xl` for every kind, on the reasoning that visual consistency
+    across modals mattered more than sizing each to its content — a skill
+    "used in" list at `max-w-lg` reads as a visibly different, narrower
+    class of thing next to a `max-w-3xl` project modal, which undercuts "one
+    modal system" more than a slightly-too-wide list view costs. The
+    `width` field was removed from `RegistryEntry` entirely rather than left
+    unused; both `registry.tsx` and `DetailModalHost.tsx` carry a comment
+    pointing at where to reintroduce a per-entry `width` if a kind
+    genuinely needs to differ later.
+11. **The accent bar moved from each body component into `Modal` itself,
+    as a shared header.** Every body (`ProjectModalBody`, `ExperienceModalBody`,
+    `LinkedItemsBody`) opened with its own `<div className="w-12 h-1
+    bg-blue-500 rounded-full mb-6" />` — copied three times, and `contact`
+    never had one at all. Moved into `Modal`, rendered once, above a
+    Back/Close row, both now in normal document flow instead of absolutely
+    positioned. This fixed a real bug, not just a duplication smell: Back
+    (`absolute top-6 left-6`) and the accent bar (each body's first,
+    flush-to-top element) landed in the same visual row, so "← Back" and
+    the blue bar overlapped whenever a modal had one open beneath it. An
+    earlier attempt patched this with a conditional `pt-14` on the panel
+    when `onBack` was set — sufficient to stop the overlap, but the bar
+    still rendered *under* Back rather than above it, which wasn't what the
+    chrome was supposed to look like. The header restructure replaced that
+    patch outright: `[accent bar] → [Back / Close row] → [body content]`,
+    entirely in flow, so nothing before or after it can overlap regardless
+    of what a given body renders first. `contact` picked up the accent bar
+    for free as a side effect; its heading's stale `pr-8` (defending against
+    the old absolutely-positioned Close button) came out too, since Close no
+    longer overlaps anything.
+12. **A runtime crash the lint rules didn't catch: cross-component
+    `setState` during render.** The `DetailModalHost` / `ModalRenderer`
+    split in note 3 passed `canGoBack`'s setter down as a prop so
+    `ModalRenderer` could react to `?d=` changing. The render-time
+    "adjusting state when a prop changes" pattern from note 4 was applied
+    to that setter too, which React explicitly disallows for a *different*
+    component's state — "Cannot update a component while rendering a
+    different component," thrown the first time a click actually exercised
+    that path, since neither `tsc` nor `react-hooks/*` catch it (it's a
+    runtime invariant, not a static one). Fixed by moving that one call into
+    a `useEffect(() => { if (target === null) setCanGoBack(false); },
+    [target, setCanGoBack])` in `ModalRenderer` — calling a parent's setter
+    from a child's effect is the standard "notify an ancestor of a change"
+    pattern and doesn't trip `set-state-in-effect` (that rule targets a
+    component setting *its own* `useState` value from an effect when it
+    could derive it during render instead; a prop function is invisible to
+    it). `renderedTarget`'s update — genuinely local to `ModalRenderer` —
+    stayed as the render-time adjustment; only the foreign setter moved.
+13. **`canGoBack` now requires history depth `> 1`, not `> 0`.** Originally
+    any `open()` call set `canGoBack` to `true` unconditionally, so the
+    *first* modal opened from a bare page (no `?d=` yet) also showed a Back
+    button — but there's no previous modal underneath it there, only the
+    page, so Back and Close did exactly the same thing. `canGoBack` is
+    reserved for a genuine previous modal now (skill → project → *then*
+    Back appears) — `open()` sets it from the post-increment depth
+    (`depthRef.current > 1`), `back()` and the `popstate` handler check the
+    same threshold instead of `> 0`.
