@@ -127,8 +127,8 @@ Desktop only (`hover: hover`, `pointer: fine`, ≥768px). Fixed overlay, invisib
 | `experience` | `ExperienceModalBody` | `max-w-2xl` | long description, achievements, skill chips, links |
 | `engagement` | `EngagementModalBody` | `max-w-2xl` | description, links                                 |
 | `story`      | `StoryPreviewBody`    | `max-w-2xl` | excerpt → "Read full story" → `/blog/[slug]`       |
-| `skill`      | `EvidenceBody`        | `max-w-lg`  | _"This skill was used in:"_ + grouped usage list   |
-| `softskill`  | `EvidenceBody`        | `max-w-lg`  | _"Demonstrated in:"_ + grouped evidence list       |
+| `skill`      | `LinkedItemsBody`     | `max-w-lg`  | _"This skill was used in:"_ + grouped usage list   |
+| `softskill`  | `LinkedItemsBody`     | `max-w-lg`  | _"Demonstrated in:"_ + grouped evidence list       |
 | `award`      | `AwardModalBody`      | `max-w-xl`  | detail, source project/experience, story link      |
 | `contact`    | `ContactFormBody`     | `max-w-lg`  | the enquiry form                                   |
 
@@ -319,10 +319,10 @@ These apply to every future change. They exist so that decisions don't have to b
 | Design tokens in `@theme`                     | ✅ Done (Phase 0)                                                                        |
 | `Modal` shell: keyboard + a11y                | ✅ Done (Phase 0) — Escape, focus trap/restore, `role="dialog"`, ref-counted scroll lock |
 | Tooling: Prettier, typecheck/lint scripts, CI | ✅ Done (Phase 0)                                                                        |
-| Skill → project/experience linking            | ❌ Not started — needs the ID model                                                      |
-| Achievements & Awards section                 | ❌ Not started                                                                           |
-| Soft-skill evidence linking                   | ❌ Not started                                                                           |
-| Global modal system                           | ❌ Not started — modal state is still trapped inside cards; the shell is ready for it    |
+| Skill → project/experience linking            | ✅ Done (Phase 2) — clickable pills/chips open the skill evidence modal                  |
+| Achievements & Awards section                 | ❌ Not clickable yet — no `award` modal (Phase 2 scope was project/experience/skill/contact) |
+| Soft-skill evidence linking                   | ❌ Not clickable yet — no `softskill` modal (same as above)                              |
+| Global modal system                           | ✅ Done (Phase 2) for `project`/`experience`/`skill`/`contact`; `engagement`/`story`/`award`/`softskill` await their own modals |
 | Content repository / typed schema             | ❌ Not started                                                                           |
 | Firestore backend                             | ❌ Not started                                                                           |
 | Admin panel                                   | ❌ Not started                                                                           |
@@ -332,6 +332,6 @@ These apply to every future change. They exist so that decisions don't have to b
 
 **Known live defects:** ~~placeholder GitHub/demo/email URLs~~ fixed; ~~two Rules-of-Hooks violations~~ fixed; ~~`Inter` font not applied~~ **this one was a misdiagnosis** — body text was always Inter, since `next/font`'s class selector outranked the `body` element selector. Only `SplashScreen` was in Arial, via an inline style, and it no longer is. See `PROJECT_PLAN.md` §1.4 #8.
 
-Still outstanding: the whole tree renders inside one client boundary (`ClientWrapper`), so §D4's Server-Component split is untouched — that's Phase 1. `HireMeModal` is still mounted twice; Phase 2 removes the duplicate.
+Still outstanding: the whole tree renders inside one client boundary (`ClientWrapper`), so §D4's Server-Component split is untouched — that's Phase 1. ~~`HireMeModal` is still mounted twice~~ fixed (Phase 2) — both triggers now dispatch `{kind:"contact"}` to the one global modal host instead.
 
 Full detail in `PROJECT_PLAN.md` §1.3–1.4.

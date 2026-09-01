@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import { ReactNode, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +15,13 @@ interface ModalProps {
    * needs one — without it a screen reader reports only "dialog".
    */
   label?: string;
+  /**
+   * Renders a Back affordance next to Close when set — the modal-to-modal
+   * navigation DetailModalHost needs (skill → project → back to skill,
+   * PROJECT_PLAN.md §3.5). Omitted entirely when there's nowhere to go back
+   * to, rather than shown disabled.
+   */
+  onBack?: () => void;
 }
 
 const FOCUSABLE_SELECTOR = [
@@ -28,10 +35,10 @@ const FOCUSABLE_SELECTOR = [
 
 /*
  * Scroll lock is ref-counted rather than a straight write to body.overflow.
- * More than one Modal can be mounted at a time — HireMeModal currently exists
- * twice over, once in the Navbar and once in CallToAction — and with a plain
- * write, closing either one would unlock scrolling for the other. Counting
- * means the lock lifts only when the last open modal closes.
+ * `Modal` is a generic, reusable shell — nothing stops two instances being
+ * mounted at once — and with a plain write, closing either one would unlock
+ * scrolling for the other. Counting means the lock lifts only when the last
+ * open modal closes.
  */
 let scrollLockCount = 0;
 
@@ -51,6 +58,7 @@ export default function Modal({
   children,
   className = "",
   label,
+  onBack,
 }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   // Kept in a ref rather than state: it's read once on close and must never
@@ -167,6 +175,17 @@ export default function Modal({
             >
               <X size={24} />
             </button>
+
+            {onBack && (
+              <button
+                type="button"
+                onClick={onBack}
+                aria-label="Back"
+                className="absolute top-6 left-6 flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors z-20"
+              >
+                <ArrowLeft size={18} /> Back
+              </button>
+            )}
 
             {children}
           </motion.div>

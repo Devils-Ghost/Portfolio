@@ -58,6 +58,123 @@ The section also picked up a title it had shipped without — **"Credentials & C
 
 ---
 
-## Phase 2 onward
+## Phase 2 — Interaction system
 
-Not yet executed. No progress notes yet — add a section here per phase as it's completed, following the same pattern: what the plan got right, what it got wrong, and what changed as a result.
+### Scope actually built
+
+The Phase 2 checklist (§6) names four modal kinds by name — `project`,
+`experience`, `skill`, `contact` — and that's what shipped. `DetailTarget`
+(§3.5) is declared as the full eight-kind union, since it's cheap and it's
+the settled type-level contract, but `MODAL_REGISTRY` in
+`components/modals/registry.tsx` only has entries for those four. Nothing in
+the app dispatches `engagement`, `story`, `award` or `softskill` yet —
+`EngagementCard`'s click still only toggles the accordion, and Awards/Beyond
+the Code are still plain lists — so this isn't a gap so much as those kinds
+not existing yet. `LinkedItemsBody` (the skill "used in" modal, named
+`EvidenceBody` in §3.5 — see the naming note below) already returns
+`engagement` and `story` usages from `usagesOfSkill()`, since that selector
+predates this phase; it renders those two groups as plain, non-interactive
+rows rather than dead buttons, and switches automatically to real links the
+day those kinds get entries in the registry — no change needed here when
+that happens.
+
+### Naming deviation from §3.5: `EvidenceBody` → `LinkedItemsBody`
+
+§3.5's `REGISTRY` sketch names the shared `skill`/`softskill` body
+`EvidenceBody`. Shipped as `LinkedItemsBody` instead, after a round of
+back-and-forth on whether a narrower, skill-specific name would read better:
+it wouldn't. `Skill` and `SoftSkill` are unrelated entities in the content
+model — no shared parent type, no overlapping fields, and driven by two
+different selectors (`usagesOfSkill()` against `skillIds` membership vs.
+`evidenceFor()` against three separate `evidence*Ids` fields on `SoftSkill`).
+"Hard skills" and "soft skills" are conventionally two separate axes, not one
+a kind of the other, and the content model encodes them that way. A name like
+`SkillBody` would read as skill-specific and mislead the day it's handed a
+`softskill` target. `LinkedItemsBody` names the shared UI pattern (a grouped,
+clickable list of related entities) instead of either entity, which is what
+was actually shared. `Modal` and `ProjectModalBody`/`ExperienceModalBody`
+keep their §3.5 names — this rename was scoped to the one component whose
+name didn't hold up under the question.
+
+### Notable decisions made while building this
+
+1. **Modal-to-modal navigation rides real browser history instead of a
+   hand-rolled stack.** §3.5 describes "a small history stack in the modal
+   context — push on open, pop on back, clear on close." Built literally, an
+   in-memory array duplicates state the browser already tracks and can
+   desync from it (a raw hardware Back bypasses whatever array we're
+   maintaining). Instead, `open()` calls `router.push()` for every modal
+   open — each one a real history entry — so the in-modal Back button and
+   the browser's own Back button do the same thing: `router.back()`. A
+   small `depthRef` counter (incremented on open, decremented on `popstate`)
+   is the only bookkeeping left, and it exists purely to decide whether Back
+   should be offered at all versus falling through to Close — a modal
+   opened from a fresh deep link has nothing behind it to return to.
+2. **`force-dynamic` on `(site)/layout.tsx`, ahead of Phase 3.** "Deep-linked
+   modals render server-side" needs the route rendered per request, not
+   statically generated at build time — otherwise `?d=project:x` only
+   resolves after client-side hydration reads the query string, which is
+   exactly the outcome the requirement rules out. Phase 3's `cacheComponents`
+   + `"use cache"` + `cacheTag`/`cacheLife` is the real fix (per-content-tag
+   caching instead of an all-or-nothing switch); `force-dynamic` is a
+   correct, honest stand-in until that infrastructure exists, called out
+   explicitly in the layout's own comment so it isn't mistaken for the
+   finished caching story.
+3. **`DetailModalHost`'s context provider sits outside its own `useSearchParams()`
+   read.** The first cut wrapped the whole component — `children` included —
+   in one `<Suspense>` boundary reading `?d=`. That crashed `next build`:
+   during static generation Next renders the Suspense `fallback`, which was
+   `children`, and everything under it calls `useDetailModal()` with no
+   provider mounted yet. Fixed by splitting `DetailModalHost` in two: the
+   outer component owns `open`/`close`/`back`/`canGoBack` (none of which need
+   `?d=` to be *defined*, only `router` and `pathname`) and provides context
+   around `children` unconditionally; a small inner `ModalRenderer`, the only
+   piece that calls `useSearchParams()`, is Suspense-wrapped separately and
+   receives `close`/`back`/`canGoBack` as props rather than re-deriving them.
+4. **Two ref-mutation-during-render attempts got rejected by
+   `react-hooks/set-state-in-effect` and `react-hooks/refs`** (the React
+   Compiler ESLint rules Phase 0 turned on as errors — see that phase's notes
+   on the 21-problem baseline). The "hold the previous target to detect a
+   change" bookkeeping in `ModalRenderer` now follows the pattern from
+   [react.dev's "adjusting state when a prop changes"](https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes)
+   exactly — comparing against a `useState`-held previous value and calling
+   setters conditionally in the render body, never inside `useEffect`, and
+   never writing a ref during render. One consequence: the `depthRef`
+   back-button counter is *not* forcibly reset to `0` when `target` goes
+   null by some route other than the host's own `close()`/`back()` (a
+   hardware Back that jumps multiple entries at once) — refs can't be
+   written during render, and the visible state (`canGoBack`) is still
+   corrected via `setCanGoBack(false)` either way. The only drift possible is
+   `back()` choosing `router.back()` once when `close()` would have been
+   marginally more precise, in a multi-jump edge case outside anything the
+   Phase 2 exit criteria exercise.
+5. **`ProjectCard` and `ExperienceCard` lost their `skills` prop entirely**,
+   not just their inline `<Modal>`. Both only ever used the resolved skill
+   list inside the modal that used to live in the card; now that
+   `ProjectModalBody`/`ExperienceModalBody` resolve chips themselves against
+   the content bundle `DetailModalHost` already holds, `ProjectsSection` and
+   `ExperienceSection` stopped fetching `skills` at all — one fewer
+   repository call per section, and one fewer thing the card needs to know.
+6. **`SkillPill` now dispatches its own click** — `useDetailModal().open({kind:"skill", id})`
+   — instead of accepting an `onClick` prop from whoever renders it. Every
+   pill on the site is going to open the same evidence modal (site-behavior
+   §6.2: `/about`'s full matrix explicitly reuses "the same evidence modal as
+   the home page"), so wiring it once here beats repeating the same
+   `onClick={() => open(...)}` at every future call site.
+7. **`ExperienceModalBody` gained `achievements` and `links` rendering that
+   `ExperienceCard`'s old inline modal never had.** Both fields already
+   existed on `Experience` — `achievements` populated on one record since
+   Phase 1 ("retained for a distinct UI treatment," per that file's own
+   comment) and `links` since the type was written — but nothing rendered
+   them. `site-behavior.md` §4.6 already specs `ExperienceModalBody` as
+   carrying achievements and links, so this is completing the settled
+   design, not adding scope. Achievements render as a small badge row
+   labelled "Recognition," visually distinct from the bullet `HighlightList`
+   above it; links reuse the existing `ResourceLinks` component untouched.
+8. **`ProjectModalBody`'s width moved from `max-w-2xl` to `max-w-3xl`.**
+   `max-w-2xl` was what `ProjectCard`'s original inline `<Modal>` used;
+   `site-behavior.md` §4.6's table specs `project` at `max-w-3xl` (wider,
+   "video embed + skill chips") against `experience` at `max-w-2xl`. No video
+   embed shipped this phase (not in the §6 Phase 2 checklist), but the width
+   now matches the settled spec regardless, so the class doesn't need to
+   change again the day a video embed does.

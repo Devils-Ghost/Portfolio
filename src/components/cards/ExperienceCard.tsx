@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   motion,
   useMotionValue,
@@ -8,19 +8,12 @@ import {
   useInView,
   animate,
 } from "framer-motion";
-import Modal from "@/components/ui/Modal";
-import HighlightList from "@/components/ui/HighlightList";
+import { useDetailModal } from "@/components/modals/DetailModalHost";
 import { EXPERIENCE_TYPE_LABELS, formatDateRange } from "@/content/selectors";
-import type { Experience, Skill } from "@/content/types";
+import type { Experience } from "@/content/types";
 
 interface ExperienceCardProps {
   exp: Experience;
-  /**
-   * Resolved by the section, not looked up here: the card is presentational
-   * and shouldn't need the whole skill vocabulary to render one row of chips.
-   * Phase 2 makes these chips clickable through to the skill modal.
-   */
-  skills: Skill[];
 }
 
 // Vertical fade applied to each bracket's own shape — solid through the
@@ -28,11 +21,16 @@ interface ExperienceCardProps {
 const BRACKET_FADE_MASK =
   "linear-gradient(to bottom, transparent, black 25%, black 75%, transparent)";
 
-export default function ExperienceCard({ exp, skills }: ExperienceCardProps) {
+/**
+ * Purely presentational (PROJECT_PLAN.md §1.3 ⑤): it no longer owns modal
+ * state, it dispatches `{kind:"experience", id}` to the one global modal
+ * host.
+ */
+export default function ExperienceCard({ exp }: ExperienceCardProps) {
+  const { open } = useDetailModal();
   const typeLabel = EXPERIENCE_TYPE_LABELS[exp.type];
   const dateLabel = formatDateRange(exp.date);
   const cardRef = useRef<HTMLDivElement>(null);
-  const [isOpen, setIsOpen] = useState(false);
 
   // Triggers once, the moment the card scrolls into view — and, unlike
   // scroll-linked values, never re-fires or reverses on further scrolling.
@@ -73,10 +71,10 @@ export default function ExperienceCard({ exp, skills }: ExperienceCardProps) {
   }, [isInView, lineScaleY, clipInset, rightEdge, fadeAmount, linesOpacity]);
 
   // 5. The Soft Gradient Mask on the card's own content
-  const maskImage = useMotionTemplate`linear-gradient(to right, 
-    transparent ${clipInset}%, 
-    black calc(${clipInset}% + ${fadeAmount}%), 
-    black calc(${rightEdge}% - ${fadeAmount}%), 
+  const maskImage = useMotionTemplate`linear-gradient(to right,
+    transparent ${clipInset}%,
+    black calc(${clipInset}% + ${fadeAmount}%),
+    black calc(${rightEdge}% - ${fadeAmount}%),
     transparent ${rightEdge}%
   )`;
 
@@ -84,113 +82,67 @@ export default function ExperienceCard({ exp, skills }: ExperienceCardProps) {
   const rightBracketPos = useMotionTemplate`${clipInset}%`;
 
   return (
-    <>
-      <div ref={cardRef} className="relative w-full max-w-4xl mx-auto py-2">
-        {/* Left bracket — a "[" shape hugging the card's left edge, not just a line */}
-        <motion.div
-          style={{
-            scaleY: lineScaleY,
-            opacity: linesOpacity,
-            left: leftBracketPos,
-            transformOrigin: "top",
-            WebkitMaskImage: BRACKET_FADE_MASK,
-            maskImage: BRACKET_FADE_MASK,
-          }}
-          className="absolute top-[8%] bottom-[8%] w-5 border-l-2 border-t-2 border-b-2 border-blue-500 rounded-l-md shadow-[0_0_12px_rgba(59,130,246,0.7)] z-10"
-        />
+    <div ref={cardRef} className="relative w-full max-w-4xl mx-auto py-2">
+      {/* Left bracket — a "[" shape hugging the card's left edge, not just a line */}
+      <motion.div
+        style={{
+          scaleY: lineScaleY,
+          opacity: linesOpacity,
+          left: leftBracketPos,
+          transformOrigin: "top",
+          WebkitMaskImage: BRACKET_FADE_MASK,
+          maskImage: BRACKET_FADE_MASK,
+        }}
+        className="absolute top-[8%] bottom-[8%] w-5 border-l-2 border-t-2 border-b-2 border-blue-500 rounded-l-md shadow-[0_0_12px_rgba(59,130,246,0.7)] z-10"
+      />
 
-        {/* Right bracket — a "]" shape hugging the card's right edge */}
-        <motion.div
-          style={{
-            scaleY: lineScaleY,
-            opacity: linesOpacity,
-            right: rightBracketPos,
-            transformOrigin: "top",
-            WebkitMaskImage: BRACKET_FADE_MASK,
-            maskImage: BRACKET_FADE_MASK,
-          }}
-          className="absolute top-[8%] bottom-[8%] w-5 border-r-2 border-t-2 border-b-2 border-blue-500 rounded-r-md shadow-[0_0_12px_rgba(59,130,246,0.7)] z-10"
-        />
+      {/* Right bracket — a "]" shape hugging the card's right edge */}
+      <motion.div
+        style={{
+          scaleY: lineScaleY,
+          opacity: linesOpacity,
+          right: rightBracketPos,
+          transformOrigin: "top",
+          WebkitMaskImage: BRACKET_FADE_MASK,
+          maskImage: BRACKET_FADE_MASK,
+        }}
+        className="absolute top-[8%] bottom-[8%] w-5 border-r-2 border-t-2 border-b-2 border-blue-500 rounded-r-md shadow-[0_0_12px_rgba(59,130,246,0.7)] z-10"
+      />
 
-        {/* The Card with the Feathered Reveal Mask and LED Hover Effect */}
-        <motion.div
-          style={{ WebkitMaskImage: maskImage, maskImage: maskImage }}
-          onClick={() => setIsOpen(true)}
-          className="w-full p-8 md:p-10 bg-surface rounded-2xl flex flex-col items-start group cursor-pointer 
-                     border border-white/10 shadow-2xl
-                     transition-all duration-500 ease-out
-                     hover:-translate-y-1.5 hover:border-blue-500/40 
-                     hover:shadow-[0_12px_40px_-15px_rgba(59,130,246,0.4)]"
-        >
-          {/* Card Header */}
-          <div className="flex flex-col md:flex-row md:justify-between md:items-start w-full mb-6 gap-4 md:gap-0">
-            <div className="flex flex-col">
-              <h3 className="text-2xl font-bold text-white mb-2">{exp.role}</h3>
-              <div className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="text-blue-400 font-medium">{exp.org}</span>
-                <span className="text-gray-600 hidden md:inline">•</span>
-                <span className="text-gray-500 font-mono">{dateLabel}</span>
-              </div>
-            </div>
-            {/* Job Type Badge */}
-            <span className="text-gray-400 bg-white/5 px-3 py-1 rounded text-xs border border-white/10 uppercase tracking-wider self-start md:mt-1 group-hover:border-blue-500/30 group-hover:text-blue-300 transition-colors duration-500">
-              {typeLabel}
-            </span>
-          </div>
-
-          <p className="text-gray-400 text-base mb-8 leading-relaxed">
-            {exp.summary}
-          </p>
-
-          <button className="px-6 py-2.5 text-sm bg-blue-600 group-hover:bg-blue-500 text-white rounded-lg font-medium transition-colors shadow-lg shadow-blue-900/20">
-            View Details
-          </button>
-        </motion.div>
-      </div>
-
-      {/* ================= REUSABLE MODAL ================= */}
-      <Modal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        className="max-w-2xl"
-        label={`${exp.role} at ${exp.org}`}
+      {/* The Card with the Feathered Reveal Mask and LED Hover Effect */}
+      <motion.div
+        style={{ WebkitMaskImage: maskImage, maskImage: maskImage }}
+        onClick={() => open({ kind: "experience", id: exp.id })}
+        className="w-full p-8 md:p-10 bg-surface rounded-2xl flex flex-col items-start group cursor-pointer
+                   border border-white/10 shadow-2xl
+                   transition-all duration-500 ease-out
+                   hover:-translate-y-1.5 hover:border-blue-500/40
+                   hover:shadow-[0_12px_40px_-15px_rgba(59,130,246,0.4)]"
       >
-        <div className="w-12 h-1 bg-blue-500 rounded-full mb-6" />
-
-        <div className="mb-6 flex flex-col md:flex-row md:justify-between md:items-start gap-4">
-          <div>
-            <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
-              {exp.role}
-            </h3>
-            <div className="flex items-center gap-3 text-sm">
-              <span className="text-blue-400 font-medium text-lg">
-                {exp.org}
-              </span>
-              <span className="text-gray-500 font-mono">• {dateLabel}</span>
+        {/* Card Header */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start w-full mb-6 gap-4 md:gap-0">
+          <div className="flex flex-col">
+            <h3 className="text-2xl font-bold text-white mb-2">{exp.role}</h3>
+            <div className="flex flex-wrap items-center gap-2 text-sm">
+              <span className="text-blue-400 font-medium">{exp.org}</span>
+              <span className="text-gray-600 hidden md:inline">•</span>
+              <span className="text-gray-500 font-mono">{dateLabel}</span>
             </div>
           </div>
-          <span className="text-gray-400 bg-white/5 px-3 py-1 rounded text-xs border border-white/10 uppercase tracking-wider">
+          {/* Job Type Badge */}
+          <span className="text-gray-400 bg-white/5 px-3 py-1 rounded text-xs border border-white/10 uppercase tracking-wider self-start md:mt-1 group-hover:border-blue-500/30 group-hover:text-blue-300 transition-colors duration-500">
             {typeLabel}
           </span>
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-8">
-          {skills.map((skill) => (
-            <span
-              key={skill.id}
-              className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs text-blue-300 font-mono"
-            >
-              {skill.name}
-            </span>
-          ))}
-        </div>
+        <p className="text-gray-400 text-base mb-8 leading-relaxed">
+          {exp.summary}
+        </p>
 
-        {exp.body && (
-          <p className="text-gray-300 leading-relaxed mb-6">{exp.body}</p>
-        )}
-
-        <HighlightList items={exp.highlights} />
-      </Modal>
-    </>
+        <button className="px-6 py-2.5 text-sm bg-blue-600 group-hover:bg-blue-500 text-white rounded-lg font-medium transition-colors shadow-lg shadow-blue-900/20">
+          View Details
+        </button>
+      </motion.div>
+    </div>
   );
 }

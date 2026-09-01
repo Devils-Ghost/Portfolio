@@ -4,32 +4,23 @@ import ScrollReveal from "@/components/motion/ScrollReveal";
 import { fadeUp, staggerParent } from "@/components/motion/variants";
 import ProjectCard from "@/components/cards/ProjectCard";
 import { getRepository } from "@/content/repository";
-import {
-  FEATURED_LIMITS,
-  featured,
-  published,
-  resolveSkills,
-} from "@/content/selectors";
+import { FEATURED_LIMITS, featured, published } from "@/content/selectors";
 
 /**
  * Featured Work — `featured(projects, FEATURED_LIMITS.projects)`.
  *
  * Fully a Server Component (PROJECT_PLAN.md §D4). It reads the repository,
- * drops drafts, takes the top three by `order` and resolves each project's
- * `skillIds` against the vocabulary — resolution belongs here, not in a
- * presentational card that would otherwise need the whole vocabulary to draw
- * one row of chips.
+ * drops drafts, and takes the top three by `order`. `ProjectCard` is purely
+ * presentational (§1.3 ⑤) and resolves nothing itself — it dispatches
+ * `{kind:"project", id}` to the modal host, which resolves skill chips
+ * against the full content bundle it already holds.
  *
  * The client half this used to need is gone: the cards' entrance is a
  * staggered `whileInView` now rather than a scroll-scrubbed timeline, so
  * nothing needs a ref on the section element.
  */
 export default async function ProjectsSection() {
-  const repo = getRepository();
-  const [allProjects, skills] = await Promise.all([
-    repo.getProjects(),
-    repo.getSkills(),
-  ]);
+  const allProjects = await getRepository().getProjects();
 
   const projects = featured(published(allProjects), FEATURED_LIMITS.projects);
 
@@ -74,7 +65,6 @@ export default async function ProjectsSection() {
             <ProjectCard
               key={project.id}
               project={project}
-              skills={resolveSkills(project.skillIds, skills)}
               index={index}
               className={positionClasses}
               baseRotation={baseRotation}
