@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import { ReactNode, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +15,13 @@ interface ModalProps {
    * needs one — without it a screen reader reports only "dialog".
    */
   label?: string;
+  /**
+   * Renders a Back affordance next to Close when set — the modal-to-modal
+   * navigation DetailModalHost needs (skill → project → back to skill,
+   * PROJECT_PLAN.md §3.5). Omitted entirely when there's nowhere to go back
+   * to, rather than shown disabled.
+   */
+  onBack?: () => void;
 }
 
 const FOCUSABLE_SELECTOR = [
@@ -28,10 +35,10 @@ const FOCUSABLE_SELECTOR = [
 
 /*
  * Scroll lock is ref-counted rather than a straight write to body.overflow.
- * More than one Modal can be mounted at a time — HireMeModal currently exists
- * twice over, once in the Navbar and once in CallToAction — and with a plain
- * write, closing either one would unlock scrolling for the other. Counting
- * means the lock lifts only when the last open modal closes.
+ * `Modal` is a generic, reusable shell — nothing stops two instances being
+ * mounted at once — and with a plain write, closing either one would unlock
+ * scrolling for the other. Counting means the lock lifts only when the last
+ * open modal closes.
  */
 let scrollLockCount = 0;
 
@@ -51,6 +58,7 @@ export default function Modal({
   children,
   className = "",
   label,
+  onBack,
 }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   // Kept in a ref rather than state: it's read once on close and must never
@@ -154,21 +162,45 @@ export default function Modal({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5 }}
             className={cn(
-              "relative w-full max-h-[90vh] overflow-y-auto bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl p-8 z-10 focus:outline-none",
+              "relative w-full max-h-[90vh] overflow-y-auto bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl z-10 focus:outline-none",
               className,
             )}
           >
-            {/* Standardized Close Button */}
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close dialog"
-              className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors z-20"
-            >
-              <X size={24} />
-            </button>
+            {/*
+              Header: the accent bar, then Back/Close in a row beneath it —
+              all in normal flow. Every kind gets the bar (it used to be each
+              body's own first element, which put it at the same absolute
+              top-6 row as Back and Close and they overlapped). Its own
+              padding, separate from the body's below, so nothing here has to
+              reason about how tall Back/Close end up.
+            */}
+            <div className="px-8 pt-8 pb-6">
+              <div className="w-12 h-1 bg-blue-500 rounded-full mb-4" />
+              <div className="flex items-center justify-between">
+                {onBack ? (
+                  <button
+                    type="button"
+                    onClick={onBack}
+                    aria-label="Back"
+                    className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors"
+                  >
+                    <ArrowLeft size={18} /> Back
+                  </button>
+                ) : (
+                  <span />
+                )}
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close dialog"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+            </div>
 
-            {children}
+            <div className="px-8 pb-8">{children}</div>
           </motion.div>
         </div>
       )}

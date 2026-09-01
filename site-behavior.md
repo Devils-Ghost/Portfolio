@@ -3,7 +3,7 @@
 **Project:** Dhaval Tanna — personal portfolio
 **Live at:** `dhaval-tanna.eternalglitch.com`
 **Companion document:** `PROJECT_PLAN.md` (audit, architecture rationale, phased execution)
-**Last updated:** August 2026
+**Last updated:** September 2026
 
 ---
 
@@ -117,20 +117,20 @@ Desktop only (`hover: hover`, `pointer: fine`, ≥768px). Fixed overlay, invisib
 - State lives in a URL query param: `?d=project:ai-intrusion-detection`
 - **Modals are therefore shareable** — you can send someone a link that opens directly to one project
 - Browser Back closes the modal
-- A **history stack** supports modal-to-modal navigation (skill → project → back to skill)
-- `Modal` is the shell only: backdrop, spring animation, close button, Escape key, focus trap, focus restore, scroll lock, `role="dialog"` + `aria-modal`
-- Each `kind` supplies its own **body component and width** — consistent chrome, independent interiors
+- A **history stack** supports modal-to-modal navigation (skill → project → back to skill) — the Back affordance only appears once there genuinely is a previous modal to return to; the first modal opened from a bare page shows Close only, since Back would do exactly the same thing there
+- `Modal` is the shell only: backdrop, spring animation, an accent bar + Back/Close header (all in normal flow, not each body's own top element), Escape key, focus trap, focus restore, scroll lock, `role="dialog"` + `aria-modal`
+- Every kind renders at the same width (`max-w-2xl`) — set once in `DetailModalHost`, not chosen per kind. Each `kind` supplies its own **body component** for the interior
 
-| kind         | body                  | width       | contents                                           |
-| ------------ | --------------------- | ----------- | -------------------------------------------------- |
-| `project`    | `ProjectModalBody`    | `max-w-3xl` | long description, skill chips, video embed, links  |
-| `experience` | `ExperienceModalBody` | `max-w-2xl` | long description, achievements, skill chips, links |
-| `engagement` | `EngagementModalBody` | `max-w-2xl` | description, links                                 |
-| `story`      | `StoryPreviewBody`    | `max-w-2xl` | excerpt → "Read full story" → `/blog/[slug]`       |
-| `skill`      | `EvidenceBody`        | `max-w-lg`  | _"This skill was used in:"_ + grouped usage list   |
-| `softskill`  | `EvidenceBody`        | `max-w-lg`  | _"Demonstrated in:"_ + grouped evidence list       |
-| `award`      | `AwardModalBody`      | `max-w-xl`  | detail, source project/experience, story link      |
-| `contact`    | `ContactFormBody`     | `max-w-lg`  | the enquiry form                                   |
+| kind         | body                  | contents                                           |
+| ------------ | --------------------- | --------------------------------------------------- |
+| `project`    | `ProjectModalBody`    | long description, skill chips, video embed, links  |
+| `experience` | `ExperienceModalBody` | long description, achievements, skill chips, links |
+| `engagement` | `EngagementModalBody` | description, links                                 |
+| `story`      | `StoryPreviewBody`    | excerpt → "Read full story" → `/blog/[slug]`       |
+| `skill`      | `LinkedItemsBody`     | _"This skill was used in:"_ + grouped usage list   |
+| `softskill`  | `LinkedItemsBody`     | _"Demonstrated in:"_ + grouped evidence list       |
+| `award`      | `AwardModalBody`      | detail, source project/experience, story link      |
+| `contact`    | `ContactFormBody`     | the enquiry form                                   |
 
 `skill` and `softskill` share one body component with different source arrays.
 
@@ -306,32 +306,31 @@ These apply to every future change. They exist so that decisions don't have to b
 
 ## 9. Build status
 
-**Phase 0 complete** — foundation done, nothing visible changed beyond the splash typeface.
+**Phases 0–2 complete** — foundation, content layer, and the interaction system are all built. The site now renders from real content and most of it is clickable; what's left is backend (Firestore, admin) and the remaining pages (`/about`, `/projects`, `/experience`, `/blog`).
 
-| Area                                          | Status                                                                                   |
-| --------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Splash → navbar transition                    | ✅ Built; skips on repeat visits via `sessionStorage`                                    |
-| Navbar, footer, social rail, custom scrollbar | ✅ Built                                                                                 |
-| Hero section                                  | ✅ Built, content approved                                                               |
-| About card                                    | ✅ Built, content approved                                                               |
-| Home sections 3–10                            | ⚠️ Built as UI, hardcoded content, several inaccurate                                    |
-| Repo structure per §4, incl. `(site)` group   | ✅ Done (Phase 0)                                                                        |
-| Design tokens in `@theme`                     | ✅ Done (Phase 0)                                                                        |
-| `Modal` shell: keyboard + a11y                | ✅ Done (Phase 0) — Escape, focus trap/restore, `role="dialog"`, ref-counted scroll lock |
-| Tooling: Prettier, typecheck/lint scripts, CI | ✅ Done (Phase 0)                                                                        |
-| Skill → project/experience linking            | ❌ Not started — needs the ID model                                                      |
-| Achievements & Awards section                 | ❌ Not started                                                                           |
-| Soft-skill evidence linking                   | ❌ Not started                                                                           |
-| Global modal system                           | ❌ Not started — modal state is still trapped inside cards; the shell is ready for it    |
-| Content repository / typed schema             | ❌ Not started                                                                           |
-| Firestore backend                             | ❌ Not started                                                                           |
-| Admin panel                                   | ❌ Not started                                                                           |
-| `/about`, `/projects`, `/experience`, `/blog` | ❌ `UnderConstruction` placeholders                                                      |
-| 3D corridor                                   | ❌ Not started (Phase 6, optional)                                                       |
-| SEO: OG images, sitemap, structured data      | ❌ Not started                                                                           |
+| Area                                          | Status                                                                                                                           |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Splash → navbar transition                    | ✅ Built; skips on repeat visits via `sessionStorage`                                                                            |
+| Navbar, footer, social rail, custom scrollbar | ✅ Built                                                                                                                          |
+| Hero section                                  | ✅ Built, content approved                                                                                                        |
+| About card                                    | ✅ Built, content approved                                                                                                        |
+| Home sections 3–10                            | ✅ Built, real content from the repository (Phase 1); interactive throughout (Phase 2)                                          |
+| Repo structure per §4, incl. `(site)` group   | ✅ Done (Phase 0)                                                                                                                 |
+| Design tokens in `@theme`                     | ✅ Done (Phase 0)                                                                                                                 |
+| `Modal` shell: keyboard + a11y                | ✅ Done (Phase 0) — Escape, focus trap/restore, `role="dialog"`, ref-counted scroll lock; Back affordance + shared accent-bar/Back/Close header added (Phase 2) |
+| Tooling: Prettier, typecheck/lint scripts, CI | ✅ Done (Phase 0)                                                                                                                 |
+| Content repository / typed schema             | ✅ Done (Phase 1) — `content/types.ts`, `schema.ts`, `selectors.ts`, `LocalRepository`; every section reads through it            |
+| Server Components by default (§D4)            | ✅ Done (Phase 1) — most home sections are Server Components; `"use client"` pushed down to animated/stateful leaves             |
+| Skill → project/experience linking            | ✅ Done (Phase 2) — clickable pills/chips open the skill evidence modal                                                          |
+| Achievements & Awards section                 | ❌ Not clickable yet — no `award` modal (Phase 2 scope was project/experience/skill/contact)                                     |
+| Soft-skill evidence linking                   | ❌ Not clickable yet — no `softskill` modal (same as above)                                                                      |
+| Global modal system                           | ✅ Done (Phase 2) for `project`/`experience`/`skill`/`contact`; `engagement`/`story`/`award`/`softskill` await their own modals   |
+| Firestore backend                             | ❌ Not started (Phase 3)                                                                                                          |
+| Admin panel                                   | ❌ Not started (Phase 4)                                                                                                          |
+| `/about`, `/projects`, `/experience`, `/blog` | ❌ `UnderConstruction` placeholders (Phase 5)                                                                                     |
+| 3D corridor                                   | ❌ Not started (Phase 6, optional)                                                                                                |
+| SEO: OG images, sitemap, structured data      | ❌ Not started (Phase 7)                                                                                                          |
 
-**Known live defects:** ~~placeholder GitHub/demo/email URLs~~ fixed; ~~two Rules-of-Hooks violations~~ fixed; ~~`Inter` font not applied~~ **this one was a misdiagnosis** — body text was always Inter, since `next/font`'s class selector outranked the `body` element selector. Only `SplashScreen` was in Arial, via an inline style, and it no longer is. See `PROJECT_PLAN.md` §1.4 #8.
+**Known live defects:** ~~placeholder GitHub/demo/email URLs~~ fixed; ~~two Rules-of-Hooks violations~~ fixed; ~~`Inter` font not applied~~ **this one was a misdiagnosis** — body text was always Inter, since `next/font`'s class selector outranked the `body` element selector. Only `SplashScreen` was in Arial, via an inline style, and it no longer is. See `PROJECT_PLAN.md` §1.4 #8. ~~`HireMeModal` mounted twice~~ fixed (Phase 2) — both triggers dispatch `{kind:"contact"}` to the one global modal host instead.
 
-Still outstanding: the whole tree renders inside one client boundary (`ClientWrapper`), so §D4's Server-Component split is untouched — that's Phase 1. `HireMeModal` is still mounted twice; Phase 2 removes the duplicate.
-
-Full detail in `PROJECT_PLAN.md` §1.3–1.4.
+Full detail in `PROJECT_PLAN.md` §1.3–1.4 and the phase-by-phase notes in `plan-progress.md`.

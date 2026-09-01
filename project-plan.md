@@ -922,13 +922,13 @@ _Execution notes for this phase are in `plan-progress.md`._
 
 ### Phase 2 — Interaction system _(8–12h)_ · your brief §1.3–1.5 ships
 
-- [ ] `DetailTarget` union + `<DetailModalHost/>` in layout, `?d=` URL sync
-- [ ] `useDetailModal()` hook; `ProjectCard` becomes presentational
-- [ ] Delete the duplicate `HireMeModal` mount; contact becomes `{kind:"contact"}`
-- [ ] **`SkillDetailModal`** — "This skill was used in:", grouped by kind, each row opens its own detail modal
-- [ ] `ProjectDetailModal` / `ExperienceDetailModal` — long description, resolved skill chips (themselves clickable → skill modal), typed link buttons
-- [ ] Modal-to-modal navigation with a back affordance (skill → project → back to skill)
-- [ ] Deep-linked modals render server-side
+- [x] `DetailTarget` union + `<DetailModalHost/>` in layout, `?d=` URL sync
+- [x] `useDetailModal()` hook; `ProjectCard` becomes presentational
+- [x] Delete the duplicate `HireMeModal` mount; contact becomes `{kind:"contact"}`
+- [x] **`SkillDetailModal`** — "This skill was used in:", grouped by kind, each row opens its own detail modal
+- [x] `ProjectDetailModal` / `ExperienceDetailModal` — long description, resolved skill chips (themselves clickable → skill modal), typed link buttons
+- [x] Modal-to-modal navigation with a back affordance (skill → project → back to skill)
+- [x] Deep-linked modals render server-side
 
 **Exit:** click any skill pill → see real usages → click through to a project → back button returns you. Copy the URL, open in a new tab, the same modal opens.
 

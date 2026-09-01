@@ -4,12 +4,7 @@ import ScrollReveal from "@/components/motion/ScrollReveal";
 import { fadeUp } from "@/components/motion/variants";
 import ExperienceCard from "@/components/cards/ExperienceCard";
 import { getRepository } from "@/content/repository";
-import {
-  FEATURED_LIMITS,
-  featured,
-  published,
-  resolveSkills,
-} from "@/content/selectors";
+import { FEATURED_LIMITS, featured, published } from "@/content/selectors";
 
 /**
  * Experience — `featured(experiences, FEATURED_LIMITS.experiences)`.
@@ -17,14 +12,11 @@ import {
  * Fully a Server Component (PROJECT_PLAN.md §D4): the only animation it owns
  * is the heading's `whileInView`, which lives in `ScrollReveal`, and each
  * card is already its own animated client leaf. The section itself just
- * fetches, filters and positions.
+ * fetches, filters and positions — `ExperienceCard` is presentational (§1.3
+ * ⑤) and resolves skills against the modal host's own content bundle.
  */
 export default async function ExperienceSection() {
-  const repo = getRepository();
-  const [allExperiences, skills] = await Promise.all([
-    repo.getExperiences(),
-    repo.getSkills(),
-  ]);
+  const allExperiences = await getRepository().getExperiences();
 
   const experiences = featured(
     published(allExperiences),
@@ -53,11 +45,7 @@ export default async function ExperienceSection() {
 
       <div className="flex flex-col gap-12">
         {experiences.map((exp) => (
-          <ExperienceCard
-            key={exp.id}
-            exp={exp}
-            skills={resolveSkills(exp.skillIds, skills)}
-          />
+          <ExperienceCard key={exp.id} exp={exp} />
         ))}
       </div>
     </section>

@@ -281,3 +281,20 @@ export interface Content {
   phases: LifePhase[];
   site: SiteContent;
 }
+
+/**
+ * What the one global modal layer is currently showing (PROJECT_PLAN.md §3.5).
+ * Serialized into the `?d=` query param — `project:ai-intrusion-detection`,
+ * or bare `contact` — so a modal is shareable and survives a hard refresh.
+ * Never persisted or validated through `schema.ts`: it describes UI state,
+ * not content.
+ */
+export type DetailTarget =
+  | { kind: "project"; id: ID }
+  | { kind: "experience"; id: ID }
+  | { kind: "engagement"; id: ID }
+  | { kind: "story"; id: ID }
+  | { kind: "skill"; id: ID }
+  | { kind: "award"; id: ID }
+  | { kind: "softskill"; id: ID }
+  | { kind: "contact" };

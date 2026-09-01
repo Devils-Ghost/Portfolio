@@ -2,16 +2,15 @@
 
 import { motion, type HTMLMotionProps } from "framer-motion";
 import { staggerItem } from "@/components/motion/variants";
+import { useDetailModal } from "@/components/modals/DetailModalHost";
 import type { Skill } from "@/content/types";
 
-// By extending HTMLMotionProps, this component can now accept ANY Framer Motion
-// or standard button property (whileHover, onClick, etc.).
-interface SkillPillProps extends HTMLMotionProps<"button"> {
+interface SkillPillProps extends Omit<HTMLMotionProps<"button">, "onClick"> {
   /**
-   * The whole entity, not its name. Phase 2 opens `SkillDetailModal` from
-   * here, which needs the id — and a pill that only knew its label would be
-   * back to matching skills by string, which is the thing §1.3 ② exists to
-   * stop.
+   * The whole entity, not its name. Every skill pill on the site — Technical
+   * Arsenal here, the full matrix on `/about` — opens the same evidence
+   * modal, so the click behaviour lives in this component rather than being
+   * wired at each call site.
    */
   skill: Skill;
 }
@@ -27,13 +26,14 @@ export default function SkillPill({
   className,
   ...props
 }: SkillPillProps) {
+  const { open } = useDetailModal();
+
   return (
     <motion.button
       variants={staggerItem}
-      {...props} // Spreads all passed animation and event props onto the button
-      className={`px-6 py-3 bg-white/5 border border-white/10 rounded-full text-gray-300 font-mono text-sm hover:border-blue-500 hover:text-white transition-colors focus:outline-none ${
-        props.onClick ? "cursor-pointer active:scale-95" : "cursor-default"
-      } ${className || ""}`}
+      {...props}
+      onClick={() => open({ kind: "skill", id: skill.id })}
+      className={`px-6 py-3 bg-white/5 border border-white/10 rounded-full text-gray-300 font-mono text-sm hover:border-blue-500 hover:text-white transition-colors focus:outline-none cursor-pointer active:scale-95 ${className || ""}`}
     >
       {skill.name}
     </motion.button>

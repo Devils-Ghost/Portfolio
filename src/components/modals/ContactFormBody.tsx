@@ -1,18 +1,8 @@
 "use client";
 
 import { Send, Mail } from "lucide-react";
-import Modal from "@/components/ui/Modal";
-
-type Props = {
-  isOpen: boolean;
-  setIsOpen: (val: boolean) => void;
-  /**
-   * The "email me directly instead" address, resolved from `site.socials` by
-   * whoever mounts this. Passed in rather than inlined so the address lives
-   * in the content layer only (PROJECT_PLAN.md §D1).
-   */
-  emailHref: string;
-};
+import { socialUrl } from "@/content/selectors";
+import type { ModalBodyProps } from "./registry";
 
 const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
@@ -22,15 +12,19 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
   );
 };
 
-export default function HireMeModal({ isOpen, setIsOpen, emailHref }: Props) {
+/**
+ * `ContactFormBody` — the one `{kind:"contact"}` modal every "Let's Talk" /
+ * "Get in Touch" trigger now dispatches to, replacing the two independent
+ * `HireMeModal` mounts that used to live in `Navbar` and `CallToAction`
+ * (PROJECT_PLAN.md §1.3 ⑤). Content and behaviour are unchanged — this is a
+ * relocation, not a redesign; the real `POST /api/contact` wiring is Phase 3.
+ */
+export default function ContactFormBody({ content }: ModalBodyProps) {
+  const emailHref = socialUrl(content.site.socials, "email") ?? "mailto:";
+
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={() => setIsOpen(false)}
-      className="max-w-lg bg-black p-6"
-      label="Get in touch"
-    >
-      <h3 className="text-xl font-bold text-white tracking-tight mb-4 pr-8">
+    <div>
+      <h3 className="text-xl font-bold text-white tracking-tight mb-4">
         Let&apos;s Connect
       </h3>
 
@@ -86,6 +80,6 @@ export default function HireMeModal({ isOpen, setIsOpen, emailHref }: Props) {
       >
         <Mail size={16} /> Send customized email instead
       </a>
-    </Modal>
+    </div>
   );
 }

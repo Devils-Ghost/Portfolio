@@ -9,15 +9,14 @@ import {
 } from "framer-motion";
 import { useState } from "react";
 import { Menu, X, MessageSquare } from "lucide-react";
-import HireMeModal from "@/components/modals/HireMeModal";
+import { useDetailModal } from "@/components/modals/DetailModalHost";
 import { SocialMark } from "@/components/icons/SocialIcons";
-import { socialUrl } from "@/content/selectors";
 import type { SocialLink } from "@/content/types";
 
 export default function Navbar({ socials }: { socials: SocialLink[] }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const { open } = useDetailModal();
 
   const { scrollY } = useScroll();
 
@@ -89,7 +88,7 @@ export default function Navbar({ socials }: { socials: SocialLink[] }) {
 
             {/* Desktop CTA */}
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => open({ kind: "contact" })}
               className="px-6 py-2 bg-white text-black text-sm font-bold rounded-full hover:bg-gray-200 transition-colors"
             >
               Let&apos;s Talk
@@ -139,19 +138,12 @@ export default function Navbar({ socials }: { socials: SocialLink[] }) {
 
       {/* Mobile Floating CTA Button (Hidden on Desktop) */}
       <button
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => open({ kind: "contact" })}
         className="md:hidden fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-white text-black rounded-full shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:bg-gray-200 active:scale-95 transition-all duration-200"
         aria-label="Let's Talk"
       >
         <MessageSquare size={24} />
       </button>
-
-      {/* Shared Modal Overlay */}
-      <HireMeModal
-        isOpen={isModalOpen}
-        setIsOpen={setIsModalOpen}
-        emailHref={socialUrl(socials, "email") ?? "mailto:"}
-      />
     </>
   );
 }

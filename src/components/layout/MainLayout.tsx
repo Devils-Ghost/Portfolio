@@ -1,15 +1,26 @@
 "use client";
 
-import { IntroProvider, useIntro } from "@/context/IntroContext";
+import { useIntro } from "@/context/IntroContext";
 import SplashScreen from "./SplashScreen";
 import Navbar from "./Navbar";
-import Footer from "./Footer"; // Import your new footer here
+import Footer from "./Footer";
 import CustomScrollbar from "./CustomScrollbar";
 import SocialRail from "./SocialRail";
 import { AnimatePresence, motion } from "framer-motion";
 import type { SocialLink } from "@/content/types";
 
-function MainLayout({
+/**
+ * The public site's chrome — splash, navbar, footer, scrollbar, social rail
+ * — gated on `useIntro()`. A "use client" leaf, not a provider: it consumes
+ * `IntroContext` and `DetailModalContext` (via `Navbar`'s descendants), it
+ * doesn't own either. `(site)/layout.tsx` composes the providers directly
+ * and renders this as their child.
+ *
+ * `socials` arrives as a prop from the Server Component in (site)/layout.tsx
+ * rather than being imported here, so the chrome reads the same
+ * `site.socials` the rest of the page does (PROJECT_PLAN.md §D1).
+ */
+export default function MainLayout({
   children,
   socials,
 }: {
@@ -46,24 +57,5 @@ function MainLayout({
       {/* Fixed social rail: desktop-only, no-ops until the intro is done */}
       {isIntroDone && <SocialRail socials={socials} />}
     </>
-  );
-}
-
-/**
- * `socials` arrives as a prop from the Server Component in (site)/layout.tsx
- * rather than being imported here, so the chrome reads the same
- * `site.socials` the rest of the page does (PROJECT_PLAN.md §D1).
- */
-export default function ClientWrapper({
-  children,
-  socials,
-}: {
-  children: React.ReactNode;
-  socials: SocialLink[];
-}) {
-  return (
-    <IntroProvider>
-      <MainLayout socials={socials}>{children}</MainLayout>
-    </IntroProvider>
   );
 }

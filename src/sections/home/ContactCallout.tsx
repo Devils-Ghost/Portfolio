@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Mail, MapPin } from "lucide-react";
-import HireMeModal from "@/components/modals/HireMeModal";
+import { useDetailModal } from "@/components/modals/DetailModalHost";
 import type { SiteContent } from "@/content/types";
 
 /**
@@ -12,21 +12,18 @@ import type { SiteContent } from "@/content/types";
  * from `site.availability` via the Server Component in CallToAction
  * (PROJECT_PLAN.md §D4).
  *
- * Phase 2 replaces the locally-mounted HireMeModal with a dispatch to the one
- * global modal host — right now this is the second of two copies of the same
- * form in the DOM (§1.3 ⑤).
+ * Dispatches `{kind:"contact"}` to the one global modal host rather than
+ * mounting its own `HireMeModal` — that used to be the second of two
+ * independent copies of the same form in the DOM (§1.3 ⑤); `Navbar` was the
+ * first, and now dispatches the same target.
  */
 export default function ContactCallout({
   availability,
-  emailHref,
 }: {
   availability: SiteContent["availability"];
-  emailHref: string;
 }) {
   const containerRef = useRef<HTMLElement>(null);
-
-  // State to control the modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { open } = useDetailModal();
 
   // Trigger the animation as the user scrolls to the bottom of the page
   const { scrollYProgress } = useScroll({
@@ -83,7 +80,7 @@ export default function ContactCallout({
           and draws the eye immediately.
         */}
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => open({ kind: "contact" })}
           className="relative z-10 inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] active:scale-95 group"
         >
           <Mail size={20} />
@@ -94,12 +91,6 @@ export default function ContactCallout({
           />
         </button>
       </motion.div>
-
-      <HireMeModal
-        isOpen={isModalOpen}
-        setIsOpen={setIsModalOpen}
-        emailHref={emailHref}
-      />
     </section>
   );
 }
