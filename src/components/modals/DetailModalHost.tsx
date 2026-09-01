@@ -23,9 +23,7 @@ interface DetailModalContextValue {
   canGoBack: boolean;
 }
 
-const DetailModalContext = createContext<DetailModalContextValue | null>(
-  null,
-);
+const DetailModalContext = createContext<DetailModalContextValue | null>(null);
 
 /**
  * Opens, closes and navigates the one global modal layer (site-behavior.md
@@ -66,9 +64,7 @@ function parseTarget(raw: string | null): DetailTarget | null {
 }
 
 function serializeTarget(target: DetailTarget): string {
-  return target.kind === "contact"
-    ? "contact"
-    : `${target.kind}:${target.id}`;
+  return target.kind === "contact" ? "contact" : `${target.kind}:${target.id}`;
 }
 
 function sameTarget(a: DetailTarget | null, b: DetailTarget | null): boolean {

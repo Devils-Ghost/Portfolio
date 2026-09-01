@@ -1,7 +1,7 @@
 # Plan Progress — Execution Log
 
 **Companion to:** `project-plan.md`
-**Purpose:** `project-plan.md` stays a clean, forward-looking plan — checkboxes and settled decisions only. This file holds everything that only exists *because* a phase was actually executed: corrections found mid-build, review-pass findings, and places where the plan changed its mind. Read it when you want the story of how a phase went; read the plan when you want to know what's next.
+**Purpose:** `project-plan.md` stays a clean, forward-looking plan — checkboxes and settled decisions only. This file holds everything that only exists _because_ a phase was actually executed: corrections found mid-build, review-pass findings, and places where the plan changed its mind. Read it when you want the story of how a phase went; read the plan when you want to know what's next.
 
 Organized by phase, in the order it was written.
 
@@ -48,13 +48,13 @@ Organized by phase, in the order it was written.
 
 These were originally recorded elsewhere in the plan (§7.1 Home page spec, §10 open decisions) with their revision history inline. That history lives here now; the plan itself states only the resolved outcome.
 
-**Awards section placement (§7.1).** The plan's original recommendation was to place the new Achievements & Awards section between Experience (1.5) and Leadership & Engagement (1.6) — proof landing right after the claim it supports. It was built there first during Phase 1. It lost to a stronger arrangement on the actual page: Certifications, Beyond the Code, and Awards are all *credentials*, and reading them as one group beat reading Awards as an interruption between Experience and Engagement. Result: 1.8 and 1.10 became one section, `CertificationsSection`, with three sibling panels in a grid (Certifications + Beyond the Code side by side, Awards centred beneath) rather than two sections in sequence — because two separate sections each carrying `py-16` put far more visual air between the top pair and the awards panel than between the pair themselves, undermining the "these three belong together" read.
+**Awards section placement (§7.1).** The plan's original recommendation was to place the new Achievements & Awards section between Experience (1.5) and Leadership & Engagement (1.6) — proof landing right after the claim it supports. It was built there first during Phase 1. It lost to a stronger arrangement on the actual page: Certifications, Beyond the Code, and Awards are all _credentials_, and reading them as one group beat reading Awards as an interruption between Experience and Engagement. Result: 1.8 and 1.10 became one section, `CertificationsSection`, with three sibling panels in a grid (Certifications + Beyond the Code side by side, Awards centred beneath) rather than two sections in sequence — because two separate sections each carrying `py-16` put far more visual air between the top pair and the awards panel than between the pair themselves, undermining the "these three belong together" read.
 
 **Awards visual treatment (§7.1, §10 open item).** The plan's original recommendation was a wrapping strip of compact chips. It shipped that way first, then was replaced the same phase: the chip strip looked like scaffolding next to the two polished modules beside it — inconsistent type scale, plain boxes, awards rendering smaller than the heading above them. Replaced with the panel treatment its siblings already used — all three panels now compose from one `components/ui/ModulePanel`, differing only in accent hue (blue / indigo / cyan) and contents, so they stay visually matched as they're edited rather than by anyone remembering to keep them so. This closed what §10 had listed as an open decision deferred to Phase 5 — it was decided in Phase 1 instead, on the reasoning that a live public site shouldn't carry a section that reads as unfinished.
 
 The section also picked up a title it had shipped without — **"Credentials & Caliber"** — which closed a bare gap between Success Stories and the panels below it.
 
-**Hero headline (§10 open item).** Still genuinely open (not resolved in Phase 1) — but the wiring happened this phase: the hero now reads its headline from `site.hero.headlines` instead of a hardcoded string, with both existing variants kept verbatim so wiring changed nothing visible. The open question — whether to use *"I break systems to learn how to build them better"* here, given it's already doing duty in the About card — is unchanged and re-parked for the Phase 5 About-page design pass.
+**Hero headline (§10 open item).** Still genuinely open (not resolved in Phase 1) — but the wiring happened this phase: the hero now reads its headline from `site.hero.headlines` instead of a hardcoded string, with both existing variants kept verbatim so wiring changed nothing visible. The open question — whether to use _"I break systems to learn how to build them better"_ here, given it's already doing duty in the About card — is unchanged and re-parked for the Phase 5 About-page design pass.
 
 ---
 
@@ -115,11 +115,11 @@ name didn't hold up under the question.
    statically generated at build time — otherwise `?d=project:x` only
    resolves after client-side hydration reads the query string, which is
    exactly the outcome the requirement rules out. Phase 3's `cacheComponents`
-   + `"use cache"` + `cacheTag`/`cacheLife` is the real fix (per-content-tag
-   caching instead of an all-or-nothing switch); `force-dynamic` is a
-   correct, honest stand-in until that infrastructure exists, called out
-   explicitly in the layout's own comment so it isn't mistaken for the
-   finished caching story.
+   - `"use cache"` + `cacheTag`/`cacheLife` is the real fix (per-content-tag
+     caching instead of an all-or-nothing switch); `force-dynamic` is a
+     correct, honest stand-in until that infrastructure exists, called out
+     explicitly in the layout's own comment so it isn't mistaken for the
+     finished caching story.
 3. **`DetailModalHost`'s context provider sits outside its own `useSearchParams()`
    read.** The first cut wrapped the whole component — `children` included —
    in one `<Suspense>` boundary reading `?d=`. That crashed `next build`:
@@ -127,7 +127,7 @@ name didn't hold up under the question.
    `children`, and everything under it calls `useDetailModal()` with no
    provider mounted yet. Fixed by splitting `DetailModalHost` in two: the
    outer component owns `open`/`close`/`back`/`canGoBack` (none of which need
-   `?d=` to be *defined*, only `router` and `pathname`) and provides context
+   `?d=` to be _defined_, only `router` and `pathname`) and provides context
    around `children` unconditionally; a small inner `ModalRenderer`, the only
    piece that calls `useSearchParams()`, is Suspense-wrapped separately and
    receives `close`/`back`/`canGoBack` as props rather than re-deriving them.
@@ -140,7 +140,7 @@ name didn't hold up under the question.
    exactly — comparing against a `useState`-held previous value and calling
    setters conditionally in the render body, never inside `useEffect`, and
    never writing a ref during render. One consequence: the `depthRef`
-   back-button counter is *not* forcibly reset to `0` when `target` goes
+   back-button counter is _not_ forcibly reset to `0` when `target` goes
    null by some route other than the host's own `close()`/`back()` (a
    hardware Back that jumps multiple entries at once) — refs can't be
    written during render, and the visible state (`canGoBack`) is still
@@ -207,7 +207,7 @@ name didn't hold up under the question.
 11. **The accent bar moved from each body component into `Modal` itself,
     as a shared header.** Every body (`ProjectModalBody`, `ExperienceModalBody`,
     `LinkedItemsBody`) opened with its own `<div className="w-12 h-1
-    bg-blue-500 rounded-full mb-6" />` — copied three times, and `contact`
+bg-blue-500 rounded-full mb-6" />` — copied three times, and `contact`
     never had one at all. Moved into `Modal`, rendered once, above a
     Back/Close row, both now in normal document flow instead of absolutely
     positioned. This fixed a real bug, not just a duplication smell: Back
@@ -216,7 +216,7 @@ name didn't hold up under the question.
     the blue bar overlapped whenever a modal had one open beneath it. An
     earlier attempt patched this with a conditional `pt-14` on the panel
     when `onBack` was set — sufficient to stop the overlap, but the bar
-    still rendered *under* Back rather than above it, which wasn't what the
+    still rendered _under_ Back rather than above it, which wasn't what the
     chrome was supposed to look like. The header restructure replaced that
     patch outright: `[accent bar] → [Back / Close row] → [body content]`,
     entirely in flow, so nothing before or after it can overlap regardless
@@ -229,25 +229,25 @@ name didn't hold up under the question.
     split in note 3 passed `canGoBack`'s setter down as a prop so
     `ModalRenderer` could react to `?d=` changing. The render-time
     "adjusting state when a prop changes" pattern from note 4 was applied
-    to that setter too, which React explicitly disallows for a *different*
+    to that setter too, which React explicitly disallows for a _different_
     component's state — "Cannot update a component while rendering a
     different component," thrown the first time a click actually exercised
     that path, since neither `tsc` nor `react-hooks/*` catch it (it's a
     runtime invariant, not a static one). Fixed by moving that one call into
     a `useEffect(() => { if (target === null) setCanGoBack(false); },
-    [target, setCanGoBack])` in `ModalRenderer` — calling a parent's setter
+[target, setCanGoBack])` in `ModalRenderer` — calling a parent's setter
     from a child's effect is the standard "notify an ancestor of a change"
     pattern and doesn't trip `set-state-in-effect` (that rule targets a
-    component setting *its own* `useState` value from an effect when it
+    component setting _its own_ `useState` value from an effect when it
     could derive it during render instead; a prop function is invisible to
     it). `renderedTarget`'s update — genuinely local to `ModalRenderer` —
     stayed as the render-time adjustment; only the foreign setter moved.
 13. **`canGoBack` now requires history depth `> 1`, not `> 0`.** Originally
     any `open()` call set `canGoBack` to `true` unconditionally, so the
-    *first* modal opened from a bare page (no `?d=` yet) also showed a Back
+    _first_ modal opened from a bare page (no `?d=` yet) also showed a Back
     button — but there's no previous modal underneath it there, only the
     page, so Back and Close did exactly the same thing. `canGoBack` is
-    reserved for a genuine previous modal now (skill → project → *then*
+    reserved for a genuine previous modal now (skill → project → _then_
     Back appears) — `open()` sets it from the post-increment depth
     (`depthRef.current > 1`), `back()` and the `popstate` handler check the
     same threshold instead of `> 0`.

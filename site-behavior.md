@@ -122,7 +122,7 @@ Desktop only (`hover: hover`, `pointer: fine`, ≥768px). Fixed overlay, invisib
 - Every kind renders at the same width (`max-w-2xl`) — set once in `DetailModalHost`, not chosen per kind. Each `kind` supplies its own **body component** for the interior
 
 | kind         | body                  | contents                                           |
-| ------------ | --------------------- | --------------------------------------------------- |
+| ------------ | --------------------- | -------------------------------------------------- |
 | `project`    | `ProjectModalBody`    | long description, skill chips, video embed, links  |
 | `experience` | `ExperienceModalBody` | long description, achievements, skill chips, links |
 | `engagement` | `EngagementModalBody` | description, links                                 |
@@ -308,28 +308,28 @@ These apply to every future change. They exist so that decisions don't have to b
 
 **Phases 0–2 complete** — foundation, content layer, and the interaction system are all built. The site now renders from real content and most of it is clickable; what's left is backend (Firestore, admin) and the remaining pages (`/about`, `/projects`, `/experience`, `/blog`).
 
-| Area                                          | Status                                                                                                                           |
-| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Splash → navbar transition                    | ✅ Built; skips on repeat visits via `sessionStorage`                                                                            |
-| Navbar, footer, social rail, custom scrollbar | ✅ Built                                                                                                                          |
-| Hero section                                  | ✅ Built, content approved                                                                                                        |
-| About card                                    | ✅ Built, content approved                                                                                                        |
-| Home sections 3–10                            | ✅ Built, real content from the repository (Phase 1); interactive throughout (Phase 2)                                          |
-| Repo structure per §4, incl. `(site)` group   | ✅ Done (Phase 0)                                                                                                                 |
-| Design tokens in `@theme`                     | ✅ Done (Phase 0)                                                                                                                 |
+| Area                                          | Status                                                                                                                                                          |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Splash → navbar transition                    | ✅ Built; skips on repeat visits via `sessionStorage`                                                                                                           |
+| Navbar, footer, social rail, custom scrollbar | ✅ Built                                                                                                                                                        |
+| Hero section                                  | ✅ Built, content approved                                                                                                                                      |
+| About card                                    | ✅ Built, content approved                                                                                                                                      |
+| Home sections 3–10                            | ✅ Built, real content from the repository (Phase 1); interactive throughout (Phase 2)                                                                          |
+| Repo structure per §4, incl. `(site)` group   | ✅ Done (Phase 0)                                                                                                                                               |
+| Design tokens in `@theme`                     | ✅ Done (Phase 0)                                                                                                                                               |
 | `Modal` shell: keyboard + a11y                | ✅ Done (Phase 0) — Escape, focus trap/restore, `role="dialog"`, ref-counted scroll lock; Back affordance + shared accent-bar/Back/Close header added (Phase 2) |
-| Tooling: Prettier, typecheck/lint scripts, CI | ✅ Done (Phase 0)                                                                                                                 |
-| Content repository / typed schema             | ✅ Done (Phase 1) — `content/types.ts`, `schema.ts`, `selectors.ts`, `LocalRepository`; every section reads through it            |
-| Server Components by default (§D4)            | ✅ Done (Phase 1) — most home sections are Server Components; `"use client"` pushed down to animated/stateful leaves             |
-| Skill → project/experience linking            | ✅ Done (Phase 2) — clickable pills/chips open the skill evidence modal                                                          |
-| Achievements & Awards section                 | ❌ Not clickable yet — no `award` modal (Phase 2 scope was project/experience/skill/contact)                                     |
-| Soft-skill evidence linking                   | ❌ Not clickable yet — no `softskill` modal (same as above)                                                                      |
-| Global modal system                           | ✅ Done (Phase 2) for `project`/`experience`/`skill`/`contact`; `engagement`/`story`/`award`/`softskill` await their own modals   |
-| Firestore backend                             | ❌ Not started (Phase 3)                                                                                                          |
-| Admin panel                                   | ❌ Not started (Phase 4)                                                                                                          |
-| `/about`, `/projects`, `/experience`, `/blog` | ❌ `UnderConstruction` placeholders (Phase 5)                                                                                     |
-| 3D corridor                                   | ❌ Not started (Phase 6, optional)                                                                                                |
-| SEO: OG images, sitemap, structured data      | ❌ Not started (Phase 7)                                                                                                          |
+| Tooling: Prettier, typecheck/lint scripts, CI | ✅ Done (Phase 0)                                                                                                                                               |
+| Content repository / typed schema             | ✅ Done (Phase 1) — `content/types.ts`, `schema.ts`, `selectors.ts`, `LocalRepository`; every section reads through it                                          |
+| Server Components by default (§D4)            | ✅ Done (Phase 1) — most home sections are Server Components; `"use client"` pushed down to animated/stateful leaves                                            |
+| Skill → project/experience linking            | ✅ Done (Phase 2) — clickable pills/chips open the skill evidence modal                                                                                         |
+| Achievements & Awards section                 | ❌ Not clickable yet — no `award` modal (Phase 2 scope was project/experience/skill/contact)                                                                    |
+| Soft-skill evidence linking                   | ❌ Not clickable yet — no `softskill` modal (same as above)                                                                                                     |
+| Global modal system                           | ✅ Done (Phase 2) for `project`/`experience`/`skill`/`contact`; `engagement`/`story`/`award`/`softskill` await their own modals                                 |
+| Firestore backend                             | ❌ Not started (Phase 3)                                                                                                                                        |
+| Admin panel                                   | ❌ Not started (Phase 4)                                                                                                                                        |
+| `/about`, `/projects`, `/experience`, `/blog` | ❌ `UnderConstruction` placeholders (Phase 5)                                                                                                                   |
+| 3D corridor                                   | ❌ Not started (Phase 6, optional)                                                                                                                              |
+| SEO: OG images, sitemap, structured data      | ❌ Not started (Phase 7)                                                                                                                                        |
 
 **Known live defects:** ~~placeholder GitHub/demo/email URLs~~ fixed; ~~two Rules-of-Hooks violations~~ fixed; ~~`Inter` font not applied~~ **this one was a misdiagnosis** — body text was always Inter, since `next/font`'s class selector outranked the `body` element selector. Only `SplashScreen` was in Arial, via an inline style, and it no longer is. See `PROJECT_PLAN.md` §1.4 #8. ~~`HireMeModal` mounted twice~~ fixed (Phase 2) — both triggers dispatch `{kind:"contact"}` to the one global modal host instead.
 
