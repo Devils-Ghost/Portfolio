@@ -437,3 +437,12 @@ export function parseCollection<T>(
     `Invalid content in "${label}":\n${z.prettifyError(result.error)}`,
   );
 }
+
+/** `parseCollection` for an array, so the caller passes an item schema, not an array schema. */
+export function parseArray<T>(
+  label: string,
+  schema: z.ZodType<T>,
+  value: unknown,
+): T[] {
+  return parseCollection(label, z.array(schema), value);
+}

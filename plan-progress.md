@@ -251,3 +251,106 @@ bg-blue-500 rounded-full mb-6" />` — copied three times, and `contact`
     Back appears) — `open()` sets it from the post-increment depth
     (`depthRef.current > 1`), `back()` and the `popstate` handler check the
     same threshold instead of `> 0`.
+
+---
+
+## Phase 3 — Backend
+
+### Collaboration mode changed for this phase
+
+Starting Phase 3, execution switched from "AI writes, owner reviews" (how
+Phases 0–2 went) to pair programming with the owner writing the actual
+implementation for new concepts, one small piece at a time, reviewed before
+moving on. Config/console-only steps (Firebase project setup, service
+account generation) stayed a guided walkthrough since there's nothing to
+learn in clicking through a dashboard. This note exists so a future read of
+this log doesn't mistake the smaller, more incremental commits in this phase
+for a change in scope rather than a change in process.
+
+### Deviation from the plan: Google Sign-In instead of email/password
+
+§6 Phase 3's checklist says "Auth (email/password, single user)." Built
+instead with **Google Sign-In** (`dtanna2@asu.edu`), for login convenience.
+
+The tradeoff this creates: Google Sign-In is not single-user by construction
+the way a manually-created email/password account is — by default, any
+Google account can authenticate against a Firebase project. The single-user
+guarantee moves from "there is exactly one account" to an app-level check,
+deferred to Phase 4: after sign-in, compare the authenticated user's
+Firebase UID against an `ADMIN_UID` env var before granting `/admin` access.
+UID was chosen over email as the allowlist key since Firebase issues it once
+and it never changes, unlike email which could have casing/normalization
+edge cases.
+
+That UID doesn't exist yet and can't be captured yet — Firebase only creates
+a user record (and assigns a UID) for a Google-provider account on its first
+successful sign-in through the app, and the console has no "add user"
+equivalent for a federated provider the way it does for email/password. So
+this is a real TODO for whoever opens Phase 4: sign in once as
+`dtanna2@asu.edu` through the admin login page once it exists, read the
+resulting UID from Firebase Console → Authentication → Users, and set it as
+`ADMIN_UID`.
+
+### Stage 1 — Firebase project
+
+Project created, Firestore enabled (production-mode start), Google Sign-In
+configured as the only provider, security rules published exactly as §D3
+specifies — deny-all, no exceptions, since every read and write is meant to
+go through the Admin SDK server-side.
+
+### Stage 2 — Admin SDK wiring
+
+Service account key generated from Firebase project settings, its three
+fields (`FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`)
+extracted into `.env.local` via a one-off script rather than hand-copied,
+specifically so the private key's contents never had to pass through chat —
+only the three variable names were ever printed. `content/firestore/client.ts`
+is a lazy singleton (`getDb()`): `getApps()[0]` reuse avoids a
+"app already exists" crash under Next's dev-server hot reload, and
+`requireEnv()` fails at the boundary with the missing variable's name rather
+than letting `firebase-admin` fail deeper with a cryptic error. Verified live
+against the real (empty) project with a throwaway script before moving on.
+
+### Stage 3 — `FirestoreRepository`
+
+Implements `ContentRepository` (the same interface `LocalRepository`
+satisfies, per §D1) against real Firestore reads, wired into
+`getRepository()`'s existing provider switch behind `CONTENT_SOURCE=firestore`.
+
+Two decisions worth recording:
+
+1. **`SiteContent` is five documents, not one.** §3.6 already specified this
+   (fixed IDs `hero`/`about`/`socials`/`availability`/`seo` under `/site`),
+   confirmed here rather than collapsed to one document, because Phase 4's
+   admin panel will have one form per section — five documents means each
+   form's save only touches its own document, with no read-modify-write
+   contention against the others.
+2. **No instance-level cache in `FirestoreRepository`, unlike
+   `LocalRepository`'s `this.cached`.** `LocalRepository`'s cache is safe
+   only because a TS module can't change under a running process.
+   `FirestoreRepository`'s data changes whenever the admin panel writes to
+   it, and this class has no way to know when that happens — that
+   invalidation hook belongs to Stage 5's Cache Components
+   (`"use cache"` + `cacheTag("content")`, actually revocable on write). A
+   first draft of `getContent()` added the same `this.cached` pattern by
+   analogy with `LocalRepository`; caught in review and removed before
+   commit, on the reasoning above.
+
+`parseCollection`'s array-wrapping helper (previously a private `parse()`
+inside `repository.ts`, used only by `LocalRepository`) moved to
+`schema.ts` as an exported `parseArray()`, so `FirestoreRepository` could
+reuse the exact same boundary-validation pattern instead of duplicating it
+in a second file.
+
+Each of the eleven `ContentRepository` methods reads independently
+(`loadCollection()` per call) rather than all routing through `getContent()`,
+because every home section currently calls its own single-collection getter
+directly (`getSkills()`, `getProjects()`, etc.) — only the modal system's
+cross-linking selectors need the whole joined bundle. Routing everything
+through `getContent()` would have meant every section triggering a full
+eleven-collection fetch to render one collection's worth of content.
+
+Verified end-to-end against the real, still-empty Firestore project:
+`getSkills()` correctly returns `[]`; `getContent()` fails loudly, naming
+every missing field under "site" — §D7's boundary validation catching the
+not-yet-seeded state exactly as designed, ahead of Stage 4's seed script.

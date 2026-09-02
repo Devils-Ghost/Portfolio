@@ -1,3 +1,4 @@
+import { FirestoreRepository } from "./firestore/repository";
 import * as localContent from "./local";
 import {
   awardSchema,
@@ -5,6 +6,7 @@ import {
   engagementSchema,
   experienceSchema,
   lifePhaseSchema,
+  parseArray,
   parseCollection,
   projectSchema,
   publicationSchema,
@@ -27,7 +29,6 @@ import type {
   SoftSkill,
   Story,
 } from "./types";
-import { z } from "zod";
 
 /**
  * The seam between the components and the data source (PROJECT_PLAN.md §D1).
@@ -82,32 +83,36 @@ export class LocalRepository implements ContentRepository {
     // Parsed collection by collection rather than through `contentSchema` in
     // one go, so a failure names the file to open.
     this.cached = {
-      skills: parse("skills", skillSchema, localContent.skills),
-      projects: parse("projects", projectSchema, localContent.projects),
-      experiences: parse(
+      skills: parseArray("skills", skillSchema, localContent.skills),
+      projects: parseArray("projects", projectSchema, localContent.projects),
+      experiences: parseArray(
         "experiences",
         experienceSchema,
         localContent.experiences,
       ),
-      engagements: parse(
+      engagements: parseArray(
         "engagements",
         engagementSchema,
         localContent.engagements,
       ),
-      stories: parse("stories", storySchema, localContent.stories),
-      awards: parse("awards", awardSchema, localContent.awards),
-      softSkills: parse("softSkills", softSkillSchema, localContent.softSkills),
-      certifications: parse(
+      stories: parseArray("stories", storySchema, localContent.stories),
+      awards: parseArray("awards", awardSchema, localContent.awards),
+      softSkills: parseArray(
+        "softSkills",
+        softSkillSchema,
+        localContent.softSkills,
+      ),
+      certifications: parseArray(
         "certifications",
         certificationSchema,
         localContent.certifications,
       ),
-      publications: parse(
+      publications: parseArray(
         "publications",
         publicationSchema,
         localContent.publications,
       ),
-      phases: parse("phases", lifePhaseSchema, localContent.phases),
+      phases: parseArray("phases", lifePhaseSchema, localContent.phases),
       site: parseCollection("site", siteContentSchema, localContent.site),
     };
     return this.cached;
@@ -152,26 +157,25 @@ export class LocalRepository implements ContentRepository {
   }
 }
 
-/** `parseCollection` for an array, so the error names the collection once. */
-function parse<T>(label: string, schema: z.ZodType<T>, value: unknown): T[] {
-  return parseCollection(label, z.array(schema), value);
-}
-
 const localRepository = new LocalRepository();
+// Constructed unconditionally but harmlessly: the class holds no state and
+// nothing in it runs until a method is actually called, so instantiating it
+// even under CONTENT_SOURCE=local costs nothing and needs no credentials.
+const firestoreRepository = new FirestoreRepository();
 
 /**
- * The one place the data source is chosen (§D1). Phase 3 adds a
- * `FirestoreRepository` branch here and nothing else in the app changes.
- *
- * `local` stays the default so a missing env var can never take the public
- * site down — it falls back to data that ships with the deployment.
+ * The one place the data source is chosen (§D1). `local` stays the default
+ * so a missing env var can never take the public site down — it falls back
+ * to data that ships with the deployment (§8.11 — the escape hatch stays
+ * working forever, on purpose).
  */
 export function getRepository(): ContentRepository {
   const source = process.env.CONTENT_SOURCE ?? "local";
+  if (source === "firestore") return firestoreRepository;
   if (source !== "local") {
     throw new Error(
-      `CONTENT_SOURCE="${source}" is not implemented yet — Phase 3 adds the ` +
-        `Firestore repository. Unset it, or set it to "local".`,
+      `CONTENT_SOURCE="${source}" is not a known provider. Use "local" or ` +
+        `"firestore".`,
     );
   }
   return localRepository;
