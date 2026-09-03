@@ -1,4 +1,5 @@
-import { FirestoreRepository } from "./firestore/repository";
+import { cacheLife, cacheTag } from "next/cache";
+import { firestoreRepository } from "./firestore/repository";
 import * as localContent from "./local";
 import {
   awardSchema,
@@ -65,103 +66,152 @@ export interface ContentRepository {
   getContent(): Promise<Content>;
 }
 
+// Parsed once per process, then reused — the local modules can't change
+// under us at runtime, so re-parsing on every read would buy nothing but
+// work. Module-level rather than on an instance so it can be shared by
+// `localRepository`'s cached methods below *and* by anything reading local
+// content outside a running Next.js server (the seed script) — `cacheTag`/
+// `"use cache"` only work inside Next's own runtime, so a plain Node script
+// calling `localRepository.getContent()` directly would throw. Exported so
+// that script can depend on this instead, deliberately bypassing the
+// `ContentRepository` abstraction: the seed script is inherently
+// local-only by definition (it always reads local and writes to Firestore),
+// so there's no provider-agnosticism for it to preserve.
+let localCache: Content | undefined;
+
+export function loadLocalContent(): Content {
+  if (localCache) return localCache;
+
+  // Parsed collection by collection rather than through `contentSchema` in
+  // one go, so a failure names the file to open.
+  localCache = {
+    skills: parseArray("skills", skillSchema, localContent.skills),
+    projects: parseArray("projects", projectSchema, localContent.projects),
+    experiences: parseArray(
+      "experiences",
+      experienceSchema,
+      localContent.experiences,
+    ),
+    engagements: parseArray(
+      "engagements",
+      engagementSchema,
+      localContent.engagements,
+    ),
+    stories: parseArray("stories", storySchema, localContent.stories),
+    awards: parseArray("awards", awardSchema, localContent.awards),
+    softSkills: parseArray(
+      "softSkills",
+      softSkillSchema,
+      localContent.softSkills,
+    ),
+    certifications: parseArray(
+      "certifications",
+      certificationSchema,
+      localContent.certifications,
+    ),
+    publications: parseArray(
+      "publications",
+      publicationSchema,
+      localContent.publications,
+    ),
+    phases: parseArray("phases", lifePhaseSchema, localContent.phases),
+    site: parseCollection("site", siteContentSchema, localContent.site),
+  };
+  return localCache;
+}
+
 /**
  * Reads the typed modules in `content/local`. The Phase 1 source of truth,
  * and the fallback that keeps working after Phase 3 lands — if Firestore is
  * unreachable or misconfigured, flipping `CONTENT_SOURCE` back to `local`
  * restores a fully working site from data committed to the repo.
+ *
+ * A plain object rather than a class: Next rejects "use cache" inline
+ * inside a class instance method outright — "It is not allowed to define
+ * inline 'use cache' annotated class instance methods... use functions,
+ * object method properties, or static class methods instead." Object
+ * method properties are explicitly fine, so each method here just *is* its
+ * own cache boundary directly, with no separate module-level function to
+ * delegate to. `local` still counts as "content that needs caching" here
+ * even though the data itself never changes at runtime — this cache exists
+ * to satisfy Cache Components' structural rule (no uncached data access
+ * outside Suspense in a dynamic route, PROJECT_PLAN.md Phase 3), not
+ * because local reads are slow.
  */
-export class LocalRepository implements ContentRepository {
-  // Validated once per process, then reused. The local modules can't change
-  // under us at runtime, so re-parsing on every section's read would buy
-  // nothing but work — and every home-page section reads on every render.
-  private cached: Content | undefined;
-
-  private load(): Content {
-    if (this.cached) return this.cached;
-
-    // Parsed collection by collection rather than through `contentSchema` in
-    // one go, so a failure names the file to open.
-    this.cached = {
-      skills: parseArray("skills", skillSchema, localContent.skills),
-      projects: parseArray("projects", projectSchema, localContent.projects),
-      experiences: parseArray(
-        "experiences",
-        experienceSchema,
-        localContent.experiences,
-      ),
-      engagements: parseArray(
-        "engagements",
-        engagementSchema,
-        localContent.engagements,
-      ),
-      stories: parseArray("stories", storySchema, localContent.stories),
-      awards: parseArray("awards", awardSchema, localContent.awards),
-      softSkills: parseArray(
-        "softSkills",
-        softSkillSchema,
-        localContent.softSkills,
-      ),
-      certifications: parseArray(
-        "certifications",
-        certificationSchema,
-        localContent.certifications,
-      ),
-      publications: parseArray(
-        "publications",
-        publicationSchema,
-        localContent.publications,
-      ),
-      phases: parseArray("phases", lifePhaseSchema, localContent.phases),
-      site: parseCollection("site", siteContentSchema, localContent.site),
-    };
-    return this.cached;
-  }
-
-  async getContent(): Promise<Content> {
-    return this.load();
-  }
-
-  async getSkills(): Promise<Skill[]> {
-    return this.load().skills;
-  }
-  async getProjects(): Promise<Project[]> {
-    return this.load().projects;
-  }
-  async getExperiences(): Promise<Experience[]> {
-    return this.load().experiences;
-  }
-  async getEngagements(): Promise<Engagement[]> {
-    return this.load().engagements;
-  }
-  async getStories(): Promise<Story[]> {
-    return this.load().stories;
-  }
-  async getAwards(): Promise<Award[]> {
-    return this.load().awards;
-  }
-  async getSoftSkills(): Promise<SoftSkill[]> {
-    return this.load().softSkills;
-  }
-  async getCertifications(): Promise<Certification[]> {
-    return this.load().certifications;
-  }
-  async getPublications(): Promise<Publication[]> {
-    return this.load().publications;
-  }
-  async getLifePhases(): Promise<LifePhase[]> {
-    return this.load().phases;
-  }
-  async getSiteContent(): Promise<SiteContent> {
-    return this.load().site;
-  }
-}
-
-const localRepository = new LocalRepository();
-// Constructed unconditionally but harmlessly: the class holds no state and
-// nothing in it runs until a method is actually called, so instantiating it
-// even under CONTENT_SOURCE=local costs nothing and needs no credentials.
-const firestoreRepository = new FirestoreRepository();
+export const localRepository: ContentRepository = {
+  async getContent() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
+    return loadLocalContent();
+  },
+  async getSkills() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
+    return loadLocalContent().skills;
+  },
+  async getProjects() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
+    return loadLocalContent().projects;
+  },
+  async getExperiences() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
+    return loadLocalContent().experiences;
+  },
+  async getEngagements() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
+    return loadLocalContent().engagements;
+  },
+  async getStories() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
+    return loadLocalContent().stories;
+  },
+  async getAwards() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
+    return loadLocalContent().awards;
+  },
+  async getSoftSkills() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
+    return loadLocalContent().softSkills;
+  },
+  async getCertifications() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
+    return loadLocalContent().certifications;
+  },
+  async getPublications() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
+    return loadLocalContent().publications;
+  },
+  async getLifePhases() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
+    return loadLocalContent().phases;
+  },
+  async getSiteContent() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
+    return loadLocalContent().site;
+  },
+};
 
 /**
  * The one place the data source is chosen (§D1). `local` stays the default

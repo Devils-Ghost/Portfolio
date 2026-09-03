@@ -8,14 +8,16 @@
  *
  *   npx tsx --env-file=.env.local scripts/seed-firestore.ts
  */
-import { LocalRepository } from "../src/content/repository";
+import { loadLocalContent } from "../src/content/repository";
 import { getDb } from "../src/content/firestore/client";
-import type { Content } from "../src/content/types";
 
 async function main() {
-  // Already Zod-validated — LocalRepository.getContent() parses through the
-  // same schemas FirestoreRepository reads back through (§D7).
-  const content: Content = await new LocalRepository().getContent();
+  // Already Zod-validated — loadLocalContent() parses through the same
+  // schemas firestoreRepository reads back through (§D7). Reads the raw
+  // loader directly rather than going through `localRepository.getContent()`:
+  // that method's `"use cache"`/`cacheTag()` calls only work inside a
+  // running Next.js server, and this is a plain standalone script.
+  const content = loadLocalContent();
   const db = getDb();
 
   // TODO(you): build one WriteBatch here.

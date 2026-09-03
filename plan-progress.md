@@ -405,3 +405,155 @@ Verified end-to-end: seeded all 124 documents, read them back through
 matches `content/local` exactly, confirmed `socials` round-trips correctly
 through the wrap/unwrap, and confirmed a second run leaves every count
 unchanged.
+
+### Stage 5 — Cache Components
+
+The largest stage in this phase, and the one with the least predictable
+framework behavior — Next 16's Cache Components is genuinely new, and
+several of its rules surfaced only by building and reading the actual
+errors, not from anything documented up front.
+
+**`cacheComponents: true` in `next.config.ts`.** Flipping it immediately
+broke the build in a way worth recording as a sequence, because each fix
+revealed the next issue:
+
+1. `dynamic = "force-dynamic"` on `(site)/layout.tsx` (added Phase 2, for
+   this exact deep-linked-modal requirement) is flatly rejected — "Route
+   segment config 'dynamic' is not compatible with `cacheComponents`."
+   Removed; Cache Components replaces the all-or-nothing switch.
+2. With it removed, the build succeeded — every route showed `○ Static` —
+   but curling a deep link (`?d=project:x`) against the built output showed
+   **no `role="dialog"` in the raw HTML**, only the full content bundle
+   serialized for hydration (which is present regardless of modal state, so
+   grepping for project text alone is not a valid test — `role="dialog"`,
+   the actual DOM the modal renders, is). The static shell was built once,
+   before any request's query string existed, so a deep link only ever
+   resolved after client hydration read the real URL — silently regressing
+   Phase 2's exit criterion.
+3. Reached for `connection()` (from `next/server`) at the top of
+   `SiteLayout` to force per-request rendering back, Cache-Components-style.
+   Broke the build again, worse: "Uncached data was accessed outside of
+   `<Suspense>`" on every single route. `connection()` is a dynamic API like
+   any other — calling it with no `<Suspense>` boundary of its own blocks
+   *everything* underneath it, which at the top of a layout wrapping every
+   page is the entire site. A stricter version of the problem it was
+   supposed to fix.
+4. Separately (surfaced by the same error, before `connection()` was even
+   added back a second time): **`"use cache"` cannot be written inline
+   inside a class instance method at all.** Next rejects it outright — "It
+   is not allowed to define inline 'use cache' annotated class instance
+   methods... use functions, object method properties, or static class
+   methods instead." Both `LocalRepository` and `FirestoreRepository`
+   needed restructuring: the actual cache boundary moved into plain,
+   zero-argument module-level functions (`cachedSkills()`,
+   `cachedLocalProjects()`, etc. — one per collection, per repository, 22
+   in total), with every class method reduced to a one-line delegate. Two
+   reasons zero-argument, closure-based functions rather than passing the
+   schema or the repository instance as a parameter: a `z.ZodType` isn't a
+   sensible cache-key argument, and neither is a class instance (`this`) —
+   `"use cache"` functions need serializable inputs. `LocalRepository`'s
+   `this.cached` instance field was replaced by a module-level
+   `loadLocalContent()` with a module-level memo variable for the same
+   reason — the cached wrapper functions needed something to close over
+   that isn't `this`.
+5. Applies to **both** repositories, not just Firestore's, and this was the
+   real surprise: Cache Components' "uncached data outside Suspense" check
+   is structural, not aware of what a function actually does at runtime. It
+   flagged `LocalRepository.getSiteContent()` — synchronous, in-memory,
+   genuinely free — exactly the same as it would flag a real network call,
+   because from the build's static analysis, an async call without
+   `"use cache"` looks the same regardless of provider. `cacheLife("max")`
+   on local data isn't a compromise, though — the data really is immutable
+   at runtime, so caching it "forever" is simply true, and it's what makes
+   every `getRepository().getXxx()` call site work under Cache Components
+   without every page needing its own opt-out.
+
+**The deep-link fix that actually works: a dynamic API needs a Suspense
+boundary it shares with the thing that depends on it, not just a Suspense
+boundary somewhere.** `DetailModalHost` already had one (Phase 2, wrapping
+`ModalRenderer`, which reads `?d=` via `useSearchParams()`). The fix was a
+new `ModalDynamicGate` — a tiny Server Component in `(site)/layout.tsx`
+whose only job is `await connection()` — passed into `DetailModalHost` as a
+`dynamicGate` prop and rendered as `ModalRenderer`'s *sibling*, inside that
+same existing boundary. `children` (the actual page — hero, sections,
+footer) never sits inside it, so the cached shell renders immediately;
+only the modal-resolving boundary is genuinely per-request. Two rejected
+alternatives, in order: `connection()` alone at the layout's top (blocks
+everything, per point 3 above); `connection()` + a `<Suspense>` wrapping
+*all* of `children` (works, but forces the entire page dynamic on every
+request — no better than the old `force-dynamic` in effect, just spelled
+differently, and loses the point of caching the shell separately from the
+one genuinely dynamic part).
+
+**A verification gap, disclosed rather than papered over.** The build
+correctly marks every `(site)` route `◐ Partial Prerender` ("prerendered as
+static HTML with dynamic server-streamed content") with the `ModalDynamicGate`
+fix in place — confirming Next's own analysis agrees a real dynamic hole
+exists. But curling a deep link against `next start` (self-hosted
+production server, run locally for this check) returned **byte-identical
+output** regardless of `?d=`, in both this fix and the coarser
+whole-children-Suspense alternative — no `role="dialog"` in either. A
+control test ruled out a logic bug: the identical deep link against `next
+dev` (fully dynamic, no prerendering involved) correctly showed 0 matches
+without `?d=` and 1 with it, and the response sizes genuinely differed.
+So the modal-resolution code itself is confirmed correct; what's unverified
+is specifically whether `next start`'s self-hosted server performs Partial
+Prerendering's per-request "resume" the way the build output claims it
+will. This project deploys to Vercel, not self-hosted `next start` — Vercel
+is the reference implementation for this exact feature — so the working
+theory is that this is a gap in local verification, not in what's built.
+**Flagged as a real to-do:** the first thing to check once this branch has
+a live Vercel preview deployment is the actual behavior of a shared
+`?d=project:x` link — curl it, or just open it in an incognito tab and view
+source before any JS runs. If it's still not resolving server-side there,
+this needs a second pass with Vercel's real infrastructure in front of it,
+which local testing cannot substitute for.
+
+**Two invalidation helpers added, still with no caller.** `content/cache.ts`
+exports `invalidateContentNow()` (`updateTag("content")`, for Phase 4's
+admin Server Actions — read-your-own-writes) and `invalidateContentSoon()`
+(`revalidateTag("content", "max")`, for a future webhook Route Handler —
+stale-while-revalidate). Neither is called from anywhere yet; wired now so
+the tag name and which-function-for-which-context question is decided once
+rather than re-derived at each future call site.
+
+Verified: full production build succeeds under both `CONTENT_SOURCE=local`
+and `CONTENT_SOURCE=firestore` — the latter genuinely hits real Firestore
+at build time to prerender each route's static shell, not just at request
+time. Lint and format clean throughout.
+
+### Stage 5 follow-up — collapsing the class/cached-function double layer
+
+Raised in review: both repositories had, for every collection, a
+module-level `"use cache"`-annotated function *and* a class method that
+did nothing but call it — real duplication, not just verbosity, since the
+double layer existed only to route around a restriction (class instance
+methods can't carry `"use cache"` inline) rather than for any reason
+intrinsic to the data.
+
+**Fix: both repositories became plain objects implementing
+`ContentRepository`, not classes.** Next's own error message names three
+legal places for `"use cache"` — "functions, object method properties, or
+static class methods" — and object method properties collapse the two
+layers into one: each method *is* its own cache boundary directly, with
+nothing to delegate to. `export class LocalRepository { getSkills() {
+return cachedLocalSkills(); } }` plus a separate `cachedLocalSkills()`
+became one `getSkills() { "use cache"; ...; return
+loadLocalContent().skills; }` on a plain exported `localRepository` object.
+Same shape for `firestoreRepository`. Halves the function count in both
+files with no behavior change — confirmed by rebuilding under both
+`CONTENT_SOURCE` values and re-checking the deep-link test, both unchanged.
+
+**One real regression this surfaced, fixed in the same pass:**
+`scripts/seed-firestore.ts` called `LocalRepository.getContent()` (soon
+`localRepository.getContent()`), and `cacheTag()`/`"use cache"` throw
+outside a running Next.js server — "`cacheTag()` is only available with the
+`cacheComponents` config." The seed script is a standalone `tsx` process,
+not something Next's runtime ever touches, so it had been quietly relying
+on `getContent()` being uncached; Stage 5's caching broke that assumption
+the moment it landed. Fixed by exporting the underlying `loadLocalContent()`
+loader directly and having the seed script call that instead of going
+through `ContentRepository` at all — arguably the more honest dependency
+anyway, since the seed script is inherently local-only (always reads local,
+always writes to Firestore) and was never actually using the interface's
+provider-agnosticism.

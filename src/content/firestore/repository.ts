@@ -1,3 +1,4 @@
+import { cacheLife, cacheTag } from "next/cache";
 import { getDb } from "./client";
 import type { ContentRepository } from "../repository";
 import {
@@ -15,20 +16,6 @@ import {
   softSkillSchema,
   storySchema,
 } from "../schema";
-import type {
-  Award,
-  Certification,
-  Content,
-  Engagement,
-  Experience,
-  LifePhase,
-  Project,
-  Publication,
-  SiteContent,
-  Skill,
-  SoftSkill,
-  Story,
-} from "../types";
 import type { z } from "zod";
 
 /**
@@ -86,58 +73,100 @@ async function loadSiteContent(): Promise<z.infer<typeof siteContentSchema>> {
  * Reads from Firestore through the Admin SDK (§D3 — the client SDK never
  * enters the bundle; deny-all rules only govern client access).
  *
- * Deliberately no instance-level cache here, unlike LocalRepository's
- * `this.cached`: that one is safe only because a TS module can't change
- * under a running process. Firestore data changes whenever the admin panel
- * saves something, so caching belongs to Phase 3's Cache Components layer
- * (`"use cache"` + `cacheTag("content")`), which can actually be invalidated
- * on write. Baking in a manual cache here would just fight that system.
+ * A plain object rather than a class — Next rejects "use cache" inline
+ * inside a class instance method outright (see `content/repository.ts` for
+ * the full explanation of why); object method properties are explicitly
+ * fine, so each method here is directly its own cache boundary, with
+ * `loadCollection`/`loadSiteContent` staying as uncached primitives
+ * underneath.
  */
-export class FirestoreRepository implements ContentRepository {
-  async getSkills(): Promise<Skill[]> {
+export const firestoreRepository: ContentRepository = {
+  async getSkills() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
     return loadCollection("skills", skillSchema);
-  }
-  async getProjects(): Promise<Project[]> {
+  },
+  async getProjects() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
     return loadCollection("projects", projectSchema);
-  }
-  async getExperiences(): Promise<Experience[]> {
+  },
+  async getExperiences() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
     return loadCollection("experiences", experienceSchema);
-  }
-  async getEngagements(): Promise<Engagement[]> {
+  },
+  async getEngagements() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
     return loadCollection("engagements", engagementSchema);
-  }
-  async getStories(): Promise<Story[]> {
+  },
+  async getStories() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
     return loadCollection("stories", storySchema);
-  }
-  async getAwards(): Promise<Award[]> {
+  },
+  async getAwards() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
     return loadCollection("awards", awardSchema);
-  }
-  async getSoftSkills(): Promise<SoftSkill[]> {
+  },
+  async getSoftSkills() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
     return loadCollection("softSkills", softSkillSchema);
-  }
-  async getCertifications(): Promise<Certification[]> {
+  },
+  async getCertifications() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
     return loadCollection("certifications", certificationSchema);
-  }
-  async getPublications(): Promise<Publication[]> {
+  },
+  async getPublications() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
     return loadCollection("publications", publicationSchema);
-  }
-  async getLifePhases(): Promise<LifePhase[]> {
+  },
+  async getLifePhases() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
     return loadCollection("phases", lifePhaseSchema);
-  }
-  async getSiteContent(): Promise<SiteContent> {
+  },
+  async getSiteContent() {
+    "use cache";
+    cacheTag("content");
+    cacheLife("max");
     return loadSiteContent();
-  }
+  },
 
-  /**
-   * TODO(you): implement this.
-   * Every method above is independent and already exists on `this` — call
-   * all eleven through `Promise.all` (same idea as `loadSiteContent`'s five
-   * reads, just one level up) and assemble the results into a `Content`
-   * object with keys: skills, projects, experiences, engagements, stories,
-   * awards, softSkills, certifications, publications, phases, site.
-   */
-  async getContent(): Promise<Content> {
-    const scanpshots = await Promise.all([
+  // Composes already-cached properties above, so this itself needs no
+  // caching of its own — every read inside it is independently cached and
+  // tagged. `this.getSkills()` etc. relies on being called as
+  // `firestoreRepository.getContent()` (always true here, via
+  // `getRepository()`) rather than destructured and called standalone.
+  async getContent() {
+    const [
+      skills,
+      projects,
+      experiences,
+      engagements,
+      stories,
+      awards,
+      softSkills,
+      certifications,
+      publications,
+      phases,
+      site,
+    ] = await Promise.all([
       this.getSkills(),
       this.getProjects(),
       this.getExperiences(),
@@ -152,17 +181,17 @@ export class FirestoreRepository implements ContentRepository {
     ]);
 
     return {
-      skills: scanpshots[0],
-      projects: scanpshots[1],
-      experiences: scanpshots[2],
-      engagements: scanpshots[3],
-      stories: scanpshots[4],
-      awards: scanpshots[5],
-      softSkills: scanpshots[6],
-      certifications: scanpshots[7],
-      publications: scanpshots[8],
-      phases: scanpshots[9],
-      site: scanpshots[10],
+      skills,
+      projects,
+      experiences,
+      engagements,
+      stories,
+      awards,
+      softSkills,
+      certifications,
+      publications,
+      phases,
+      site,
     };
-  }
-}
+  },
+};
