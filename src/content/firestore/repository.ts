@@ -71,7 +71,10 @@ async function loadSiteContent(): Promise<z.infer<typeof siteContentSchema>> {
   const data = {
     hero: snapshots[0].data(),
     about: snapshots[1].data(),
-    socials: snapshots[2].data(),
+    // Stored wrapped as `{ items: [...] }` — a Firestore document's root
+    // must be a map, and `socials` is the one SiteContent key that's an
+    // array (see the seed script's matching comment on the write side).
+    socials: snapshots[2].data()?.items,
     availability: snapshots[3].data(),
     seo: snapshots[4].data(),
   };

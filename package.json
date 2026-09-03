@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check:content": "tsx scripts/check-content.ts"
+    "check:content": "tsx scripts/check-content.ts",
+    "seed:firestore": "tsx --env-file=.env.local scripts/seed-firestore.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

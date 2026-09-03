@@ -354,3 +354,54 @@ Verified end-to-end against the real, still-empty Firestore project:
 `getSkills()` correctly returns `[]`; `getContent()` fails loudly, naming
 every missing field under "site" — §D7's boundary validation catching the
 not-yet-seeded state exactly as designed, ahead of Stage 4's seed script.
+
+### Stage 4 — Seed script
+
+`scripts/seed-firestore.ts` pushes `content/local/*` into Firestore via
+`LocalRepository.getContent()` (already Zod-validated, so the seed can't
+push malformed data even if a local file were wrong) and one `WriteBatch`
+covering all 124 documents — comfortably under Firestore's 500-writes-per-
+batch limit, so no chunking needed. Idempotent by construction: every write
+is `batch.set(collection.doc(item.id), item)` against the stable,
+human-readable IDs from §3.3.5, so re-running produces the same end state
+rather than duplicates — verified directly by running it twice and
+confirming identical counts back through `FirestoreRepository`. Upsert
+only, deliberately: it will never delete a Firestore doc whose local
+counterpart was removed, since ongoing content lifecycle is Phase 4's job,
+not a one-time bootstrap script's.
+
+Two real bugs surfaced and were fixed before anything wrong reached
+Firestore:
+
+1. **The batch was built but never used.** A first draft created
+   `const batch = db.batch()` and correctly called `batch.commit()` at the
+   end, but every individual write called `.set()` directly on the
+   `DocumentReference` (`db.collection(x).doc(id).set(item)`) instead of
+   `batch.set(ref, item)` — a different method that fires an independent,
+   unawaited write immediately rather than queuing onto the batch. This
+   would have logged "Seed complete." before (or regardless of whether) the
+   124 real writes had actually finished, thrown an unhandled promise
+   rejection on any individual failure, and lost the atomicity the batch
+   existed for. Caught in review before running it; fixed by routing every
+   write through `batch.set()`.
+2. **`content.site.socials` is an array, and Firestore document data must
+   be a map at its root.** `socials: SocialLink[]` is the one `SiteContent`
+   key that isn't an object, so writing it directly as a document threw
+   `Input is not a plain JavaScript object` — caught by Firestore's
+   client-side validation before any network call, so nothing partial ever
+   landed. A first fix attempt misread the problem as "give each social
+   link its own document," keyed by `social.id` — but `SocialLink` has no
+   `id` field, so `.doc(undefined)` would have silently auto-generated a
+   random ID per run, breaking idempotency for exactly the reason IDs were
+   supposed to prevent it, and splitting one logical list across N
+   documents that `loadSiteContent()` has no way to reassemble. Fixed
+   instead by wrapping the array once (`{ items: content.site.socials }`)
+   on the write side, with a matching unwrap (`snapshots[2].data()?.items`)
+   added to Stage 3's `loadSiteContent()` — the two sides have to agree on
+   the wire shape, so the fix touched both files.
+
+Verified end-to-end: seeded all 124 documents, read them back through
+`FirestoreRepository.getContent()` and confirmed every collection's count
+matches `content/local` exactly, confirmed `socials` round-trips correctly
+through the wrap/unwrap, and confirmed a second run leaves every count
+unchanged.
