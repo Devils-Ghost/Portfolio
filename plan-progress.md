@@ -509,6 +509,16 @@ source before any JS runs. If it's still not resolving server-side there,
 this needs a second pass with Vercel's real infrastructure in front of it,
 which local testing cannot substitute for.
 
+**Resolved in Stage 6.** Checked against the real Vercel preview
+deployment (`CONTENT_SOURCE=firestore`, real Firebase env vars set in
+Vercel project settings): View Source on
+`/?d=project:prj_decompiler_eval` shows `<div role="dialog" aria-modal="true"
+aria-label="Decompiler Evaluation for LLM Vulnerability Discovery" ...>` in
+the raw HTML, before any client JS runs. The working theory holds — this
+was a `next start` self-hosted local-verification limitation, not a defect
+in `ModalDynamicGate`/the Suspense-sharing fix. No code changes needed;
+this closes the one open item from Stage 5.
+
 **Two invalidation helpers added, still with no caller.** `content/cache.ts`
 exports `invalidateContentNow()` (`updateTag("content")`, for Phase 4's
 admin Server Actions — read-your-own-writes) and `invalidateContentSoon()`
@@ -557,3 +567,26 @@ through `ContentRepository` at all — arguably the more honest dependency
 anyway, since the seed script is inherently local-only (always reads local,
 always writes to Firestore) and was never actually using the interface's
 provider-agnosticism.
+
+### Stage 6 — Flip the provider
+
+`CONTENT_SOURCE=firestore` plus the three `FIREBASE_*` credentials added to
+Vercel's project environment variables (Production, Preview, and
+Development all enabled — Preview deliberately included, since that's what
+made the Stage 5 deep-link re-verification below possible).
+
+**Local escape hatch confirmed:** built with `CONTENT_SOURCE` completely
+unset — no override, nothing in `.env.local` — and it defaulted cleanly to
+`local` per `getRepository()`'s fallback, exactly as §8.11 requires.
+
+**The Stage 5 open item closed here, against the real Vercel preview**
+(`https://dhaval-tanna-git-phase-3-backend-devils-ghost.vercel.app`, behind
+Vercel's default Deployment Protection — reached via the owner's own
+browser session, not `curl`, since a bypass secret wasn't needed for a
+one-time manual check). View Source on `/?d=project:prj_decompiler_eval`
+confirmed `role="dialog"` in the raw server response, and the page's
+content itself (a real seeded experience record — "Volunteer Research
+Assistant — Decompiler Evaluation for LLM Vulnerability Discovery," Noelo
+Lab, UGA) confirmed the site is genuinely reading from Firestore, not
+silently still on `local`. Full detail in the Stage 5 section above, where
+the open item originated.
