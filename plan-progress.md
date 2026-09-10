@@ -435,7 +435,7 @@ revealed the next issue:
    Broke the build again, worse: "Uncached data was accessed outside of
    `<Suspense>`" on every single route. `connection()` is a dynamic API like
    any other — calling it with no `<Suspense>` boundary of its own blocks
-   *everything* underneath it, which at the top of a layout wrapping every
+   _everything_ underneath it, which at the top of a layout wrapping every
    page is the entire site. A stricter version of the problem it was
    supposed to fix.
 4. Separately (surfaced by the same error, before `connection()` was even
@@ -474,13 +474,13 @@ boundary somewhere.** `DetailModalHost` already had one (Phase 2, wrapping
 `ModalRenderer`, which reads `?d=` via `useSearchParams()`). The fix was a
 new `ModalDynamicGate` — a tiny Server Component in `(site)/layout.tsx`
 whose only job is `await connection()` — passed into `DetailModalHost` as a
-`dynamicGate` prop and rendered as `ModalRenderer`'s *sibling*, inside that
+`dynamicGate` prop and rendered as `ModalRenderer`'s _sibling_, inside that
 same existing boundary. `children` (the actual page — hero, sections,
 footer) never sits inside it, so the cached shell renders immediately;
 only the modal-resolving boundary is genuinely per-request. Two rejected
 alternatives, in order: `connection()` alone at the layout's top (blocks
 everything, per point 3 above); `connection()` + a `<Suspense>` wrapping
-*all* of `children` (works, but forces the entire page dynamic on every
+_all_ of `children` (works, but forces the entire page dynamic on every
 request — no better than the old `force-dynamic` in effect, just spelled
 differently, and loses the point of caching the shell separately from the
 one genuinely dynamic part).
@@ -535,7 +535,7 @@ time. Lint and format clean throughout.
 ### Stage 5 follow-up — collapsing the class/cached-function double layer
 
 Raised in review: both repositories had, for every collection, a
-module-level `"use cache"`-annotated function *and* a class method that
+module-level `"use cache"`-annotated function _and_ a class method that
 did nothing but call it — real duplication, not just verbosity, since the
 double layer existed only to route around a restriction (class instance
 methods can't carry `"use cache"` inline) rather than for any reason
@@ -545,7 +545,7 @@ intrinsic to the data.
 `ContentRepository`, not classes.** Next's own error message names three
 legal places for `"use cache"` — "functions, object method properties, or
 static class methods" — and object method properties collapse the two
-layers into one: each method *is* its own cache boundary directly, with
+layers into one: each method _is_ its own cache boundary directly, with
 nothing to delegate to. `export class LocalRepository { getSkills() {
 return cachedLocalSkills(); } }` plus a separate `cachedLocalSkills()`
 became one `getSkills() { "use cache"; ...; return
@@ -622,7 +622,7 @@ portfolio's contact form backed primarily by Turnstile, not by the rate
 limit.
 
 `sendContactNotification` sets `replyTo` only when `contact` both looks
-like a real email *and* isn't a `no-reply@`/`noreply@` address — a
+like a real email _and_ isn't a `no-reply@`/`noreply@` address — a
 syntactically valid but unusable reply target, since nothing downstream
 double-checked that boundary case in the first draft.
 
@@ -644,7 +644,7 @@ locally without solving a real challenge every test.
 **Two DNS findings, chased down while testing delivery, not code bugs:**
 Resend showing a test email "Delivered" while it landed in Gmail's spam
 folder isn't a contradiction — "Delivered" means the receiving server
-*accepted* the message; spam-folder placement is a separate decision made
+_accepted_ the message; spam-folder placement is a separate decision made
 after acceptance. DKIM was confirmed resolving correctly; DMARC was
 confirmed **missing** (checked both `_dmarc.eternalglitch.com` and
 `_dmarc.send.eternalglitch.com` — DMARC's lookup location is standardized,
@@ -690,7 +690,7 @@ by reading the code:**
    success. Renaming the field plus `lpignore`/`data-1p-ignore` attributes
    was a first attempt at hardening it; a follow-up submit-timing check
    (reject anything faster than ~1.5s, later loosened to ~800ms) was added
-   as a second, field-name-independent signal — but *that* then produced
+   as a second, field-name-independent signal — but _that_ then produced
    its own false positive against a visitor using browser field-history
    suggestions (a single-field autocomplete dropdown, filling one field
    near-instantly). Decided to drop both entirely rather than keep tuning
