@@ -17,15 +17,14 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  // Honeypot: a hidden form field (name: "website") real visitors never see
-  // or fill in, but bots that auto-fill every input often do. Checked
-  // before real validation/rate-limiting/Turnstile — there's no reason to
-  // spend any of that work on traffic we're about to discard anyway.
-  // Responds as a normal success, so a bot gets no signal it was caught.
-  if (typeof body.website === "string" && body.website.length > 0) {
-    return NextResponse.json({ ok: true });
-  }
-
+  // No honeypot, no submit-timing check: both were tried and dropped after
+  // producing real false positives against genuine visitors (browser
+  // extension autofill, then field-history suggestions — see
+  // plan-progress.md). What's left: Turnstile actually verifies a human
+  // solved a real challenge, and the rate limiter below caps abuse volume
+  // even in the case that's somehow bypassed. Bot crawlers hitting this
+  // form specifically aren't an expected threat for a personal portfolio
+  // at this scale — revisit if that assumption turns out wrong.
   const result = contactFormSchema.safeParse(body);
   if (!result.success) {
     return NextResponse.json(
@@ -55,19 +54,29 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
+  // Firestore's `.set()` rejects `undefined` field values outright (`null`
+  // is fine, `undefined` is not) — `company`/`role` are optional in the
+  // schema, and `user-agent`/`referer` aren't guaranteed headers, so all
+  // four are conditionally spread in rather than assigned directly, which
+  // would otherwise write a literal `undefined` whenever they're absent.
+  const userAgent = request.headers.get("user-agent");
+  const referer = request.headers.get("referer");
+
   const submission: ContactSubmission = {
     id: randomUUID(),
     name: result.data.name,
-    company: result.data.company,
-    role: result.data.role,
     contact: result.data.contact,
     message: result.data.message,
     createdAt: new Date().toISOString(),
     status: "new",
-    meta: {
-      userAgent: request.headers.get("user-agent") ?? undefined,
-      referer: request.headers.get("referer") ?? undefined,
-    },
+    ...(result.data.company ? { company: result.data.company } : {}),
+    ...(result.data.role ? { role: result.data.role } : {}),
+    ...((userAgent || referer) && {
+      meta: {
+        ...(userAgent ? { userAgent } : {}),
+        ...(referer ? { referer } : {}),
+      },
+    }),
   };
 
   await getDb().collection("contact").doc(submission.id).set(submission);

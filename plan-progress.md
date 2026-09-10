@@ -632,3 +632,79 @@ in-memory rate limiter unit-tested directly (3 allowed, 4th blocked,
 independent per IP) since exercising it through the real route needs an
 actual browser-solved Turnstile token. Firestore `rateLimits` collection
 confirmed empty after the switch — no docs get written there anymore.
+
+### Stage 9 — wiring the real contact form
+
+Real `name` attributes, `FormData` → JSON on submit, `idle/loading/success/error`
+status states, `alert()` gone. Cloudflare's official always-pass test key
+pair (`1x0000...AA` site/secret) swapped into `.env.local` only — never
+Vercel — so the widget and server-side verification could be exercised
+locally without solving a real challenge every test.
+
+**Two DNS findings, chased down while testing delivery, not code bugs:**
+Resend showing a test email "Delivered" while it landed in Gmail's spam
+folder isn't a contradiction — "Delivered" means the receiving server
+*accepted* the message; spam-folder placement is a separate decision made
+after acceptance. DKIM was confirmed resolving correctly; DMARC was
+confirmed **missing** (checked both `_dmarc.eternalglitch.com` and
+`_dmarc.send.eternalglitch.com` — DMARC's lookup location is standardized,
+unlike SPF/DKIM's provider-specific naming, so this finding didn't depend
+on guessing). Added `v=DMARC1; p=none; rua=mailto:dtanna2@asu.edu` at
+`_dmarc.send.eternalglitch.com`. Noted plainly: a domain's first-ever sent
+email landing in spam once is common regardless, since spam filtering
+weighs sending history a brand-new subdomain doesn't have yet.
+
+**Four real bugs found only by actually clicking through the feature, not
+by reading the code:**
+
+1. **Firestore rejects `undefined` field values outright** (`null` is
+   fine). `ContactSubmission`'s optional fields (`company`, `role`,
+   `meta.userAgent`/`referer`) were being assigned `undefined` directly
+   when absent instead of omitted, crashing the `.set()` call with a 500 —
+   never hit in `curl` testing during Stage 8 because every test there
+   happened to fill every field. Fixed with conditional spreads instead of
+   direct assignment.
+2. **The Resend SDK never throws on API-level errors** — checked its
+   actual type definitions rather than assume: `emails.send()` resolves to
+   `{ data, error }` either way, only throwing for things like a network
+   failure. The first draft discarded the return value entirely, so a
+   rejected send (bad `from`, key/domain mismatch, whatever) would report
+   success to the visitor while silently never sending anything. Fixed by
+   checking `error` and throwing if present.
+3. **The Turnstile widget only rendered on the very first modal open.**
+   Rendered declaratively (a `.cf-turnstile` div + Cloudflare's script
+   auto-scanning the page once on load); since the modal unmounts on close
+   and a fresh container gets created each reopen, nothing ever re-scanned
+   for it after the first mount — every subsequent open showed no widget
+   and a permanently-disabled submit button. Rewritten to render
+   imperatively (`window.turnstile.render()`) in an effect keyed to the
+   component's own mount, with `turnstile.remove()` on unmount, so the
+   widget's lifecycle actually matches React's instead of a one-time page
+   scan.
+4. **Two anti-spam checks, both dropped after producing real false
+   positives against genuine visitors, not bots.** A honeypot field
+   (`name="website"`, later renamed `_hp_check`) got silently filled by a
+   job-application-autofill browser extension ("jobright," visible in the
+   browser console) that fills forms by field name regardless of CSS
+   visibility — a real human's submission got faked into a silent no-op
+   success. Renaming the field plus `lpignore`/`data-1p-ignore` attributes
+   was a first attempt at hardening it; a follow-up submit-timing check
+   (reject anything faster than ~1.5s, later loosened to ~800ms) was added
+   as a second, field-name-independent signal — but *that* then produced
+   its own false positive against a visitor using browser field-history
+   suggestions (a single-field autocomplete dropdown, filling one field
+   near-instantly). Decided to drop both entirely rather than keep tuning
+   thresholds: this endpoint only accepts a JS `fetch()` POST, not a real
+   HTML form submission, so a bot unsophisticated enough for a honeypot or
+   timing check to matter couldn't hit it correctly in the first place —
+   Turnstile (an actual solved challenge, not a heuristic) is the real
+   defense against anything that could, and the rate limiter caps damage
+   even if that's somehow bypassed. Bot crawlers targeting this specific
+   form aren't considered a realistic threat at this project's scale;
+   revisit if that assumption turns out wrong.
+
+Verified end-to-end via `curl` against a live dev server (`CONTENT_SOURCE=
+firestore`, test Turnstile keys) after each fix, with Firestore test docs
+inspected and cleaned up after each round — confirmed the final,
+simplified request path (Turnstile → rate limit → store → send) produces
+a real Firestore doc and a real Resend send only when it should.

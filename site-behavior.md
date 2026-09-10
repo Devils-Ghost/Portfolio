@@ -255,7 +255,7 @@ Triggered from three places — navbar "Let's Talk", CTA "Get in Touch", footer 
 
 Fields: Name*, Company, Role, Contact*, Message\*.
 On submit → `POST /api/contact` → Zod validation → stored in Firestore → email via Resend from the verified subdomain, `reply-to` set to the visitor's address.
-Spam defence: honeypot field, rate limit, Cloudflare Turnstile.
+Spam defence: Cloudflare Turnstile (a real solved challenge, verified server-side) plus a per-IP rate limit. No honeypot or submit-timing check — both were tried in Phase 3 and dropped after producing false positives against genuine visitors (browser autofill and field-history suggestions respectively); this endpoint only accepts a JS `fetch()` POST, not a real HTML form submission, so neither added meaningful protection anyway. See `plan-progress.md` Phase 3 Stage 9.
 An escape hatch link offers a plain `mailto:` for anyone who'd rather write their own email.
 
 ---
@@ -306,7 +306,7 @@ These apply to every future change. They exist so that decisions don't have to b
 
 ## 9. Build status
 
-**Phases 0–2 complete** — foundation, content layer, and the interaction system are all built. The site now renders from real content and most of it is clickable; what's left is backend (Firestore, admin) and the remaining pages (`/about`, `/projects`, `/experience`, `/blog`).
+**Phases 0–3 complete** — foundation, content layer, the interaction system, and the backend (Firestore, the real contact form) are all built. The site now renders from real content, most of it is clickable, and content is served from Firestore in production; what's left is the admin panel (Phase 4) and the remaining pages (`/about`, `/projects`, `/experience`, `/blog`, Phase 5).
 
 | Area                                          | Status                                                                                                                                                          |
 | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -325,7 +325,7 @@ These apply to every future change. They exist so that decisions don't have to b
 | Achievements & Awards section                 | ❌ Not clickable yet — no `award` modal (Phase 2 scope was project/experience/skill/contact)                                                                    |
 | Soft-skill evidence linking                   | ❌ Not clickable yet — no `softskill` modal (same as above)                                                                                                     |
 | Global modal system                           | ✅ Done (Phase 2) for `project`/`experience`/`skill`/`contact`; `engagement`/`story`/`award`/`softskill` await their own modals                                 |
-| Firestore backend                             | ✅ Done (Phase 3, stages 1–6) — Firebase project, `FirestoreRepository`, idempotent seed script, Cache Components (`"use cache"` + `cacheTag`/`cacheLife`), provider flipped to Firestore in production; `POST /api/contact` and the real contact form are still ❌ (stages 7–9) |
+| Firestore backend                             | ✅ Done (Phase 3, all 9 stages) — Firebase project, `FirestoreRepository`, idempotent seed script, Cache Components, provider flipped to Firestore in production, Resend domain verified, `POST /api/contact` and the real contact form wired end to end |
 | Admin panel                                   | ❌ Not started (Phase 4)                                                                                                                                        |
 | `/about`, `/projects`, `/experience`, `/blog` | ❌ `UnderConstruction` placeholders (Phase 5)                                                                                                                   |
 | 3D corridor                                   | ❌ Not started (Phase 6, optional)                                                                                                                              |

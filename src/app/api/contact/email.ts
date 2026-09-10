@@ -31,7 +31,12 @@ export async function sendContactNotification(
     throw new Error("Missing required env var: RESEND_FROM_EMAIL");
   }
 
-  await resend.emails.send({
+  // The SDK resolves successfully even when Resend rejects the send (bad
+  // `from`, key/domain restriction mismatch, quota, ...) — it never throws
+  // for API-level errors, only for things like a network failure. Ignoring
+  // `error` here would mean the route reports success on a send that
+  // silently never happened, which is exactly what shipped at first.
+  const { error } = await resend.emails.send({
     from,
     to: NOTIFY_ADDRESS,
     replyTo: usableReplyTo(data.contact),
@@ -47,4 +52,8 @@ export async function sendContactNotification(
       .filter((line) => line !== null)
       .join("\n"),
   });
+
+  if (error) {
+    throw new Error(`Resend failed to send: ${error.name} - ${error.message}`);
+  }
 }
