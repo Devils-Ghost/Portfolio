@@ -11,15 +11,18 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check:content": "tsx scripts/check-content.ts"
+    "check:content": "tsx scripts/check-content.ts",
+    "seed:firestore": "tsx --env-file=.env.local scripts/seed-firestore.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",
+    "firebase-admin": "^14.3.0",
     "framer-motion": "^12.42.2",
     "lucide-react": "^1.23.0",
     "next": "16.2.10",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "resend": "^6.27.0",
     "tailwind-merge": "^3.6.0",
     "zod": "^4.5.2"
   },

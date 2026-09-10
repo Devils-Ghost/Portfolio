@@ -251,3 +251,460 @@ bg-blue-500 rounded-full mb-6" />` — copied three times, and `contact`
     Back appears) — `open()` sets it from the post-increment depth
     (`depthRef.current > 1`), `back()` and the `popstate` handler check the
     same threshold instead of `> 0`.
+
+---
+
+## Phase 3 — Backend
+
+### Collaboration mode changed for this phase
+
+Starting Phase 3, execution switched from "AI writes, owner reviews" (how
+Phases 0–2 went) to pair programming with the owner writing the actual
+implementation for new concepts, one small piece at a time, reviewed before
+moving on. Config/console-only steps (Firebase project setup, service
+account generation) stayed a guided walkthrough since there's nothing to
+learn in clicking through a dashboard. This note exists so a future read of
+this log doesn't mistake the smaller, more incremental commits in this phase
+for a change in scope rather than a change in process.
+
+### Deviation from the plan: Google Sign-In instead of email/password
+
+§6 Phase 3's checklist says "Auth (email/password, single user)." Built
+instead with **Google Sign-In** (`dtanna2@asu.edu`), for login convenience.
+
+The tradeoff this creates: Google Sign-In is not single-user by construction
+the way a manually-created email/password account is — by default, any
+Google account can authenticate against a Firebase project. The single-user
+guarantee moves from "there is exactly one account" to an app-level check,
+deferred to Phase 4: after sign-in, compare the authenticated user's
+Firebase UID against an `ADMIN_UID` env var before granting `/admin` access.
+UID was chosen over email as the allowlist key since Firebase issues it once
+and it never changes, unlike email which could have casing/normalization
+edge cases.
+
+That UID doesn't exist yet and can't be captured yet — Firebase only creates
+a user record (and assigns a UID) for a Google-provider account on its first
+successful sign-in through the app, and the console has no "add user"
+equivalent for a federated provider the way it does for email/password. So
+this is a real TODO for whoever opens Phase 4: sign in once as
+`dtanna2@asu.edu` through the admin login page once it exists, read the
+resulting UID from Firebase Console → Authentication → Users, and set it as
+`ADMIN_UID`.
+
+### Stage 1 — Firebase project
+
+Project created, Firestore enabled (production-mode start), Google Sign-In
+configured as the only provider, security rules published exactly as §D3
+specifies — deny-all, no exceptions, since every read and write is meant to
+go through the Admin SDK server-side.
+
+### Stage 2 — Admin SDK wiring
+
+Service account key generated from Firebase project settings, its three
+fields (`FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`)
+extracted into `.env.local` via a one-off script rather than hand-copied,
+specifically so the private key's contents never had to pass through chat —
+only the three variable names were ever printed. `content/firestore/client.ts`
+is a lazy singleton (`getDb()`): `getApps()[0]` reuse avoids a
+"app already exists" crash under Next's dev-server hot reload, and
+`requireEnv()` fails at the boundary with the missing variable's name rather
+than letting `firebase-admin` fail deeper with a cryptic error. Verified live
+against the real (empty) project with a throwaway script before moving on.
+
+### Stage 3 — `FirestoreRepository`
+
+Implements `ContentRepository` (the same interface `LocalRepository`
+satisfies, per §D1) against real Firestore reads, wired into
+`getRepository()`'s existing provider switch behind `CONTENT_SOURCE=firestore`.
+
+Two decisions worth recording:
+
+1. **`SiteContent` is five documents, not one.** §3.6 already specified this
+   (fixed IDs `hero`/`about`/`socials`/`availability`/`seo` under `/site`),
+   confirmed here rather than collapsed to one document, because Phase 4's
+   admin panel will have one form per section — five documents means each
+   form's save only touches its own document, with no read-modify-write
+   contention against the others.
+2. **No instance-level cache in `FirestoreRepository`, unlike
+   `LocalRepository`'s `this.cached`.** `LocalRepository`'s cache is safe
+   only because a TS module can't change under a running process.
+   `FirestoreRepository`'s data changes whenever the admin panel writes to
+   it, and this class has no way to know when that happens — that
+   invalidation hook belongs to Stage 5's Cache Components
+   (`"use cache"` + `cacheTag("content")`, actually revocable on write). A
+   first draft of `getContent()` added the same `this.cached` pattern by
+   analogy with `LocalRepository`; caught in review and removed before
+   commit, on the reasoning above.
+
+`parseCollection`'s array-wrapping helper (previously a private `parse()`
+inside `repository.ts`, used only by `LocalRepository`) moved to
+`schema.ts` as an exported `parseArray()`, so `FirestoreRepository` could
+reuse the exact same boundary-validation pattern instead of duplicating it
+in a second file.
+
+Each of the eleven `ContentRepository` methods reads independently
+(`loadCollection()` per call) rather than all routing through `getContent()`,
+because every home section currently calls its own single-collection getter
+directly (`getSkills()`, `getProjects()`, etc.) — only the modal system's
+cross-linking selectors need the whole joined bundle. Routing everything
+through `getContent()` would have meant every section triggering a full
+eleven-collection fetch to render one collection's worth of content.
+
+Verified end-to-end against the real, still-empty Firestore project:
+`getSkills()` correctly returns `[]`; `getContent()` fails loudly, naming
+every missing field under "site" — §D7's boundary validation catching the
+not-yet-seeded state exactly as designed, ahead of Stage 4's seed script.
+
+### Stage 4 — Seed script
+
+`scripts/seed-firestore.ts` pushes `content/local/*` into Firestore via
+`LocalRepository.getContent()` (already Zod-validated, so the seed can't
+push malformed data even if a local file were wrong) and one `WriteBatch`
+covering all 124 documents — comfortably under Firestore's 500-writes-per-
+batch limit, so no chunking needed. Idempotent by construction: every write
+is `batch.set(collection.doc(item.id), item)` against the stable,
+human-readable IDs from §3.3.5, so re-running produces the same end state
+rather than duplicates — verified directly by running it twice and
+confirming identical counts back through `FirestoreRepository`. Upsert
+only, deliberately: it will never delete a Firestore doc whose local
+counterpart was removed, since ongoing content lifecycle is Phase 4's job,
+not a one-time bootstrap script's.
+
+Two real bugs surfaced and were fixed before anything wrong reached
+Firestore:
+
+1. **The batch was built but never used.** A first draft created
+   `const batch = db.batch()` and correctly called `batch.commit()` at the
+   end, but every individual write called `.set()` directly on the
+   `DocumentReference` (`db.collection(x).doc(id).set(item)`) instead of
+   `batch.set(ref, item)` — a different method that fires an independent,
+   unawaited write immediately rather than queuing onto the batch. This
+   would have logged "Seed complete." before (or regardless of whether) the
+   124 real writes had actually finished, thrown an unhandled promise
+   rejection on any individual failure, and lost the atomicity the batch
+   existed for. Caught in review before running it; fixed by routing every
+   write through `batch.set()`.
+2. **`content.site.socials` is an array, and Firestore document data must
+   be a map at its root.** `socials: SocialLink[]` is the one `SiteContent`
+   key that isn't an object, so writing it directly as a document threw
+   `Input is not a plain JavaScript object` — caught by Firestore's
+   client-side validation before any network call, so nothing partial ever
+   landed. A first fix attempt misread the problem as "give each social
+   link its own document," keyed by `social.id` — but `SocialLink` has no
+   `id` field, so `.doc(undefined)` would have silently auto-generated a
+   random ID per run, breaking idempotency for exactly the reason IDs were
+   supposed to prevent it, and splitting one logical list across N
+   documents that `loadSiteContent()` has no way to reassemble. Fixed
+   instead by wrapping the array once (`{ items: content.site.socials }`)
+   on the write side, with a matching unwrap (`snapshots[2].data()?.items`)
+   added to Stage 3's `loadSiteContent()` — the two sides have to agree on
+   the wire shape, so the fix touched both files.
+
+Verified end-to-end: seeded all 124 documents, read them back through
+`FirestoreRepository.getContent()` and confirmed every collection's count
+matches `content/local` exactly, confirmed `socials` round-trips correctly
+through the wrap/unwrap, and confirmed a second run leaves every count
+unchanged.
+
+### Stage 5 — Cache Components
+
+The largest stage in this phase, and the one with the least predictable
+framework behavior — Next 16's Cache Components is genuinely new, and
+several of its rules surfaced only by building and reading the actual
+errors, not from anything documented up front.
+
+**`cacheComponents: true` in `next.config.ts`.** Flipping it immediately
+broke the build in a way worth recording as a sequence, because each fix
+revealed the next issue:
+
+1. `dynamic = "force-dynamic"` on `(site)/layout.tsx` (added Phase 2, for
+   this exact deep-linked-modal requirement) is flatly rejected — "Route
+   segment config 'dynamic' is not compatible with `cacheComponents`."
+   Removed; Cache Components replaces the all-or-nothing switch.
+2. With it removed, the build succeeded — every route showed `○ Static` —
+   but curling a deep link (`?d=project:x`) against the built output showed
+   **no `role="dialog"` in the raw HTML**, only the full content bundle
+   serialized for hydration (which is present regardless of modal state, so
+   grepping for project text alone is not a valid test — `role="dialog"`,
+   the actual DOM the modal renders, is). The static shell was built once,
+   before any request's query string existed, so a deep link only ever
+   resolved after client hydration read the real URL — silently regressing
+   Phase 2's exit criterion.
+3. Reached for `connection()` (from `next/server`) at the top of
+   `SiteLayout` to force per-request rendering back, Cache-Components-style.
+   Broke the build again, worse: "Uncached data was accessed outside of
+   `<Suspense>`" on every single route. `connection()` is a dynamic API like
+   any other — calling it with no `<Suspense>` boundary of its own blocks
+   _everything_ underneath it, which at the top of a layout wrapping every
+   page is the entire site. A stricter version of the problem it was
+   supposed to fix.
+4. Separately (surfaced by the same error, before `connection()` was even
+   added back a second time): **`"use cache"` cannot be written inline
+   inside a class instance method at all.** Next rejects it outright — "It
+   is not allowed to define inline 'use cache' annotated class instance
+   methods... use functions, object method properties, or static class
+   methods instead." Both `LocalRepository` and `FirestoreRepository`
+   needed restructuring: the actual cache boundary moved into plain,
+   zero-argument module-level functions (`cachedSkills()`,
+   `cachedLocalProjects()`, etc. — one per collection, per repository, 22
+   in total), with every class method reduced to a one-line delegate. Two
+   reasons zero-argument, closure-based functions rather than passing the
+   schema or the repository instance as a parameter: a `z.ZodType` isn't a
+   sensible cache-key argument, and neither is a class instance (`this`) —
+   `"use cache"` functions need serializable inputs. `LocalRepository`'s
+   `this.cached` instance field was replaced by a module-level
+   `loadLocalContent()` with a module-level memo variable for the same
+   reason — the cached wrapper functions needed something to close over
+   that isn't `this`.
+5. Applies to **both** repositories, not just Firestore's, and this was the
+   real surprise: Cache Components' "uncached data outside Suspense" check
+   is structural, not aware of what a function actually does at runtime. It
+   flagged `LocalRepository.getSiteContent()` — synchronous, in-memory,
+   genuinely free — exactly the same as it would flag a real network call,
+   because from the build's static analysis, an async call without
+   `"use cache"` looks the same regardless of provider. `cacheLife("max")`
+   on local data isn't a compromise, though — the data really is immutable
+   at runtime, so caching it "forever" is simply true, and it's what makes
+   every `getRepository().getXxx()` call site work under Cache Components
+   without every page needing its own opt-out.
+
+**The deep-link fix that actually works: a dynamic API needs a Suspense
+boundary it shares with the thing that depends on it, not just a Suspense
+boundary somewhere.** `DetailModalHost` already had one (Phase 2, wrapping
+`ModalRenderer`, which reads `?d=` via `useSearchParams()`). The fix was a
+new `ModalDynamicGate` — a tiny Server Component in `(site)/layout.tsx`
+whose only job is `await connection()` — passed into `DetailModalHost` as a
+`dynamicGate` prop and rendered as `ModalRenderer`'s _sibling_, inside that
+same existing boundary. `children` (the actual page — hero, sections,
+footer) never sits inside it, so the cached shell renders immediately;
+only the modal-resolving boundary is genuinely per-request. Two rejected
+alternatives, in order: `connection()` alone at the layout's top (blocks
+everything, per point 3 above); `connection()` + a `<Suspense>` wrapping
+_all_ of `children` (works, but forces the entire page dynamic on every
+request — no better than the old `force-dynamic` in effect, just spelled
+differently, and loses the point of caching the shell separately from the
+one genuinely dynamic part).
+
+**A verification gap, disclosed rather than papered over.** The build
+correctly marks every `(site)` route `◐ Partial Prerender` ("prerendered as
+static HTML with dynamic server-streamed content") with the `ModalDynamicGate`
+fix in place — confirming Next's own analysis agrees a real dynamic hole
+exists. But curling a deep link against `next start` (self-hosted
+production server, run locally for this check) returned **byte-identical
+output** regardless of `?d=`, in both this fix and the coarser
+whole-children-Suspense alternative — no `role="dialog"` in either. A
+control test ruled out a logic bug: the identical deep link against `next
+dev` (fully dynamic, no prerendering involved) correctly showed 0 matches
+without `?d=` and 1 with it, and the response sizes genuinely differed.
+So the modal-resolution code itself is confirmed correct; what's unverified
+is specifically whether `next start`'s self-hosted server performs Partial
+Prerendering's per-request "resume" the way the build output claims it
+will. This project deploys to Vercel, not self-hosted `next start` — Vercel
+is the reference implementation for this exact feature — so the working
+theory is that this is a gap in local verification, not in what's built.
+**Flagged as a real to-do:** the first thing to check once this branch has
+a live Vercel preview deployment is the actual behavior of a shared
+`?d=project:x` link — curl it, or just open it in an incognito tab and view
+source before any JS runs. If it's still not resolving server-side there,
+this needs a second pass with Vercel's real infrastructure in front of it,
+which local testing cannot substitute for.
+
+**Resolved in Stage 6.** Checked against the real Vercel preview
+deployment (`CONTENT_SOURCE=firestore`, real Firebase env vars set in
+Vercel project settings): View Source on
+`/?d=project:prj_decompiler_eval` shows `<div role="dialog" aria-modal="true"
+aria-label="Decompiler Evaluation for LLM Vulnerability Discovery" ...>` in
+the raw HTML, before any client JS runs. The working theory holds — this
+was a `next start` self-hosted local-verification limitation, not a defect
+in `ModalDynamicGate`/the Suspense-sharing fix. No code changes needed;
+this closes the one open item from Stage 5.
+
+**Two invalidation helpers added, still with no caller.** `content/cache.ts`
+exports `invalidateContentNow()` (`updateTag("content")`, for Phase 4's
+admin Server Actions — read-your-own-writes) and `invalidateContentSoon()`
+(`revalidateTag("content", "max")`, for a future webhook Route Handler —
+stale-while-revalidate). Neither is called from anywhere yet; wired now so
+the tag name and which-function-for-which-context question is decided once
+rather than re-derived at each future call site.
+
+Verified: full production build succeeds under both `CONTENT_SOURCE=local`
+and `CONTENT_SOURCE=firestore` — the latter genuinely hits real Firestore
+at build time to prerender each route's static shell, not just at request
+time. Lint and format clean throughout.
+
+### Stage 5 follow-up — collapsing the class/cached-function double layer
+
+Raised in review: both repositories had, for every collection, a
+module-level `"use cache"`-annotated function _and_ a class method that
+did nothing but call it — real duplication, not just verbosity, since the
+double layer existed only to route around a restriction (class instance
+methods can't carry `"use cache"` inline) rather than for any reason
+intrinsic to the data.
+
+**Fix: both repositories became plain objects implementing
+`ContentRepository`, not classes.** Next's own error message names three
+legal places for `"use cache"` — "functions, object method properties, or
+static class methods" — and object method properties collapse the two
+layers into one: each method _is_ its own cache boundary directly, with
+nothing to delegate to. `export class LocalRepository { getSkills() {
+return cachedLocalSkills(); } }` plus a separate `cachedLocalSkills()`
+became one `getSkills() { "use cache"; ...; return
+loadLocalContent().skills; }` on a plain exported `localRepository` object.
+Same shape for `firestoreRepository`. Halves the function count in both
+files with no behavior change — confirmed by rebuilding under both
+`CONTENT_SOURCE` values and re-checking the deep-link test, both unchanged.
+
+**One real regression this surfaced, fixed in the same pass:**
+`scripts/seed-firestore.ts` called `LocalRepository.getContent()` (soon
+`localRepository.getContent()`), and `cacheTag()`/`"use cache"` throw
+outside a running Next.js server — "`cacheTag()` is only available with the
+`cacheComponents` config." The seed script is a standalone `tsx` process,
+not something Next's runtime ever touches, so it had been quietly relying
+on `getContent()` being uncached; Stage 5's caching broke that assumption
+the moment it landed. Fixed by exporting the underlying `loadLocalContent()`
+loader directly and having the seed script call that instead of going
+through `ContentRepository` at all — arguably the more honest dependency
+anyway, since the seed script is inherently local-only (always reads local,
+always writes to Firestore) and was never actually using the interface's
+provider-agnosticism.
+
+### Stage 6 — Flip the provider
+
+`CONTENT_SOURCE=firestore` plus the three `FIREBASE_*` credentials added to
+Vercel's project environment variables (Production, Preview, and
+Development all enabled — Preview deliberately included, since that's what
+made the Stage 5 deep-link re-verification below possible).
+
+**Local escape hatch confirmed:** built with `CONTENT_SOURCE` completely
+unset — no override, nothing in `.env.local` — and it defaulted cleanly to
+`local` per `getRepository()`'s fallback, exactly as §8.11 requires.
+
+**The Stage 5 open item closed here, against the real Vercel preview**
+(`https://dhaval-tanna-git-phase-3-backend-devils-ghost.vercel.app`, behind
+Vercel's default Deployment Protection — reached via the owner's own
+browser session, not `curl`, since a bypass secret wasn't needed for a
+one-time manual check). View Source on `/?d=project:prj_decompiler_eval`
+confirmed `role="dialog"` in the raw server response, and the page's
+content itself (a real seeded experience record — "Volunteer Research
+Assistant — Decompiler Evaluation for LLM Vulnerability Discovery," Noelo
+Lab, UGA) confirmed the site is genuinely reading from Firestore, not
+silently still on `local`. Full detail in the Stage 5 section above, where
+the open item originated.
+
+### Stage 7 — Resend domain verification
+
+`send.eternalglitch.com` verified in Resend via its Cloudflare
+auto-configure integration (DNS is already Cloudflare-managed) rather than
+copying MX/SPF/DKIM records by hand. API key scoped to sending-only
+permission and restricted to that one domain specifically — tighter than
+the plan asked for, and cheap insurance if the key ever leaked.
+
+### Stage 8 — `POST /api/contact`
+
+`contactFormSchema` (Zod) validates the real fields; the honeypot
+(`website`) and Turnstile token are handled outside it deliberately — a
+filled honeypot is spam to silently swallow, not an error to report, and
+Turnstile needs an async Cloudflare round-trip a sync schema can't do.
+
+Order in the route matters and was gotten wrong once, then corrected:
+honeypot → validation → **Turnstile → rate limit** → store (Firestore) →
+send (Resend). Turnstile has to run before the rate limiter, not after —
+first draft had it the other way, which meant a bot spamming garbage
+tokens paid for a Firestore read/write on every attempt (rate-limit
+bookkeeping) for requests that were never going to succeed anyway, on the
+Spark plan's metered daily quota. Rate limiting itself also moved off
+Firestore entirely, onto an in-memory `Map` (3 requests/hour per
+IP-hash) — safe specifically because it now only runs after Turnstile
+already filtered out script traffic; a plain in-memory counter has no
+Firestore cost at all, at the tradeoff of not being perfectly global
+across every warm serverless instance, acceptable for a personal
+portfolio's contact form backed primarily by Turnstile, not by the rate
+limit.
+
+`sendContactNotification` sets `replyTo` only when `contact` both looks
+like a real email _and_ isn't a `no-reply@`/`noreply@` address — a
+syntactically valid but unusable reply target, since nothing downstream
+double-checked that boundary case in the first draft.
+
+Verified with `curl` end-to-end: malformed input → 400 with per-field
+errors; filled honeypot → 200 fake-success; bad Turnstile token → 403; the
+in-memory rate limiter unit-tested directly (3 allowed, 4th blocked,
+independent per IP) since exercising it through the real route needs an
+actual browser-solved Turnstile token. Firestore `rateLimits` collection
+confirmed empty after the switch — no docs get written there anymore.
+
+### Stage 9 — wiring the real contact form
+
+Real `name` attributes, `FormData` → JSON on submit, `idle/loading/success/error`
+status states, `alert()` gone. Cloudflare's official always-pass test key
+pair (`1x0000...AA` site/secret) swapped into `.env.local` only — never
+Vercel — so the widget and server-side verification could be exercised
+locally without solving a real challenge every test.
+
+**Two DNS findings, chased down while testing delivery, not code bugs:**
+Resend showing a test email "Delivered" while it landed in Gmail's spam
+folder isn't a contradiction — "Delivered" means the receiving server
+_accepted_ the message; spam-folder placement is a separate decision made
+after acceptance. DKIM was confirmed resolving correctly; DMARC was
+confirmed **missing** (checked both `_dmarc.eternalglitch.com` and
+`_dmarc.send.eternalglitch.com` — DMARC's lookup location is standardized,
+unlike SPF/DKIM's provider-specific naming, so this finding didn't depend
+on guessing). Added `v=DMARC1; p=none; rua=mailto:dtanna2@asu.edu` at
+`_dmarc.send.eternalglitch.com`. Noted plainly: a domain's first-ever sent
+email landing in spam once is common regardless, since spam filtering
+weighs sending history a brand-new subdomain doesn't have yet.
+
+**Four real bugs found only by actually clicking through the feature, not
+by reading the code:**
+
+1. **Firestore rejects `undefined` field values outright** (`null` is
+   fine). `ContactSubmission`'s optional fields (`company`, `role`,
+   `meta.userAgent`/`referer`) were being assigned `undefined` directly
+   when absent instead of omitted, crashing the `.set()` call with a 500 —
+   never hit in `curl` testing during Stage 8 because every test there
+   happened to fill every field. Fixed with conditional spreads instead of
+   direct assignment.
+2. **The Resend SDK never throws on API-level errors** — checked its
+   actual type definitions rather than assume: `emails.send()` resolves to
+   `{ data, error }` either way, only throwing for things like a network
+   failure. The first draft discarded the return value entirely, so a
+   rejected send (bad `from`, key/domain mismatch, whatever) would report
+   success to the visitor while silently never sending anything. Fixed by
+   checking `error` and throwing if present.
+3. **The Turnstile widget only rendered on the very first modal open.**
+   Rendered declaratively (a `.cf-turnstile` div + Cloudflare's script
+   auto-scanning the page once on load); since the modal unmounts on close
+   and a fresh container gets created each reopen, nothing ever re-scanned
+   for it after the first mount — every subsequent open showed no widget
+   and a permanently-disabled submit button. Rewritten to render
+   imperatively (`window.turnstile.render()`) in an effect keyed to the
+   component's own mount, with `turnstile.remove()` on unmount, so the
+   widget's lifecycle actually matches React's instead of a one-time page
+   scan.
+4. **Two anti-spam checks, both dropped after producing real false
+   positives against genuine visitors, not bots.** A honeypot field
+   (`name="website"`, later renamed `_hp_check`) got silently filled by a
+   job-application-autofill browser extension ("jobright," visible in the
+   browser console) that fills forms by field name regardless of CSS
+   visibility — a real human's submission got faked into a silent no-op
+   success. Renaming the field plus `lpignore`/`data-1p-ignore` attributes
+   was a first attempt at hardening it; a follow-up submit-timing check
+   (reject anything faster than ~1.5s, later loosened to ~800ms) was added
+   as a second, field-name-independent signal — but _that_ then produced
+   its own false positive against a visitor using browser field-history
+   suggestions (a single-field autocomplete dropdown, filling one field
+   near-instantly). Decided to drop both entirely rather than keep tuning
+   thresholds: this endpoint only accepts a JS `fetch()` POST, not a real
+   HTML form submission, so a bot unsophisticated enough for a honeypot or
+   timing check to matter couldn't hit it correctly in the first place —
+   Turnstile (an actual solved challenge, not a heuristic) is the real
+   defense against anything that could, and the rate limiter caps damage
+   even if that's somehow bypassed. Bot crawlers targeting this specific
+   form aren't considered a realistic threat at this project's scale;
+   revisit if that assumption turns out wrong.
+
+Verified end-to-end via `curl` against a live dev server (`CONTENT_SOURCE=
+firestore`, test Turnstile keys) after each fix, with Firestore test docs
+inspected and cleaned up after each round — confirmed the final,
+simplified request path (Turnstile → rate limit → store → send) produces
+a real Firestore doc and a real Resend send only when it should.

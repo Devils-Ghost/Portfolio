@@ -94,16 +94,25 @@ const MODAL_WIDTH = "max-w-2xl";
  * `content` arrives as a prop from the server — `(site)/layout.tsx` reads it
  * with `getContent()` — so resolving a deep-linked target (turning
  * `?d=project:x` into that project's title and body) needs no client-side
- * fetch. The layout also forces this route to render per request rather
- * than being statically cached at build time, which is what makes a deep
- * link's modal content show up in the HTML the server sends rather than
- * only after client-side hydration.
+ * fetch. `dynamicGate` (Phase 3's `ModalDynamicGate`, from `(site)/layout.tsx`)
+ * is what makes that resolution happen server-side in the first response
+ * rather than only after client hydration — see that component's comment.
  */
 export default function DetailModalHost({
   content,
+  dynamicGate,
   children,
 }: {
   content: Content;
+  /**
+   * A server-rendered slot that calls `connection()`, sharing this
+   * component's Suspense boundary with `ModalRenderer` so a deep link
+   * resolves per-request under Cache Components. Optional so this
+   * component doesn't hard-depend on a Next-version-specific API — pass
+   * nothing and modals still work, just without the server-render
+   * guarantee for deep links.
+   */
+  dynamicGate?: ReactNode;
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -164,6 +173,7 @@ export default function DetailModalHost({
     <DetailModalContext.Provider value={value}>
       {children}
       <Suspense fallback={null}>
+        {dynamicGate}
         <ModalRenderer
           content={content}
           close={close}
