@@ -590,3 +590,45 @@ Assistant — Decompiler Evaluation for LLM Vulnerability Discovery," Noelo
 Lab, UGA) confirmed the site is genuinely reading from Firestore, not
 silently still on `local`. Full detail in the Stage 5 section above, where
 the open item originated.
+
+### Stage 7 — Resend domain verification
+
+`send.eternalglitch.com` verified in Resend via its Cloudflare
+auto-configure integration (DNS is already Cloudflare-managed) rather than
+copying MX/SPF/DKIM records by hand. API key scoped to sending-only
+permission and restricted to that one domain specifically — tighter than
+the plan asked for, and cheap insurance if the key ever leaked.
+
+### Stage 8 — `POST /api/contact`
+
+`contactFormSchema` (Zod) validates the real fields; the honeypot
+(`website`) and Turnstile token are handled outside it deliberately — a
+filled honeypot is spam to silently swallow, not an error to report, and
+Turnstile needs an async Cloudflare round-trip a sync schema can't do.
+
+Order in the route matters and was gotten wrong once, then corrected:
+honeypot → validation → **Turnstile → rate limit** → store (Firestore) →
+send (Resend). Turnstile has to run before the rate limiter, not after —
+first draft had it the other way, which meant a bot spamming garbage
+tokens paid for a Firestore read/write on every attempt (rate-limit
+bookkeeping) for requests that were never going to succeed anyway, on the
+Spark plan's metered daily quota. Rate limiting itself also moved off
+Firestore entirely, onto an in-memory `Map` (3 requests/hour per
+IP-hash) — safe specifically because it now only runs after Turnstile
+already filtered out script traffic; a plain in-memory counter has no
+Firestore cost at all, at the tradeoff of not being perfectly global
+across every warm serverless instance, acceptable for a personal
+portfolio's contact form backed primarily by Turnstile, not by the rate
+limit.
+
+`sendContactNotification` sets `replyTo` only when `contact` both looks
+like a real email *and* isn't a `no-reply@`/`noreply@` address — a
+syntactically valid but unusable reply target, since nothing downstream
+double-checked that boundary case in the first draft.
+
+Verified with `curl` end-to-end: malformed input → 400 with per-field
+errors; filled honeypot → 200 fake-success; bad Turnstile token → 403; the
+in-memory rate limiter unit-tested directly (3 allowed, 4th blocked,
+independent per IP) since exercising it through the real route needs an
+actual browser-solved Turnstile token. Firestore `rateLimits` collection
+confirmed empty after the switch — no docs get written there anymore.
