@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { flattenError } from "zod";
-import { getDb } from "@/content/firestore/client";
+import { getDb } from "@/lib/firebase/admin";
 import type { ContactSubmission } from "@/content/types";
 import { sendContactNotification } from "./email";
 import { getClientIp, isRateLimited } from "./rate-limit";

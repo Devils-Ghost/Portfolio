@@ -1,5 +1,5 @@
 import { cacheLife, cacheTag } from "next/cache";
-import { getDb } from "./client";
+import { getDb } from "@/lib/firebase/admin";
 import type { ContentRepository } from "../repository";
 import {
   awardSchema,

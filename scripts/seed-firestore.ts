@@ -9,7 +9,7 @@
  *   npx tsx --env-file=.env.local scripts/seed-firestore.ts
  */
 import { loadLocalContent } from "../src/content/repository";
-import { getDb } from "../src/content/firestore/client";
+import { getDb } from "../src/lib/firebase/admin";
 
 async function main() {
   // Already Zod-validated — loadLocalContent() parses through the same
