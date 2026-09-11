@@ -708,3 +708,45 @@ firestore`, test Turnstile keys) after each fix, with Firestore test docs
 inspected and cleaned up after each round — confirmed the final,
 simplified request path (Turnstile → rate limit → store → send) produces
 a real Firestore doc and a real Resend send only when it should.
+
+### Stage 9 follow-up — HTML email, and a Vercel env var bug found deploying it
+
+The admin notification was plain-text only; not explicitly scoped to a
+later phase, just never specified either way. Added `email-template.ts`:
+an HTML body styled to match the site's own theme (dark surface, blue
+accent, the same accent-bar treatment `ContactFormBody`'s modal uses) via
+inline styles and a table layout, since email clients don't reliably
+support stylesheets or CSS custom properties the way a browser does — the
+`@theme` OKLCH values are reproduced as their standard Tailwind hex
+equivalents instead. User-submitted fields are HTML-escaped (a real
+injection surface once content reaches an email client's renderer, not
+just a display concern). Sent alongside the existing `text` version, not
+instead of it — both is also a mild deliverability signal, since spam
+tends to send only one. One design pass after seeing a real rendered
+email: the page background outside the card started black (matching the
+site), but an email renders inside a client's own white reading pane, so
+a full black canvas around the card looked like a rendering glitch rather
+than a deliberate choice — changed to white, leaving only the card itself
+carrying the dark theme.
+
+**Unrelated bug found while manually testing a production deploy of this
+branch to `main`:** `Failed to parse private key` / OpenSSL
+`ERR_OSSL_UNSUPPORTED` on Vercel, `FIREBASE_PRIVATE_KEY` specifically.
+Root cause: back in Stage 2, `.env.local` was told to hold the key
+wrapped in double quotes (`"-----BEGIN...-----\n"`), and Vercel's
+environment variable box was then filled in by copying that value
+_including_ the surrounding quotes — correct for `.env.local`, wrong for
+Vercel. `.env.local` (via Node's `--env-file` / Next's own loader) does
+dotenv-style parsing: it strips a layer of surrounding double quotes and
+expands `\n` into real newlines automatically for quoted values, which is
+_why_ it worked locally. Vercel's env var UI does no such parsing — it
+stores exactly what's pasted, character for character — so the value
+there literally began and ended with a stray `"`, which survived
+`client.ts`'s own `.replace(/\\n/g, "\n")` and broke the PEM structure.
+Fixed by re-entering the value in Vercel without the surrounding quotes,
+keeping the internal `\n` sequences intact. Confirmed no other env var was
+affected — `FIREBASE_PRIVATE_KEY` was the only one Stage 2 ever wrapped in
+quotes, since it's the only value that ever needed to safely contain
+literal `\n` sequences in the first place.
+
+Phase 3 is complete.

@@ -1,9 +1,10 @@
 import { Resend } from "resend";
+import { renderContactNotificationHtml } from "./email-template";
 import type { ContactFormInput } from "./schema";
 
 // TODO: swap for hello@eternalglitch.com once Cloudflare Email Routing is
 // confirmed set up, if that's preferred over a personal inbox.
-const NOTIFY_ADDRESS = "dtanna2@asu.edu";
+const NOTIFY_ADDRESS = "devils.ghost.us@gmail.com";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const NO_REPLY_PATTERN = /^no.?reply@/i;
@@ -41,6 +42,11 @@ export async function sendContactNotification(
     to: NOTIFY_ADDRESS,
     replyTo: usableReplyTo(data.contact),
     subject: `Contact request | Portfolio Visit: ${data.name}`,
+    // Both, not just one — `html` is what almost every modern client
+    // actually renders, `text` stays as the fallback for anything that
+    // can't (or won't) render HTML, and having both is also a mild
+    // positive deliverability signal, since spam tends to send only one.
+    html: renderContactNotificationHtml(data),
     text: [
       `Name: ${data.name}`,
       data.company ? `Company: ${data.company}` : null,
