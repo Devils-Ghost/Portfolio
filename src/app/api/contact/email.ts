@@ -4,7 +4,7 @@ import type { ContactFormInput } from "./schema";
 
 // TODO: swap for hello@eternalglitch.com once Cloudflare Email Routing is
 // confirmed set up, if that's preferred over a personal inbox.
-const NOTIFY_ADDRESS = "dtanna2@asu.edu";
+const NOTIFY_ADDRESS = "devils.ghost.us@gmail.com";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const NO_REPLY_PATTERN = /^no.?reply@/i;
