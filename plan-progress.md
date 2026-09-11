@@ -735,11 +735,11 @@ branch to `main`:** `Failed to parse private key` / OpenSSL
 Root cause: back in Stage 2, `.env.local` was told to hold the key
 wrapped in double quotes (`"-----BEGIN...-----\n"`), and Vercel's
 environment variable box was then filled in by copying that value
-*including* the surrounding quotes — correct for `.env.local`, wrong for
+_including_ the surrounding quotes — correct for `.env.local`, wrong for
 Vercel. `.env.local` (via Node's `--env-file` / Next's own loader) does
 dotenv-style parsing: it strips a layer of surrounding double quotes and
 expands `\n` into real newlines automatically for quoted values, which is
-*why* it worked locally. Vercel's env var UI does no such parsing — it
+_why_ it worked locally. Vercel's env var UI does no such parsing — it
 stores exactly what's pasted, character for character — so the value
 there literally began and ended with a stray `"`, which survived
 `client.ts`'s own `.replace(/\\n/g, "\n")` and broke the PEM structure.
