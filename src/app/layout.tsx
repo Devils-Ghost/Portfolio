@@ -15,7 +15,7 @@ const inter = Inter({
 /**
  * Title and description come from `site.seo` rather than being written here,
  * so the one thing this page exists to do — be found — is editable from the
- * content layer along with everything else (PROJECT_PLAN.md §D1).
+ * content layer along with everything else (docs/project-plan.md §D1).
  */
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getRepository().getSiteContent();

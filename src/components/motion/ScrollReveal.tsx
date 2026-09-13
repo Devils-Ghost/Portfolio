@@ -3,7 +3,7 @@
 import { motion, type HTMLMotionProps } from "framer-motion";
 
 /**
- * A `motion.div` with nothing added but a client boundary (PROJECT_PLAN.md §D4).
+ * A `motion.div` with nothing added but a client boundary (docs/project-plan.md §D4).
  *
  * Sections are Server Components now, and `whileInView` needs a client one.
  * Rather than marking a whole section `"use client"` for the sake of a heading

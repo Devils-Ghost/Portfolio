@@ -32,7 +32,7 @@ import type {
 } from "./types";
 
 /**
- * The seam between the components and the data source (PROJECT_PLAN.md §D1).
+ * The seam between the components and the data source (docs/project-plan.md §D1).
  *
  * Every component reads content through this interface, and no component ever
  * imports Firebase. That's what lets Phase 1 do the whole restructure against
@@ -135,7 +135,7 @@ export function loadLocalContent(): Content {
  * delegate to. `local` still counts as "content that needs caching" here
  * even though the data itself never changes at runtime — this cache exists
  * to satisfy Cache Components' structural rule (no uncached data access
- * outside Suspense in a dynamic route, PROJECT_PLAN.md Phase 3), not
+ * outside Suspense in a dynamic route, docs/project-plan.md Phase 3), not
  * because local reads are slow.
  */
 export const localRepository: ContentRepository = {

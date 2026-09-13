@@ -750,3 +750,135 @@ quotes, since it's the only value that ever needed to safely contain
 literal `\n` sequences in the first place.
 
 Phase 3 is complete.
+
+---
+
+## Phase 4 — Admin panel
+
+### Stage 1 — `ADMIN_UID` bootstrap and the auth gate
+
+The bootstrapping order §6 describes worked as written: an ungated login
+page had to exist and be signed into once before the UID that gates it
+existed. Signed in as `dtanna2@asu.edu`, read the UID back, set it as
+`ADMIN_UID`. The bootstrap page's debug UI (which printed the UID on
+screen) was then replaced by the real sign-in flow in the same stage,
+since its only purpose was to produce that one value.
+
+**The Firebase _client_ SDK is new to the repo.** Everything in Phase 3
+talked to Firebase from the server with the Admin SDK and a service
+account. A Google sign-in popup has to run in the browser, which needs the
+separate `firebase` package and its public config — a different credential
+path entirely, and the first client-side Firebase code here. The two are
+kept in separate modules (`lib/firebase/browser-auth.ts` vs
+`lib/firebase/admin.ts`) specifically so an import can't accidentally pull
+`firebase-admin` — and the service account key with it — into a client
+bundle. `server-only` is imported at the top of the admin module as a
+build-time tripwire for the same mistake.
+
+**A Next.js behaviour worth recording, because the error is silent.**
+`NEXT_PUBLIC_*` variables are not read from a runtime `process.env` in the
+browser — Next inlines them at build time by scanning source text for the
+literal expression `process.env.NEXT_PUBLIC_FOO`. The first draft routed
+every value through a shared `requireEnv(name)` helper doing
+`process.env[name]`, which the bundler cannot statically match, so every
+value resolved to `undefined` in the browser while being perfectly present
+in `.env.local`. The fix is that each variable must appear as its literal
+dotted expression at its own call site; only the "throw if missing" check
+can be shared.
+
+**Session model.** Sign-in mints a Firebase session cookie server-side via
+a Server Action (`httpOnly`, 14 days, the Firebase maximum), and
+`AdminGate` verifies it per request and compares the uid to `ADMIN_UID`.
+`checkRevoked` is deliberately left off: it makes an extra Auth backend
+call on every request to check a revocation list there is no UI to
+populate, which is cost with no behaviour. Without it, verification is a
+local signature check against cached Google public keys — free, which
+matters on the Spark plan.
+
+**Cache Components bit again, the same way it did in Phase 3 Stage 5.**
+`cookies()` is a dynamic API, and reading one with no `<Suspense>`
+boundary of its own fails the build. `AdminGate` is split out of
+`admin/layout.tsx` purely so the layout can wrap it — structurally the
+same fix as `ModalDynamicGate`, for the same underlying rule.
+
+**Route layout.** `/login` lives in the `(admin)` group but _outside_ the
+gated subtree, so the gate cannot wrap the one page that has to stay
+reachable. Nesting handles this for free: the gate is `admin/layout.tsx`,
+one level below `(admin)/layout.tsx`, so `/login` is a sibling rather than
+a child. No middleware and no pathname sniffing needed.
+
+**A consolidation, raised in review.** Admin SDK access was initially
+spread across `content/firestore/client.ts` (Firestore) and a separate
+app-singleton module (Auth), with a third copy of `requireEnv` in each.
+Collapsed into one `lib/firebase/admin.ts` exposing `getDb()` and
+`getAdminAuth()` over one private app instance. The shared `requireEnv`
+moved to `lib/utils.ts`. Four call sites moved with it, one of which —
+`scripts/seed-firestore.ts` — lives outside `src/` and was caught only by
+`tsc`, not by the grep that found the others.
+
+### Stage 2 — design direction
+
+Executed differently from Phases 0–3: the UI was **designed before it was
+built**, because a first attempt at the dashboard was written straight to
+code and correctly rejected. Layout, spacing, colour and hierarchy are
+design decisions, and making them implicitly while writing JSX produces
+something that works and looks improvised. The dashboard built that way
+was reverted in full; the auth gate, which is plumbing with no visual
+dimension, was kept.
+
+The direction now lives in `docs/admin/ADMIN_DESIGN.md`, with screens in
+`docs/admin/admin-mockups.html`. It went through two review passes, and
+§11 of that document records what each changed and — more usefully — what
+was rejected and why, so the rejected options don't get re-proposed later.
+
+**Three findings from those passes were real defects, not preferences:**
+
+1. **The metadata greys failed WCAG AA**, on the public site as well as in
+   the admin design. `gray-500` measures 3.97:1 against `--color-surface`
+   and `gray-600` measures 2.54:1; both carry normal text. Fixed
+   site-wide — see the note below.
+2. **A 900px modal and a "split collapses below 1100px" rule contradicted
+   each other.** A 900px modal minus a section rail leaves two ~350px
+   panes, narrower than the width the same document rejected, on every
+   screen size. Split could never have been valid. Resolved by widening
+   body-heavy entities to 1140px and gating split on the _pane_ width
+   rather than the viewport.
+3. **Drag-to-reorder with only a keyboard alternative fails WCAG 2.2 SC
+   2.5.7.** The criterion wants a single-pointer path — someone using a
+   head pointer or switch has a pointer but cannot drag. Keyboard support
+   satisfies a different criterion and a different population. Move
+   up/down controls are now part of the featured manager's spec.
+
+**The mockups were also lying about the typeface.** They rendered in
+JetBrains Mono; the project has no `--font-mono` token, so `font-mono` —
+27 usages across the public site — resolves to the system mono stack.
+Every mono value in the design would have shipped looking different from
+what was approved. The mockups now use the real stack, and adopting a mono
+face is parked as a site-wide decision rather than smuggled in through an
+admin mockup.
+
+### The contrast fix, which is a public-site change
+
+Committed separately from the admin work, because it is a live-site bug
+that the admin design only happened to surface. `--color-meta` (`#818a99`,
+5.5:1) added to `@theme`; 20 text call sites migrated off `gray-500/600`.
+The worst instance was `SuccessStoryListItem`'s inactive org line on the
+home page, at 2.54:1.
+
+**The obvious implementation was wrong.** `@theme` already redefines
+Tailwind's `blue-*` scale so ~100 accent call sites need no edit, and the
+same trick applied to `gray-*` would have fixed all 20 with zero churn.
+But three of the grey usages are `to-gray-500`/`to-gray-600` gradient
+stops rendering the metallic pushpin on `ProjectCard` and the lanyard clip
+on `AboutSection` — two of the details §1.2 lists as worth preserving.
+Blue was safe to redefine because every blue on the site is the accent;
+grey was doing two unrelated jobs that merely shared a scale. Hence a new
+semantic token and 20 deliberate call-site edits instead.
+
+### Documentation moved to `docs/`
+
+`project-plan.md`, `site-behavior.md` and `plan-progress.md` moved from the
+repo root into `docs/`, with the admin design documents in `docs/admin/`.
+54 citations in source comments were updated to match — of which **37 were
+already stale before the move**, pointing at `PROJECT_PLAN.md` in
+screaming case, a filename that has not existed for some time.

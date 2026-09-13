@@ -2,8 +2,8 @@
 
 /*
  * ============================ DESIGN TOKENS ============================
- * The single place the site's look is defined. project-plan.md §D6 and
- * site-behavior.md §3 and §8.5: no new hex literals in components.
+ * The single place the site's look is defined. docs/project-plan.md §D6 and
+ * docs/site-behavior.md §3 and §8.5: no new hex literals in components.
  */
 @theme {
   /* ── Typography ────────────────────────────────────────────────────
@@ -48,7 +48,7 @@
      redefine because every blue on the site is the accent. Grey is not:
      `to-gray-500`/`to-gray-600` render the metallic pushpin on
      ProjectCard and the lanyard clip on AboutSection, and lightening
-     those would flatten two of the details project-plan.md §1.2 calls
+     those would flatten two of the details docs/project-plan.md §1.2 calls
      out as worth preserving. Text and material happened to share a
      scale; they don't share a meaning. */
   --color-meta: #818a99;

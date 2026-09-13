@@ -10,7 +10,7 @@ import { getRepository } from "@/content/repository";
  * A Server Component: the hanging ID card and the text slide-in are the only
  * animated parts, and both are `whileInView` wrappers around otherwise static
  * markup, so they become ScrollReveal boundaries rather than making the whole
- * section client (PROJECT_PLAN.md §D4).
+ * section client (docs/project-plan.md §D4).
  */
 export default async function AboutSection() {
   const { about } = await getRepository().getSiteContent();

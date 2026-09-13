@@ -33,7 +33,7 @@ function splitHeadline(headline: string): [lead: string, accent: string] {
 /**
  * Client, because it types, rotates and scroll-animates. Its copy arrives as
  * props from the Server Component in HeroSection, so the headline and the
- * role lines are in the initial HTML (PROJECT_PLAN.md §D4).
+ * role lines are in the initial HTML (docs/project-plan.md §D4).
  */
 export default function Hero({ hero }: { hero: SiteContent["hero"] }) {
   // Named locally because the effects below depend on them. These arrive from

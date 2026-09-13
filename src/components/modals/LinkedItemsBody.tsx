@@ -43,9 +43,9 @@ function usageDateLabel(usage: SkillUsage): string {
 }
 
 /**
- * `LinkedItemsBody` — site-behavior.md §4.6 (named `EvidenceBody` there;
- * renamed in Phase 2, see plan-progress.md). "This skill was used in:",
- * grouped by kind (PROJECT_PLAN.md §3.4 `usagesOfSkill`). Only `project` and
+ * `LinkedItemsBody` — docs/site-behavior.md §4.6 (named `EvidenceBody` there;
+ * renamed in Phase 2, see docs/plan-progress.md). "This skill was used in:",
+ * grouped by kind (docs/project-plan.md §3.4 `usagesOfSkill`). Only `project` and
  * `experience` have their own modal yet (§6 Phase 2), so engagement and
  * story rows render as plain, non-interactive entries this phase rather than
  * as dead links — they still show real content, they just don't drill down

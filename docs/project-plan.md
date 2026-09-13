@@ -25,7 +25,7 @@ Section 10 lists the things I could not decide for you.
 ### 1.1 Stack (confirmed from `package.json`)
 
 | Layer                 | Version                           | Note                                                             |
-| --------------------- | --------------------------------- | ---------------------------------------------------------------- |
+| --------------------- | ---------------------------------- | ----------------------------------------------------------------- |
 | Next.js               | **16.2.10**                       | App Router. **Next 16 changed the caching model** — see Phase 3. |
 | React                 | **19.2.4**                        | Next 16 requires ≥19.2. You're compliant.                        |
 | TypeScript            | ^5                                | `@/*` alias configured                                           |
@@ -177,7 +177,7 @@ There's a related symptom: `HireMeModal` is mounted **twice** — once in `Navba
 ### 1.4 Smaller issues, worth a cleanup pass
 
 | #   | Issue                                                                                                                                                                                                                                                                                                         | Why it matters                                                                                                                                                                                                                                                                                                                                           |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 6   | **`https://github.com/yourusername/repo` is live in production** — twice, plus `https://your-live-link.com`, plus `mailto:your.email@example.com` in `UnderConstruction`                                                                                                                                      | A recruiter clicking "Source Code" hits a 404. Fix today, it's a 2-minute job.                                                                                                                                                                                                                                                                           |
 | 7   | **26 of 35 components are `"use client"`** — the entire homepage renders client-side                                                                                                                                                                                                                          | This made sense when you were targeting Firebase Hosting static export. Since you moved to Vercel, full SSR is available and free — so the constraint that justified this is gone. Google currently sees an empty shell on first pass. For a page whose _purpose_ is being found by recruiters, this is the highest-leverage SEO fix available.          |
 | 8   | **`globals.css` still has Next.js starter cruft**: `--font-geist-sans`/`--font-geist-mono` referenced but never defined; a light-mode `:root` and `prefers-color-scheme` block that are dead (html is hardcoded `dark`, body is `bg-black`); and a stray `body { font-family: Arial, Helvetica, sans-serif }` | Body text was always rendering in Inter — `next/font`'s CSS-module class (specificity 0,1,0) already beats the `body` element selector (0,0,1). Only `SplashScreen` was genuinely in Arial, via an inline style — the one thing that _could_ beat the class. Removing it is what makes the splash → navbar `layoutId` transition render in one typeface. |
@@ -186,8 +186,8 @@ There's a related symptom: `HireMeModal` is mounted **twice** — once in `Navba
 | 11  | **`Modal` writes `document.body.style.overflow` directly**                                                                                                                                                                                                                                                    | With two `HireMeModal`s mounted, closing one unlocks scroll for the other. Use a counter or a single modal host.                                                                                                                                                                                                                                         |
 | 12  | **Splash screen costs every visitor a hard 2s** — `isIntroDone` lives in `useState(false)` with no persistence, and `Navbar`/`Footer` don't render until it flips                                                                                                                                             | Fine on first visit; annoying on every refresh. Store a flag in `sessionStorage` and skip the splash on repeat visits within a session.                                                                                                                                                                                                                  |
 | 13  | **No `loading.tsx`, `error.tsx`, `not-found.tsx`, `sitemap.ts`, `robots.ts`, or OpenGraph image**                                                                                                                                                                                                             | The OG image is the one that stings: every LinkedIn share of your portfolio currently renders as a grey box.                                                                                                                                                                                                                                             |
-| 14  | **`HireMeModal` form has no `name` attributes and calls `alert()`**                                                                                                                                                                                                                                           | Nothing to wire up yet — noted so it's not forgotten in Phase 3.                                                                                                                                                                                                                                                                                         |
-| 15  | **Naming drift**: `src/container/HomePage/` (singular "container") vs `src/components/home/` (lowercase); `SuccessStoriesSection` imported as `BlogSection` in `page.tsx`                                                                                                                                     | Cheap to fix now, annoying at 3× the file count.                                                                                                                                                                                                                                                                                                         |
+| 14  | **`HireMeModal` form has no `name` attributes and calls `alert()`**                                                                                                                                                                                                                                           | Nothing to wire up yet — noted so it's not forgotten in Phase 3.                                                                                                                                                                                                                                                                                          |
+| 15  | **Naming drift**: `src/container/HomePage/` (singular "container") vs `src/components/home/` (lowercase); `SuccessStoriesSection` imported as `BlogSection` in `page.tsx`                                                                                                                                     | Cheap to fix now, annoying at 3× the file count.                                                                                                                                                                                                                                                                                                          |
 
 ---
 
@@ -242,13 +242,13 @@ Your instinct was right. Confirming it, with one correction you need to know abo
 
 | Option                     | Verdict                                                                                                                                                                                                                                                                                                                                                               |
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Firestore (Spark)** ✅   | <cite index="3-1">1 GiB storage, 50,000 reads/day, 20,000 writes/day, 10 GiB egress/month</cite> — you'll use a fraction of a percent. Auth is free to 50K MAU. **No payment method required.** <cite index="3-1">Spark is sufficient if you only use Firestore, Hosting and standard Authentication, and stays at guaranteed zero cost with no card required.</cite> |
+| **Firestore (Spark)** ✅   | 1 GiB storage, 50,000 reads/day, 20,000 writes/day, 10 GiB egress/month — you'll use a fraction of a percent. Auth is free to 50K MAU. **No payment method required.** Spark is sufficient if you only use Firestore, Hosting and standard Authentication, and stays at guaranteed zero cost with no card required. |
 | Realtime Database ❌       | Wrong tool. Designed for high-frequency sync; your data changes monthly. Firestore's querying is better for this shape.                                                                                                                                                                                                                                               |
 | Supabase / Neon (Postgres) | Genuinely better _relational_ fit, but free projects pause on inactivity — friction every time you open the admin panel. Reconsider only if you outgrow Firestore's model.                                                                                                                                                                                            |
 | Sanity / Contentful        | Would hand you a polished admin panel for free and delete Phase 4 entirely. Trade-off: you don't get to _build_ the admin panel — and building your own CMS is itself a portfolio artifact. Your call.                                                                                                                                                                |
 
 > **⚠️ Correction to your plan — Firebase Storage is no longer free.**
-> <cite index="3-1">Since February 3, 2026, Google aligned Cloud Storage for Firebase with standard Google Cloud Storage rules, which require a linked billing account to create a bucket, even while staying in the "Always Free" tier.</cite> <cite index="4-1">Projects on Spark with default buckets lose console access and API calls return 402/403 errors.</cite>
+> Since February 3, 2026, Google aligned Cloud Storage for Firebase with standard Google Cloud Storage rules, which require a linked billing account to create a bucket, even while staying in the "Always Free" tier. Projects on Spark with default buckets lose console access and API calls return 402/403 errors.
 >
 > **This does not block you.** Firestore and Auth are still fully free on Spark. Only _file uploads_ are affected, and you have ~20 images total. Put them in `/public/media/` committed to the repo — Vercel serves them from its CDN for free and `next/image` optimizes them. Only reach for a blob store (Vercel Blob or Cloudinary free tier) if the admin panel genuinely needs runtime upload. Verify current terms before you rely on any of it.
 
@@ -600,7 +600,7 @@ export interface ContactSubmission {
 The clean split:
 
 |          | `Award`                                      | `Story`                                            |
-| -------- | -------------------------------------------- | -------------------------------------------------- |
+| -------- | --------------------------------------------- | --------------------------------------------------- |
 | Is       | **the fact** — what you won, from whom, when | **the narrative** — what happened and what you did |
 | Length   | one line                                     | 500–1500 words, STAR-structured                    |
 | Lives on | Home strip + `/experience`                   | `/blog`                                            |
@@ -629,7 +629,7 @@ Structurally it's free: `SoftSkillModal` is the same component as `SkillDetailMo
    **You asked whether 3 is the right number and whether the UI can handle variation.** I checked each section — only _one_ is actually locked:
 
    | Home section            | Current | Layout tolerance                                                                                                                       | Verdict                                                                                                                                                                 |
-   | ----------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | ------------------------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
    | Featured Work           | 3       | **Locked at 3.** Positions are hardcoded: `md:ml-[12%]`, `md:ml-[55%] md:-mt-52`, `md:ml-[32%] md:mt-3`. A 4th card has nowhere to go. | Keep 3. To unlock later, move the three offsets into a `POSITIONS` array and index with `index % 3` — then every group of 3 repeats the cluster down the page. ~20 min. |
    | Experience              | 3       | Plain vertical stack — any count                                                                                                       | Free to change                                                                                                                                                          |
    | Leadership & Engagement | 3       | Flex accordion, fixed-height row. 4 spines still read fine; 5 gets cramped on tablet                                                   | 3–4 safe                                                                                                                                                                |
@@ -858,7 +858,7 @@ Two renames worth calling out: `container/HomePage` → `sections/home` (they're
 ## 5. Cost model
 
 | Service              | Tier                                                                                   | Cost         |
-| -------------------- | -------------------------------------------------------------------------------------- | ------------ |
+| --------------------- | ---------------------------------------------------------------------------------------- | ------------ |
 | Vercel               | Hobby — fine for a personal portfolio (non-commercial)                                 | $0           |
 | Firestore + Auth     | Spark — no card required                                                               | $0           |
 | Images               | `/public/media/`, served by Vercel CDN                                                 | $0           |
@@ -938,22 +938,28 @@ _Execution notes for this phase are in `plan-progress.md`._
 
 ### Phase 3 — Backend _(8–12h)_
 
-- [ ] Firebase project, Firestore enabled, Auth (email/password, one user)
-- [ ] Lock security rules to deny-all (§D3)
-- [ ] Admin SDK server-side only; service account in Vercel env vars
-- [ ] `FirestoreRepository` implementing the same interface
-- [ ] Seed script: `content/local/*` → Firestore, idempotent
-- [ ] **Enable Cache Components** and wire the Next 16 caching model — see below
-- [ ] Flip the provider env var. **Keep `LocalRepository` working forever** — it's your offline dev mode and your escape hatch
-- [ ] Verify `eternalglitch.com` in Resend (sending subdomain + DKIM/SPF records)
-- [ ] `POST /api/contact` — Zod validate → store → email via Resend; honeypot + rate limit + Cloudflare Turnstile
-- [ ] Wire the real form (add `name` attributes, loading/success/error states, kill the `alert()`)
+- [x] Firebase project, Firestore enabled, Auth (Google Sign-In, single account — see note below)
+- [x] Lock security rules to deny-all (§D3)
+- [x] Admin SDK server-side only; service account in Vercel env vars
+- [x] `FirestoreRepository` implementing the same interface
+- [x] Seed script: `content/local/*` → Firestore, idempotent
+- [x] **Enable Cache Components** and wire the Next 16 caching model — see below
+- [x] Flip the provider env var. **Keep `LocalRepository` working forever** — it's your offline dev mode and your escape hatch
+- [x] Verify `eternalglitch.com` in Resend (sending subdomain + DKIM/SPF records)
+- [x] `POST /api/contact` — Zod validate → store → email via Resend; rate limit + Cloudflare Turnstile
+- [x] Wire the real form (add `name` attributes, loading/success/error states, kill the `alert()`)
 
-**Exit:** content served from Firestore, site visually unchanged, contact form delivers a real email from your own domain, `PROVIDER=local` still works offline.
+**Exit:** content served from Firestore, site visually unchanged, contact form delivers a real email from your own domain, `PROVIDER=local` still works offline. ✅ **Met.**
+
+> **Auth note:** shipped as Google Sign-In (`dtanna2@asu.edu`), not email/password. Google Sign-In isn't single-user by construction — any Google account can authenticate against the project by default. The single-user guarantee is an app-level check deferred to Phase 4: compare the signed-in user's Firebase UID against an `ADMIN_UID` env var before granting `/admin` access. See Phase 4 below.
+>
+> **Contact form note:** a honeypot field and a submit-timing check were both tried and dropped after producing false positives against real visitors (autofill extensions, browser field-history suggestions). Turnstile plus the rate limit are the actual defense — this endpoint only accepts a JS `fetch()` POST, not a real form submission, so neither of the dropped checks would have mattered against anything sophisticated enough to bypass Turnstile anyway.
+
+_Execution notes for this phase are in `plan-progress.md`._
 
 #### ⚠️ Next.js 16 changed the caching API — this is the correction to my v1 plan
 
-I originally specified `unstable_cache` + `revalidateTag(tag)`. On 16.2.10 both are wrong. <cite index="12-1">`unstable_cache` has been replaced by `use cache` in Next.js 16; the recommendation is to opt into Cache Components and replace `unstable_cache` with the `use cache` directive.</cite> And <cite index="15-1">the single-argument form `revalidateTag(tag)` is deprecated — it still works if you suppress the TypeScript error, but that may be removed in a future version.</cite>
+I originally specified `unstable_cache` + `revalidateTag(tag)`. On 16.2.10 both are wrong. `unstable_cache` has been replaced by `use cache` in Next.js 16; the recommendation is to opt into Cache Components and replace `unstable_cache` with the `use cache` directive. And the single-argument form `revalidateTag(tag)` is deprecated — it still works if you suppress the TypeScript error, but that may be removed in a future version.
 
 You're effectively greenfield on the data layer, so take the modern path:
 
@@ -977,13 +983,13 @@ export async function getContent(): Promise<Content> {
 Then — and this is the part worth internalising, because getting it backwards causes a confusing class of bug:
 
 | Where you are                                | Function                          | Semantics                                                                                                                                                                              |
-| -------------------------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Admin panel Save button** (Server Action)  | `updateTag("content")`            | <cite index="20-1">Immediately expires cached data for read-your-own-writes — you see your change right away instead of stale content. Only usable in Server Actions.</cite>           |
-| **Route Handler / webhook / background job** | `revalidateTag("content", "max")` | Stale-while-revalidate: next visitor gets the old version instantly while the new one builds behind them. <cite index="22-1">`updateTag` throws if called from a Route Handler.</cite> |
+| ---------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Admin panel Save button** (Server Action)  | `updateTag("content")`            | Immediately expires cached data for read-your-own-writes — you see your change right away instead of stale content. Only usable in Server Actions.           |
+| **Route Handler / webhook / background job** | `revalidateTag("content", "max")` | Stale-while-revalidate: next visitor gets the old version instantly while the new one builds behind them. `updateTag` throws if called from a Route Handler. |
 
 For your admin panel, **`updateTag` in a Server Action is the right call on every save.** You click Save, you land back on the list, and your edit is _there_ — not there-on-the-next-refresh. That's the difference between a CMS that feels real and one that feels broken.
 
-One known gotcha to expect: <cite index="14-1">stale data on `<Link>` navigation after a revalidation is caused by the client-side Router Cache, not the server cache — use `revalidatePath()` alongside `revalidateTag()`, or configure `staleTimes`.</cite> If a publish looks like it didn't take but a hard refresh shows it did, that's this, not your Firestore code.
+One known gotcha to expect: stale data on `<Link>` navigation after a revalidation is caused by the client-side Router Cache, not the server cache — use `revalidatePath()` alongside `revalidateTag()`, or configure `staleTimes`. If a publish looks like it didn't take but a hard refresh shows it did, that's this, not your Firestore code.
 
 There's also a codemod that strips the old `unstable_` prefixes if you ever inherit code using them.
 
@@ -991,18 +997,27 @@ There's also a codemod that strips the old `unstable_` prefixes if you ever inhe
 
 ### Phase 4 — Admin panel _(15–25h)_
 
-- [ ] `(admin)` route group, Firebase Auth session, middleware redirect, no splash/nav chrome
-- [ ] Dashboard: counts, drafts, **orphan skills**, unread contact submissions
-- [ ] CRUD for each entity — forms generated from the Zod schemas
-- [ ] Skill multi-select with search (used on projects/experiences/stories)
-- [ ] **Featured manager**: drag-to-reorder per section, live preview of the home page, warning when >3 are flagged
-- [ ] Markdown/MDX editor with preview for `body` fields
+**The UI for this phase is specified in `docs/admin/ADMIN_DESIGN.md`,** with seven screens rendered in `docs/admin/admin-mockups.html`. That document is the source of truth for what the admin panel looks like and how it behaves; the checklist below is the source of truth for what gets built. Where the two disagree, the design document is newer — it has been through a review pass the checklist has not, and two items below were changed by it.
+
+- [x] **Bootstrap `ADMIN_UID` first, before anything else in this phase:** build the `(admin)` login page (Google Sign-In button, ungated), sign in once as `dtanna2@asu.edu`, read the resulting UID from Firebase Console → Authentication → Users, set it as `ADMIN_UID` in Vercel
+- [x] `(admin)` route group, Firebase Auth session, UID-comparison gate against `ADMIN_UID`, no splash/nav chrome
+- [ ] Dashboard — **an action queue, not a status report:** unread messages first, then drafts, then integrity warnings. Counts drop to a footer line (§4.7 of the design doc inverts this item's original ordering; knowing you have 58 skills changes nothing about what you do next)
+- [ ] CRUD for each entity — forms generated from the Zod schemas. Thin entities (Skill, Certification, LifePhase) expand inline in the row; heavy entities open a modal
+- [ ] Skill multi-select with search (used on projects/experiences/stories) — a floating command menu, grouped by category, alias-aware, with usage counts
+- [ ] **Featured manager**: ordered by home page section rather than entity type, drag-to-reorder with a mandatory single-pointer alternative, bench for unfeatured items, warning when more are flagged than `FEATURED_LIMITS` allows. ~~live preview of the home page~~ — **dropped**, see below
+- [ ] Markdown/MDX editor with preview for `body` fields — write / preview / split, split gated on the editor pane measuring ≥720px
 - [ ] Image upload → decide per §10 Q4
 - [ ] Draft/publish toggle + `/preview?token=…` for drafts
-- [ ] `revalidateTag` on every mutation
+- [ ] `updateTag("content")` on every mutation, called from the Server Action itself (read-your-own-writes) — `content/cache.ts` already exports this, unused since Phase 3
 - [ ] Contact inbox with status transitions
 
 **Exit:** you can add a project end-to-end from the browser and see it live within seconds, without opening an editor.
+
+> **Carried over from Phase 3:** the original plan assumed email/password auth, which is single-user by construction. Phase 3 shipped Google Sign-In instead, so that guarantee doesn't exist yet — the first bullet above is what creates it. There's a real bootstrapping order: the login page has to exist and be signed into once before the UID that gates it exists, so it has to be built ungated first. **Both bullets are now done** — see `docs/plan-progress.md`.
+>
+> **The featured manager's live home-page preview is dropped.** It was specified here before the screen was designed. The section-ordered layout the design landed on already communicates order, grouping and capacity, and the overflow warning states in words the one thing a preview would reveal ("Digital forensics will not render"). A preview is a second rendering path to keep in sync with the real home page, and one that drifts is worse than none. Reinstate only if the schematic proves insufficient in use.
+>
+> **Accessibility conformance is part of this phase's definition of done,** which the original checklist did not say. The design document carries the specifics (WCAG 2.2 target size, single-pointer drag alternatives, focus not obscured, an error summary for failed saves). This is not gold-plating: the admin panel is keyboard- and pointer-driven in ways the public site is not.
 
 ---
 
@@ -1050,7 +1065,7 @@ See §8. Fully optional, fully isolated, zero risk to the rest of the site.
 ### Timeline
 
 | Phase               | Hours | Cumulative |
-| ------------------- | ----- | ---------- |
+| -------------------- | ----- | ---------- |
 | 0 · Foundation      | 4–6   | 6          |
 | 1 · Content layer   | 6–10  | 16         |
 | 2 · Interaction     | 8–12  | 28         |
@@ -1073,7 +1088,7 @@ Mapped to the numbering in your brief, so you can check nothing was dropped.
 ### 7.1 Home — `/`
 
 | §        | Section                           | Decision                                                                                                                                                               |
-| -------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| -------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 0        | Splash                            | Keep. Add `sessionStorage` skip on repeat visits.                                                                                                                      |
 | 1.1      | Hero                              | Keep. Two notes below.                                                                                                                                                 |
 | 1.2      | About card                        | Keep. Content from `site.about.short`.                                                                                                                                 |
@@ -1136,7 +1151,7 @@ For 17 pages of Word content: convert to MDX once (`pandoc` handles the bulk), t
 That's a good visual target, and — usefully — it's one of the _easiest_ looks to achieve in three.js, because it's built almost entirely from emissive geometry rather than realistic lighting. Which means simple shapes look intentional rather than unfinished. The recipe:
 
 | Element               | How                                                                                                                                                                                              |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Near-black void       | `scene.background = black`, `<fog>` with a short far-plane so the corridor dissolves into darkness ahead                                                                                         |
 | Glowing edges         | `meshStandardMaterial` with `emissive` + `emissiveIntensity` on thin strips — light-**emitting** geometry, not lit surfaces                                                                      |
 | The actual glow       | **Bloom postprocessing** — `@react-three/postprocessing`'s `<EffectComposer><Bloom/></EffectComposer>`. This single effect is ~80% of "Tron". Without it, emissive strips are just bright lines. |
@@ -1189,14 +1204,14 @@ You framed this as directing a movie. Good movies have a skip-intro button — n
 ## 9. Risks
 
 | Risk                                         | Why it's real here                                                                           | Mitigation                                                                                                                                                      |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **The refactor eats the momentum**           | Phases 0–1 change nothing visible. That's demoralising when you're used to shipping UI.      | Phase 2 is the payoff, and it's only ~25h in. Also: do the placeholder-URL fix on day one for an immediate win.                                                 |
 | **3D scope creep**                           | It's the most exciting part and the least bounded. Easy to spend 60h and ship nothing.       | It's last, isolated in `components/three/`, and gated behind a page that already works without it. Timebox it.                                                  |
 | **Content churn**                            | You said several sections aren't decided.                                                    | D1 means undecided sections change _data_, not architecture. Add fields; don't restructure.                                                                     |
 | **Perfectionism stalls the launch**          | _"It has to be perfect"_ is your words, and it's the most common way projects like this die. | Every phase ends deployable. Ship Phase 3 publicly and keep going. A live good site beats an unreleased perfect one — and recruiters can't read a local branch. |
 | **Firebase terms shift again**               | Storage left the free tier in Feb 2026 with little fanfare.                                  | D1's repository interface. Swapping providers is one file. Don't build Firebase assumptions into components.                                                    |
 | **Admin panel is bigger than it looks**      | 15–25h is realistic; it's a small CMS.                                                       | Build read-only + featured-toggle first (that's 80% of your day-to-day use), full CRUD after. Or reconsider Sanity per §10 Q1.                                  |
-| **Single-admin auth becomes the weak point** | One account with write access to everything.                                                 | Firebase Auth + strong password + **2FA on the Google account** + deny-all Firestore rules + never expose the Admin SDK to the client.                          |
+| **Single-admin auth becomes the weak point** | One account with write access to everything. Shipped as Google Sign-In (Phase 3), which isn't single-user by construction the way email/password would have been. | `ADMIN_UID` allowlist check on `/admin` (Phase 4) + **2FA on the Google account** + deny-all Firestore rules + never expose the Admin SDK to the client.        |
 
 ---
 
@@ -1205,7 +1220,7 @@ You framed this as directing a movie. Good movies have a skip-intro button — n
 All six are settled. Recorded here so a future you (or a future chat) doesn't reopen them.
 
 | #   | Question                      | **Decision**                                                                                                                                           |
-| --- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| --- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Q1  | Build the CMS or use hosted?  | **Build our own.** Phase 4 stands. It's also an interview story.                                                                                       |
 | Q2  | Where do certifications live? | 3 featured on Home; full list on `/about` beneath the skill matrix. **Awards go on `/experience`**, grouped by life phase, since most originate there. |
 | Q3  | Engagements clickable?        | **Yes** — each gets a `body`. Removes the inconsistency of three inert cards among clickable siblings.                                                 |

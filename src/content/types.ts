@@ -283,7 +283,7 @@ export interface Content {
 }
 
 /**
- * A contact form submission (PROJECT_PLAN.md §3.2, site-behavior.md §6.7).
+ * A contact form submission (docs/project-plan.md §3.2, docs/site-behavior.md §6.7).
  * Write-only from the public side — `/api/contact` creates these, nothing
  * public ever reads them back. Not part of `Content`: this isn't something
  * every page loads, only the (future, Phase 4) admin inbox does.
@@ -301,7 +301,7 @@ export interface ContactSubmission {
 }
 
 /**
- * What the one global modal layer is currently showing (PROJECT_PLAN.md §3.5).
+ * What the one global modal layer is currently showing (docs/project-plan.md §3.5).
  * Serialized into the `?d=` query param — `project:ai-intrusion-detection`,
  * or bare `contact` — so a modal is shareable and survives a hard refresh.
  * Never persisted or validated through `schema.ts`: it describes UI state,

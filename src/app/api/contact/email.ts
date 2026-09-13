@@ -19,7 +19,7 @@ function usableReplyTo(contact: string): string | undefined {
  * Sends the admin-facing notification for a new contact submission.
  * `replyTo` is only set when `contact` actually looks like a real, usable
  * email address — the field also accepts a phone number or a LinkedIn URL
- * (site-behavior.md §6.7), neither valid as a reply-to; and a syntactically
+ * (docs/site-behavior.md §6.7), neither valid as a reply-to; and a syntactically
  * valid but `no-reply@...`/`noreply@...` address is equally useless as one,
  * even though it'd pass the plain pattern check.
  */

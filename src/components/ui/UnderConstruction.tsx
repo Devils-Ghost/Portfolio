@@ -13,7 +13,7 @@ type Props = {
   /**
    * Contact address, resolved from `site.socials` by the page rendering
    * this. Passed in rather than looked up here so the address exists in the
-   * content layer only (PROJECT_PLAN.md §D1).
+   * content layer only (docs/project-plan.md §D1).
    */
   emailHref: string;
 };

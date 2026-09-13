@@ -18,7 +18,7 @@ interface ModalProps {
   /**
    * Renders a Back affordance next to Close when set — the modal-to-modal
    * navigation DetailModalHost needs (skill → project → back to skill,
-   * PROJECT_PLAN.md §3.5). Omitted entirely when there's nowhere to go back
+   * docs/project-plan.md §3.5). Omitted entirely when there's nowhere to go back
    * to, rather than shown disabled.
    */
   onBack?: () => void;

@@ -9,7 +9,7 @@ import type { Engagement } from "@/content/types";
 /**
  * The flex accordion. Client only because one card is expanded at a time and
  * that selection is state — the heading above it and the content itself both
- * stay on the server (PROJECT_PLAN.md §D4).
+ * stay on the server (docs/project-plan.md §D4).
  *
  * The first card starts open, so the section never renders as three closed
  * spines with nothing to read.

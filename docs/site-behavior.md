@@ -2,14 +2,14 @@
 
 **Project:** Dhaval Tanna — personal portfolio
 **Live at:** `dhaval-tanna.eternalglitch.com`
-**Companion document:** `PROJECT_PLAN.md` (audit, architecture rationale, phased execution)
+**Companion document:** `project-plan.md` (audit, architecture rationale, phased execution)
 **Last updated:** September 2026
 
 ---
 
 ## 0. What this document is
 
-`PROJECT_PLAN.md` says **how we're building it and in what order**. This document says **what the site is and how it behaves** — permanently, independent of build phase.
+`project-plan.md` says **how we're building it and in what order**. This document says **what the site is and how it behaves** — permanently, independent of build phase.
 
 It is written to be self-contained. If this chat is lost, paste this document into a new one and the assistant will have the full picture without re-reading the codebase.
 
@@ -240,14 +240,18 @@ Source material: an existing 17-page STAR document, converted to MDX once and th
 
 Auth-gated (Firebase Auth, single user). Own layout: sidebar, no splash, no navbar, no custom scrollbar.
 
-- **Dashboard** — counts, drafts, unread enquiries, and integrity warnings: orphan skills, dangling skill references, unevidenced soft skills
-- **CRUD** for every entity, with forms generated from the Zod schemas
+**Visual and interaction design is specified in `admin/ADMIN_DESIGN.md`,** with screens in `admin/admin-mockups.html`. This section is the behavioural summary; that document is the detail.
+
+- **Sign-in** — `/login`, Google Sign-In, deliberately outside the gated subtree so the gate can never wrap the page that grants access. A session cookie (`httpOnly`, 14 days) is minted server-side and its uid checked against `ADMIN_UID` on every request
+- **Dashboard** — an **action queue, not a status report**: unread enquiries first, then drafts by age, then integrity warnings (orphan skills, dangling skill references, unevidenced soft skills, over-limit featured counts). Counts are a footer line. The warnings block renders only when something is wrong
+- **CRUD** for every entity, with forms generated from the Zod schemas. Thin entities expand inline in the row; heavy entities open a modal, URL-driven, with Escape and backdrop guarded when the draft is dirty
 - **Skill multi-select** with search wherever `skillIds` appears — makes typos structurally impossible
-- **Featured manager** — drag to reorder per section, live home-page preview, warning when more than the section limit is flagged
+- **Featured manager** — ordered by home page section rather than entity type, drag to reorder with a single-pointer alternative, a bench for unfeatured items, warning when more than the section limit is flagged
 - **Markdown/MDX editor** with preview for all `body` fields
 - **Draft / publish** toggle, with token-gated preview URLs
 - **Inbox** for contact submissions with status transitions
 - Every save calls `updateTag("content")` — changes are live within seconds and visible immediately to the person who made them
+- **Deletion is a hard delete guarded by a reference check** — if anything references the record, the dialog names what, and delete stays disabled until they are detached. There is no archive state; `visibility: "draft"` already covers "exists but is not public"
 
 ### 6.7 Contact flow
 
@@ -262,7 +266,7 @@ An escape hatch link offers a plain `mailto:` for anyone who'd rather write thei
 
 ## 7. Content entities
 
-Full TypeScript definitions live in `PROJECT_PLAN.md` §3.2. Summary of what exists and how it relates:
+Full TypeScript definitions live in `project-plan.md` §3.2. Summary of what exists and how it relates:
 
 | Entity                | Holds                                             | Points at                                |
 | --------------------- | ------------------------------------------------- | ---------------------------------------- |
@@ -306,7 +310,7 @@ These apply to every future change. They exist so that decisions don't have to b
 
 ## 9. Build status
 
-**Phases 0–3 complete** — foundation, content layer, the interaction system, and the backend (Firestore, the real contact form) are all built. The site now renders from real content, most of it is clickable, and content is served from Firestore in production; what's left is the admin panel (Phase 4) and the remaining pages (`/about`, `/projects`, `/experience`, `/blog`, Phase 5).
+**Phases 0–3 complete, Phase 4 in progress** — foundation, content layer, the interaction system, and the backend (Firestore, the real contact form) are all built. The site now renders from real content, most of it is clickable, and content is served from Firestore in production. Phase 4's auth gate is built and its UI is designed but not yet implemented; after that comes the remaining pages (`/about`, `/projects`, `/experience`, `/blog`, Phase 5).
 
 | Area                                          | Status                                                                                                                                                                                                                                                   |
 | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -326,11 +330,12 @@ These apply to every future change. They exist so that decisions don't have to b
 | Soft-skill evidence linking                   | ❌ Not clickable yet — no `softskill` modal (same as above)                                                                                                                                                                                              |
 | Global modal system                           | ✅ Done (Phase 2) for `project`/`experience`/`skill`/`contact`; `engagement`/`story`/`award`/`softskill` await their own modals                                                                                                                          |
 | Firestore backend                             | ✅ Done (Phase 3, all 9 stages) — Firebase project, `FirestoreRepository`, idempotent seed script, Cache Components, provider flipped to Firestore in production, Resend domain verified, `POST /api/contact` and the real contact form wired end to end |
-| Admin panel                                   | ❌ Not started (Phase 4)                                                                                                                                                                                                                                 |
+| Admin auth (`/login`, session, gate)          | ✅ Built (Phase 4) — Google Sign-In, `httpOnly` session cookie, uid checked against `ADMIN_UID` on every request                                                                                                                                         |
+| Admin panel UI                                | 🟡 Designed, not built (Phase 4) — see `admin/ADMIN_DESIGN.md`; `/admin` is currently a placeholder                                                                                                                                                     |
 | `/about`, `/projects`, `/experience`, `/blog` | ❌ `UnderConstruction` placeholders (Phase 5)                                                                                                                                                                                                            |
 | 3D corridor                                   | ❌ Not started (Phase 6, optional)                                                                                                                                                                                                                       |
 | SEO: OG images, sitemap, structured data      | ❌ Not started (Phase 7)                                                                                                                                                                                                                                 |
 
-**Known live defects:** ~~placeholder GitHub/demo/email URLs~~ fixed; ~~two Rules-of-Hooks violations~~ fixed; ~~`Inter` font not applied~~ **this one was a misdiagnosis** — body text was always Inter, since `next/font`'s class selector outranked the `body` element selector. Only `SplashScreen` was in Arial, via an inline style, and it no longer is. See `PROJECT_PLAN.md` §1.4 #8. ~~`HireMeModal` mounted twice~~ fixed (Phase 2) — both triggers dispatch `{kind:"contact"}` to the one global modal host instead.
+**Known live defects:** ~~placeholder GitHub/demo/email URLs~~ fixed; ~~two Rules-of-Hooks violations~~ fixed; ~~`Inter` font not applied~~ **this one was a misdiagnosis** — body text was always Inter, since `next/font`'s class selector outranked the `body` element selector. Only `SplashScreen` was in Arial, via an inline style, and it no longer is. See `project-plan.md` §1.4 #8. ~~`HireMeModal` mounted twice~~ fixed (Phase 2) — both triggers dispatch `{kind:"contact"}` to the one global modal host instead.
 
-Full detail in `PROJECT_PLAN.md` §1.3–1.4 and the phase-by-phase notes in `plan-progress.md`.
+Full detail in `project-plan.md` §1.3–1.4 and the phase-by-phase notes in `plan-progress.md`.

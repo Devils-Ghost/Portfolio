@@ -2,7 +2,7 @@ import type { ContactFormInput } from "./schema";
 
 /**
  * The admin notification's HTML body, styled to match the site's own theme
- * (site-behavior.md §3) rather than a generic transactional-email look —
+ * (docs/site-behavior.md §3) rather than a generic transactional-email look —
  * same dark surface, blue accent, and the same small accent-bar treatment
  * `ContactFormBody`'s own modal uses (`w-12 h-1 bg-blue-500 rounded-full`).
  * The page background outside the card is white, not the site's own black —
@@ -18,7 +18,7 @@ import type { ContactFormInput } from "./schema";
  * are hardcoded hex, not `var(--color-*)`, for the same reason: CSS custom
  * properties aren't reliably supported in email either. The hex values
  * mirror `@theme`'s definitions in `globals.css` — `--color-blue-500` etc.
- * are Tailwind v4's stock defaults for those shades (plan-progress.md,
+ * are Tailwind v4's stock defaults for those shades (docs/plan-progress.md,
  * Phase 0), so their standard hex equivalents are used directly here
  * rather than trying to reproduce the OKLCH values email clients wouldn't
  * render correctly anyway.

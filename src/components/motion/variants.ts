@@ -1,7 +1,7 @@
 import type { Variants } from "framer-motion";
 
 /**
- * The site's entrance animations, in one place (PROJECT_PLAN.md §4).
+ * The site's entrance animations, in one place (docs/project-plan.md §4).
  *
  * Every section fades and lifts the same way on the way in, so the settings
  * live here rather than being retyped per section — retuning the easing is

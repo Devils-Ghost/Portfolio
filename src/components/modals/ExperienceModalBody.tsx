@@ -11,8 +11,8 @@ import {
 import type { ModalBodyProps } from "./registry";
 
 /**
- * `ExperienceModalBody` — site-behavior.md §4.6. Relocated from the modal
- * that used to live inside `ExperienceCard` (PROJECT_PLAN.md §1.3 ⑤), with
+ * `ExperienceModalBody` — docs/site-behavior.md §4.6. Relocated from the modal
+ * that used to live inside `ExperienceCard` (docs/project-plan.md §1.3 ⑤), with
  * two additions the card's modal never had: `links` (the field existed, the
  * UI never rendered it) and `achievements` — retained since Phase 1 "for a
  * distinct UI treatment" and never wired up until now.

@@ -18,7 +18,7 @@ import type { SocialLink } from "@/content/types";
  *
  * `socials` arrives as a prop from the Server Component in (site)/layout.tsx
  * rather than being imported here, so the chrome reads the same
- * `site.socials` the rest of the page does (PROJECT_PLAN.md §D1).
+ * `site.socials` the rest of the page does (docs/project-plan.md §D1).
  */
 export default function MainLayout({
   children,

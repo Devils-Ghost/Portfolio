@@ -89,7 +89,7 @@ export const ENGAGEMENT_TYPE_LABELS: Record<Engagement["type"], string> = {
 };
 
 // ─── Featured selection ──────────────────────────────────────────
-/** Section limits live here, never in the data. See PROJECT_PLAN.md §3.3. */
+/** Section limits live here, never in the data. See docs/project-plan.md §3.3. */
 export const FEATURED_LIMITS = {
   skills: 14,
   projects: 3,

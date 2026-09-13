@@ -17,9 +17,9 @@ interface RegistryEntry {
 }
 
 /**
- * `DetailModalHost`'s body lookup (PROJECT_PLAN.md §3.5, which names this
+ * `DetailModalHost`'s body lookup (docs/project-plan.md §3.5, which names this
  * file's `skill`/`softskill` body `EvidenceBody` — renamed to
- * `LinkedItemsBody` in Phase 2, see plan-progress.md). Only the kinds Phase 2
+ * `LinkedItemsBody` in Phase 2, see docs/plan-progress.md). Only the kinds Phase 2
  * actually wires up have entries — `engagement`, `story`, `award` and
  * `softskill` join here as their own detail modals ship in later phases;
  * nothing in the app dispatches those kinds yet, and `LinkedItemsBody`

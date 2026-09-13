@@ -10,7 +10,7 @@ import type { SiteContent } from "@/content/types";
  * The contact callout. Client, because the whole block is scrubbed by a
  * `useScroll` taken on its own element; the availability line it shows comes
  * from `site.availability` via the Server Component in CallToAction
- * (PROJECT_PLAN.md §D4).
+ * (docs/project-plan.md §D4).
  *
  * Dispatches `{kind:"contact"}` to the one global modal host rather than
  * mounting its own `HireMeModal` — that used to be the second of two

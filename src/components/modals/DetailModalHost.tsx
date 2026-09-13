@@ -26,7 +26,7 @@ interface DetailModalContextValue {
 const DetailModalContext = createContext<DetailModalContextValue | null>(null);
 
 /**
- * Opens, closes and navigates the one global modal layer (site-behavior.md
+ * Opens, closes and navigates the one global modal layer (docs/site-behavior.md
  * §4.6). Any component under `<DetailModalHost>` can call this — a skill
  * pill, a project card, the navbar's "Let's Talk" — without needing to know
  * where the modal actually renders.
@@ -80,7 +80,7 @@ function sameTarget(a: DetailTarget | null, b: DetailTarget | null): boolean {
 const MODAL_WIDTH = "max-w-2xl";
 
 /**
- * The one global modal layer (PROJECT_PLAN.md §3.5, §D5). State lives in the
+ * The one global modal layer (docs/project-plan.md §3.5, §D5). State lives in the
  * `?d=` query param, so a modal is shareable and reopens on a hard refresh.
  *
  * The context (`open`/`back`/`close`/`canGoBack`) is provided here, around
@@ -126,7 +126,7 @@ export default function DetailModalHost({
   // and Close would do the same thing — the affordance is reserved for a
   // genuine previous *modal* (skill → project → back to skill), not just
   // "a modal is open" — "push on open, pop on back, clear on close"
-  // (PROJECT_PLAN.md §3.5).
+  // (docs/project-plan.md §3.5).
   const depthRef = useRef(0);
   const [canGoBack, setCanGoBack] = useState(false);
 

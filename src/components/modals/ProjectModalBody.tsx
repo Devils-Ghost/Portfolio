@@ -7,9 +7,9 @@ import { resolveSkills } from "@/content/selectors";
 import type { ModalBodyProps } from "./registry";
 
 /**
- * `ProjectModalBody` — site-behavior.md §4.6. Long description, resolved
+ * `ProjectModalBody` — docs/site-behavior.md §4.6. Long description, resolved
  * skill chips and typed link buttons, relocated verbatim from the modal that
- * used to live inside `ProjectCard` itself (PROJECT_PLAN.md §1.3 ⑤). The
+ * used to live inside `ProjectCard` itself (docs/project-plan.md §1.3 ⑤). The
  * chips are buttons now instead of static spans: clicking one opens that
  * skill's own evidence modal.
  */

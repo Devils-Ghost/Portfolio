@@ -1,7 +1,7 @@
 import { revalidateTag, updateTag } from "next/cache";
 
 /**
- * Invalidates the `"content"` cache tag (PROJECT_PLAN.md Phase 3) that every
+ * Invalidates the `"content"` cache tag (docs/project-plan.md Phase 3) that every
  * repository read is tagged with (§D1 — both `LocalRepository` and
  * `FirestoreRepository`, so a stray call under `CONTENT_SOURCE=local` is
  * harmless, just a no-op cache miss on the next read).

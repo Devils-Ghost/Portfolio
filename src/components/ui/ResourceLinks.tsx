@@ -13,7 +13,7 @@ import type { LinkKind, ResourceLink } from "@/content/types";
  * Renders a `ResourceLink[]` as buttons.
  *
  * The content model stores links as an array of tagged links rather than
- * `{github?, live?, doc?}` (PROJECT_PLAN.md §3.1), so adding a kind is a row
+ * `{github?, live?, doc?}` (docs/project-plan.md §3.1), so adding a kind is a row
  * in this table instead of a new field on three entities. `label` on the link
  * overrides the default for its kind — an empty string counts as absent, so a
  * record that leaves it blank still gets the sensible default.

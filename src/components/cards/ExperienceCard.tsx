@@ -22,7 +22,7 @@ const BRACKET_FADE_MASK =
   "linear-gradient(to bottom, transparent, black 25%, black 75%, transparent)";
 
 /**
- * Purely presentational (PROJECT_PLAN.md §1.3 ⑤): it no longer owns modal
+ * Purely presentational (docs/project-plan.md §1.3 ⑤): it no longer owns modal
  * state, it dispatches `{kind:"experience", id}` to the one global modal
  * host.
  */

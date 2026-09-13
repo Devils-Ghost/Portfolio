@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /**
- * Validates the contact form's real fields (site-behavior.md §6.7) — a
+ * Validates the contact form's real fields (docs/site-behavior.md §6.7) — a
  * security boundary, not a correctness check like `content/schema.ts`'s
  * mirrors: this data comes from anyone on the internet, not from a file we
  * wrote ourselves, so nothing downstream (the Firestore write, the email

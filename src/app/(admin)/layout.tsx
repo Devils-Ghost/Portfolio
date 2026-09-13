@@ -1,6 +1,6 @@
 /**
  * (admin) route group opts out of all `(site)` chrome — no splash, no
- * navbar, no footer, no custom scrollbar (PROJECT_PLAN.md §4). Root
+ * navbar, no footer, no custom scrollbar (docs/project-plan.md §4). Root
  * layout.tsx already sets the dark background and base typography, so
  * there's nothing left for this layout to do until the dashboard shell
  * (sidebar, auth gate) lands later in this phase.

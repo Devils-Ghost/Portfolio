@@ -4,7 +4,7 @@ import { ICONS } from "@/lib/icons";
 import type { IconName } from "@/content/types";
 
 /**
- * Draws the icon a content record names (PROJECT_PLAN.md §1.3 ③).
+ * Draws the icon a content record names (docs/project-plan.md §1.3 ③).
  *
  * Content stores `iconName: "flag"`, never a component, so something has to
  * turn the string back into one. Doing that inline — `const Icon =

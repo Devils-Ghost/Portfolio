@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin panel — screen review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ───────────────────────────────────────────────────────────────
+   TOKENS
+   Every text colour below is measured against --surface (#0a0f18).
+   Ratios are printed in §00 so they can be re-checked, not trusted.
+   Mono is the SYSTEM stack on purpose — the project has no
+   --font-mono token, so `font-mono` already resolves to this on the
+   live site. A mockup in JetBrains Mono would be showing a font the
+   site does not load. See ADMIN_DESIGN.md §2.3.
+   ─────────────────────────────────────────────────────────────── */
+:root{
+  --surface:#0a0f18;
+  --surface-deep:#05080c;
+  --surface-raised:#151d29;
+
+  /* text — all ≥4.5:1 on --surface */
+  --text:#ffffff;      /* 19.2:1 */
+  --text-2:#9ca3af;    /*  7.6:1  body copy, excerpts */
+  --text-3:#818a99;    /*  5.5:1  ALL metadata, mono labels, hints */
+
+  /* lines — decorative vs informational are different jobs */
+  --line:rgba(255,255,255,.08);        /* dividers, decorative */
+  --line-strong:rgba(255,255,255,.16); /* card + panel edges */
+  --line-input:rgba(255,255,255,.36);  /* input boundary, 3.3:1 — WCAG 1.4.11 */
+
+  --accent:#3b82f6;      /* 5.2:1 on surface — safe as a focus ring */
+  --accent-soft:#60a5fa; /* 7.6:1 */
+
+  --ok:#6ee7b7;     --ok-bg:rgba(16,185,129,.13);
+  --warn:#fcd34d;   --warn-bg:rgba(245,158,11,.13);  --warn-line:rgba(245,158,11,.30);
+  --danger:#fca5a5; --danger-bg:rgba(239,68,68,.12); --danger-line:rgba(239,68,68,.32);
+
+  --card-shadow:0 20px 40px -15px rgb(0 0 0 / .7);
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+
+  /* motion — built-in CSS easings are too weak to read as intentional */
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-in-out:cubic-bezier(.77,0,.175,1);
+
+  /* 4pt spacing grid */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px;
+  --s6:24px; --s8:32px; --s12:48px; --s16:64px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Inter,system-ui,sans-serif;
+  background:#000;color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  font-size:14px;line-height:1.55;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-10;
+  background:radial-gradient(ellipse 80% 55% at 50% -10%,rgba(59,130,246,.16),transparent 70%);
+}
+
+/* ── type scale: 7 steps, tracking is size-specific ── */
+.t-display{font-size:28px;line-height:1.15;letter-spacing:-.02em;font-weight:600}
+.t-title  {font-size:20px;line-height:1.25;letter-spacing:-.015em;font-weight:600}
+.t-heading{font-size:16px;line-height:1.35;letter-spacing:-.01em;font-weight:600}
+.t-body   {font-size:14px;line-height:1.55;letter-spacing:0}
+.t-small  {font-size:13px;line-height:1.5;letter-spacing:0}
+.t-mono   {font-family:var(--mono);font-size:12px;line-height:1.4;letter-spacing:.01em}
+.t-label  {font-family:var(--mono);font-size:11px;line-height:1.3;letter-spacing:.08em;text-transform:uppercase}
+
+/* ── universal interaction states ──
+   focus-visible only: a mouse click must not leave a ring behind.  */
+:where(button,a,[tabindex],input,.pressable):focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px;border-radius:6px;
+}
+.pressable{transition:transform 120ms var(--ease-out),background-color 120ms ease;cursor:pointer}
+.pressable:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){
+  .pressable:hover{background-color:rgba(255,255,255,.04)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms!important;animation-duration:.01ms!important}
+  .pressable:active{transform:none}
+}
+
+.wrap{max-width:1140px;margin:0 auto;padding:var(--s16) var(--s6) 96px}
+.doc-head{border-bottom:1px solid var(--line);padding-bottom:var(--s8)}
+.doc-head h1{font-size:28px;line-height:1.15;letter-spacing:-.02em;font-weight:600}
+.doc-head p{color:var(--text-2);margin-top:var(--s3);max-width:62ch;font-size:14px}
+.stamp{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--s4)}
+section{padding-top:var(--s16)}
+.sec-head{display:flex;align-items:baseline;gap:var(--s3);margin-bottom:var(--s2)}
+.sec-num{font-family:var(--mono);font-size:12px;color:var(--accent-soft)}
+.sec-head h2{font-size:20px;line-height:1.25;letter-spacing:-.015em;font-weight:600}
+.sec-note{color:var(--text-2);font-size:14px;max-width:68ch;margin-bottom:var(--s5)}
+.sec-note code{font-family:var(--mono);font-size:12.5px;color:var(--text)}
+.frame{background:var(--surface);border:1px solid var(--line-strong);border-radius:16px;box-shadow:var(--card-shadow);overflow:hidden}
+
+/* ═══ 00 FOUNDATIONS ═══ */
+.found{padding:var(--s6);display:grid;gap:var(--s8)}
+.found h3{font-size:16px;letter-spacing:-.01em;font-weight:600;margin-bottom:var(--s4)}
+.spec-row{display:flex;align-items:baseline;gap:var(--s5);padding:var(--s3) 0;border-top:1px solid var(--line)}
+.spec-row .meta{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--text-3);width:210px;flex:none}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:var(--s3)}
+.sw-card{background:var(--surface-deep);border:1px solid var(--line);border-radius:12px;padding:var(--s4)}
+.sw-chip{height:34px;border-radius:8px;margin-bottom:var(--s3);border:1px solid var(--line)}
+.sw-name{font-family:var(--mono);font-size:12px}
+.sw-ratio{font-family:var(--mono);font-size:11px;color:var(--text-3);margin-top:var(--s1)}
+.sw-ratio b{color:var(--ok);font-weight:400}
+.grid-demo{display:flex;gap:var(--s2);align-items:flex-end}
+.grid-demo div{background:rgba(59,130,246,.22);border:1px solid rgba(59,130,246,.4);border-radius:4px;width:34px}
+.grid-demo span{font-family:var(--mono);font-size:11px;color:var(--text-3);display:block;text-align:center;margin-top:var(--s2)}
+.motion-tbl{width:100%;border-collapse:collapse}
+.motion-tbl th{text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);font-weight:400;padding:var(--s2) var(--s3) var(--s2) 0;border-bottom:1px solid var(--line)}
+.motion-tbl td{padding:var(--s3) var(--s3) var(--s3) 0;border-bottom:1px solid var(--line);font-size:13px;color:var(--text-2);vertical-align:top}
+.motion-tbl td:first-child{color:var(--text)}
+.motion-tbl code{font-family:var(--mono);font-size:12px;color:var(--accent-soft)}
+.try{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center;margin-top:var(--s4)}
+.try p{font-size:13px;color:var(--text-3);width:100%}
+
+/* ═══ APP SHELL ═══ */
+.app{display:grid;grid-template-columns:200px minmax(0,1fr)}
+.side{background:var(--surface-deep);border-right:1px solid var(--line);padding:var(--s5) var(--s3)}
+.side-group{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);padding:0 var(--s3);margin:var(--s5) 0 var(--s2)}
+.side-group:first-child{margin-top:0}
+.nav{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) var(--s3);border-radius:8px;color:var(--text-2);font-size:14px;border:0;background:none;width:100%;text-align:left;font-family:inherit}
+.nav.on{background:rgba(59,130,246,.13);color:var(--text);box-shadow:inset 2px 0 0 var(--accent)}
+.dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.55;flex:none}
+.count{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--accent-soft);background:rgba(59,130,246,.16);border-radius:99px;padding:1px var(--s2)}
+.pane{padding:var(--s6)}
+.pane-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s5)}
+.pane-head h3{font-size:20px;line-height:1.25;letter-spacing:-.015em;font-weight:600}
+
+.btn{font-size:14px;color:#fff;background:var(--accent);border:0;border-radius:8px;padding:var(--s2) var(--s4);font-family:inherit;font-weight:500;transition:transform 120ms var(--ease-out),background-color 120ms ease;cursor:pointer}
+.btn:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.btn:hover{background:#4c8ef7}}
+.btn.ghost{background:transparent;border:1px solid var(--line-strong);color:var(--text-2)}
+@media (hover:hover) and (pointer:fine){.btn.ghost:hover{background:rgba(255,255,255,.05);color:var(--text)}}
+.btn.danger{background:transparent;border:1px solid var(--danger-line);color:var(--danger)}
+@media (hover:hover) and (pointer:fine){.btn.danger:hover{background:var(--danger-bg)}}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:disabled:active{transform:none}
+
+/* ── rows: full-bleed divider, inset hover ── */
+.rows{margin:0 calc(var(--s3) * -1)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:var(--s4);
+     padding:var(--s4) var(--s3);border-radius:8px;position:relative;
+     transition:background-color 120ms ease;cursor:pointer;border:0;background:none;
+     width:100%;text-align:left;font-family:inherit;color:inherit}
+.row + .row::before{content:"";position:absolute;top:0;left:var(--s3);right:var(--s3);height:1px;background:var(--line)}
+@media (hover:hover) and (pointer:fine){.row:hover{background:rgba(255,255,255,.04)}}
+.row:active{transform:scale(.995)}
+.row-t{font-size:14px;font-weight:500}
+.row-m{font-family:var(--mono);font-size:12px;color:var(--text-3);margin-top:var(--s1)}
+.tag{font-family:var(--mono);font-size:11px;border-radius:99px;padding:2px var(--s2);white-space:nowrap;flex:none;letter-spacing:.01em}
+.tag.live{color:var(--ok);background:var(--ok-bg)}
+.tag.wip{color:var(--warn);background:var(--warn-bg)}
+.tag.draft{color:var(--text-3);border:1px solid var(--line-strong)}
+
+.expand-in{background:var(--surface-deep);border:1px solid var(--line);border-radius:12px;padding:var(--s4);margin:var(--s3) 0 var(--s2)}
+.expand-lab{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--s3)}
+.chips{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
+.chip{font-family:var(--mono);font-size:12px;color:var(--text-2);background:rgba(255,255,255,.05);
+      border:1px solid var(--line-strong);border-radius:99px;padding:var(--s1) var(--s3);
+      display:inline-flex;gap:var(--s2);align-items:center;
+      transition:transform 140ms var(--ease-out),background-color 120ms ease;cursor:pointer}
+.chip:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.chip:hover{background:rgba(255,255,255,.09)}}
+.chip .x{color:var(--text-3)}
+.chip.ghost{border-style:dashed;color:var(--text-3);background:none}
+.chip.on{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.38);color:#bfdbfe}
+.chip.warn{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn)}
+.add-skill{background:transparent;border:1px dashed var(--line-input);border-radius:99px;color:var(--text-3);
+           font-family:var(--mono);font-size:12px;padding:var(--s1) var(--s3);cursor:pointer;
+           transition:transform 140ms var(--ease-out),color 120ms ease,border-color 120ms ease}
+.add-skill:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.add-skill:hover{color:var(--text);border-color:var(--accent)}}
+
+/* ═══ MODAL ═══ */
+.scrim{background:rgba(0,0,0,.6);padding:var(--s8);border-radius:16px}
+.sheet{background:var(--surface);border:1px solid var(--line-strong);border-radius:14px;overflow:hidden;box-shadow:var(--card-shadow)}
+.sheet-bar{display:flex;align-items:center;justify-content:space-between;padding:var(--s3) var(--s5);border-bottom:1px solid var(--line)}
+.sheet-bar h4{font-size:16px;letter-spacing:-.01em;font-weight:600}
+.bar-right{display:flex;align-items:center;gap:var(--s3)}
+.saved{font-family:var(--mono);font-size:12px;color:var(--text-3)}
+.sheet-body{display:grid;grid-template-columns:164px minmax(0,1fr)}
+.rail{border-right:1px solid var(--line);padding:var(--s3) var(--s2)}
+.rail button{font-size:13px;color:var(--text-2);padding:var(--s2) var(--s3);border-radius:7px;display:block;width:100%;text-align:left;border:0;background:none;font-family:inherit;cursor:pointer;transition:background-color 120ms ease}
+.rail button.on{background:rgba(59,130,246,.13);color:var(--text)}
+@media (hover:hover) and (pointer:fine){.rail button:hover:not(.on){background:rgba(255,255,255,.04)}}
+.editor{padding:var(--s4) var(--s5) var(--s5)}
+.ed-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s3)}
+.ed-head .lab{font-size:14px;font-weight:500}
+.seg{display:flex;gap:2px;border:1px solid var(--line-strong);border-radius:8px;padding:2px}
+/* min-height 24px — WCAG 2.2 SC 2.5.8 target size (web number, not iOS 44pt) */
+.seg button{font-family:var(--mono);font-size:11px;color:var(--text-3);padding:0 var(--s3);min-height:24px;border-radius:6px;border:0;background:none;cursor:pointer;transition:background-color 120ms ease,color 120ms ease}
+.seg button.on{background:rgba(59,130,246,.16);color:#bfdbfe}
+.split{display:flex;border:1px solid var(--line);border-radius:10px;min-height:200px;overflow:hidden}
+.md{flex:1;padding:var(--s4);font-family:var(--mono);font-size:12.5px;line-height:1.8;color:var(--text-2);min-width:0}
+.md .h{color:#e5e7eb}
+.md .c{color:var(--accent-soft)}
+.grip{width:11px;background:var(--surface-deep);border-left:1px solid var(--line);border-right:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:col-resize;flex:none}
+.grip i{width:2px;height:26px;background:var(--text-3);border-radius:2px;display:block;opacity:.6}
+.prev{flex:1;padding:var(--s4);min-width:0}
+.prev h5{font-size:16px;letter-spacing:-.01em;font-weight:600;margin-bottom:var(--s2)}
+.prev p{font-size:13px;color:var(--text-2)}
+.prev code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);border-radius:4px;padding:1px 5px;color:var(--accent-soft)}
+
+/* ═══ FEATURED ═══ */
+.stack{padding:var(--s6);display:flex;flex-direction:column;gap:var(--s3)}
+.slot{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s4);border:1px dashed var(--line);border-radius:12px;opacity:.55}
+.slot .n,.card .n{font-family:var(--mono);font-size:12px;color:var(--text-3);width:16px;flex:none}
+.slot .nm{font-size:14px;color:var(--text-2)}
+.slot .to{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text-3)}
+.card{background:var(--surface-deep);border:1px solid var(--line);border-radius:12px;padding:var(--s4)}
+.card-top{display:flex;align-items:baseline;gap:var(--s3);margin-bottom:var(--s3)}
+.card-top .t{font-size:14px;font-weight:500}
+.card-top .cap{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--text-3)}
+.card-top .cap.over{color:var(--warn)}
+.drag{display:flex;align-items:center;gap:var(--s3);padding:var(--s3);background:rgba(255,255,255,.035);
+      border:1px solid var(--line);border-radius:9px;margin-bottom:var(--s2);
+      transition:transform 160ms var(--ease-out),box-shadow 160ms var(--ease-out),background-color 120ms ease;cursor:grab}
+@media (hover:hover) and (pointer:fine){.drag:hover{background:rgba(255,255,255,.06)}}
+.drag:active{cursor:grabbing;transform:scale(1.02);box-shadow:var(--card-shadow);background:var(--surface-raised)}
+.drag .hd{display:flex;flex-direction:column;gap:3px;flex:none}
+.drag .hd b{display:block;width:11px;height:1.5px;background:var(--text-3);border-radius:2px;opacity:.7}
+.drag .nm{font-size:14px}
+/* WCAG 2.2 SC 2.5.7 — drag must never be the only way to reorder.
+   A keyboard path does not satisfy this: it serves a different population. */
+.drag .moves{margin-left:auto;display:flex;gap:var(--s1);flex:none}
+.drag .moves button{min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid var(--line);border-radius:6px;background:none;color:var(--text-3);font-size:11px;cursor:pointer;
+  transition:background-color 120ms ease,color 120ms ease,transform 120ms var(--ease-out)}
+.drag .moves button:active{transform:scale(.94)}
+@media (hover:hover) and (pointer:fine){.drag .moves button:hover{background:rgba(255,255,255,.07);color:var(--text)}}
+.drag .moves button:disabled{opacity:.35;cursor:not-allowed}
+.drag .moves button:disabled:active{transform:none}
+.bench{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin:var(--s4) 0 var(--s2)}
+.warn-line{margin-top:var(--s3);font-size:13px;color:var(--warn)}
+
+/* ═══ DASHBOARD ═══ */
+.dash{padding:var(--s6)}
+.dash-h{font-size:28px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin-bottom:var(--s1)}
+.dash-sub{font-family:var(--mono);font-size:12px;color:var(--text-3);margin-bottom:var(--s8)}
+.block{margin-bottom:var(--s8)}
+.block-h{display:flex;align-items:baseline;gap:var(--s3);margin-bottom:var(--s3)}
+.block-h .t{font-size:14px;font-weight:500}
+.block-h .c{font-family:var(--mono);font-size:12px;color:var(--text-3)}
+.msg{display:flex;gap:var(--s3);padding:var(--s3) var(--s4);background:var(--surface-deep);border:1px solid var(--line);
+     border-radius:12px;margin-bottom:var(--s2);transition:background-color 120ms ease;cursor:pointer}
+@media (hover:hover) and (pointer:fine){.msg:hover{background:var(--surface-raised)}}
+.msg:active{transform:scale(.995)}
+.msg.unread{border-left:2px solid var(--accent);border-radius:0 12px 12px 0}
+.msg .who{font-size:14px;font-weight:500}
+.msg .org{font-family:var(--mono);font-size:12px;color:var(--text-3);margin-left:var(--s2);font-weight:400}
+.msg .ex{font-size:13px;color:var(--text-2);margin-top:var(--s1)}
+.msg .when{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text-3);white-space:nowrap;flex:none}
+.dline{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s4);border:1px solid var(--line);
+       border-radius:10px;margin-bottom:var(--s2);transition:background-color 120ms ease;cursor:pointer}
+@media (hover:hover) and (pointer:fine){.dline:hover{background:rgba(255,255,255,.04)}}
+.dline .nm{font-size:13px}
+.dline .age{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text-3)}
+.issue{display:flex;gap:var(--s3);align-items:flex-start;padding:var(--s3) var(--s4);background:rgba(245,158,11,.07);
+       border:1px solid var(--warn-line);border-radius:10px;margin-bottom:var(--s2)}
+.issue .bang{color:var(--warn);font-family:var(--mono);font-size:12px;flex:none;line-height:1.5}
+.issue .txt{font-size:13px;color:#fde68a}
+.issue .txt em{display:block;font-style:normal;font-size:13px;color:var(--text-3);margin-top:var(--s1)}
+.foot-counts{border-top:1px solid var(--line);padding-top:var(--s4);font-family:var(--mono);font-size:12px;color:var(--text-3)}
+
+/* ═══ PHONE ═══ */
+.phones{display:flex;gap:var(--s6);flex-wrap:wrap;padding:var(--s8);background:var(--surface-deep);border-radius:16px;border:1px solid var(--line);justify-content:center}
+.phone{width:300px;background:var(--surface);border:1px solid var(--line-strong);border-radius:22px;overflow:hidden;box-shadow:var(--card-shadow)}
+.ph-bar{display:flex;align-items:center;justify-content:space-between;padding:var(--s4);border-bottom:1px solid var(--line)}
+.ph-bar .t{font-size:14px;font-weight:500}
+.ph-bar .a{font-size:14px;color:var(--accent-soft);border:0;background:none;font-family:inherit;cursor:pointer;min-height:24px;padding:0 var(--s1)}
+/* was a bare 16px glyph with no padding — under the 24px minimum */
+.ph-bar .x{font-size:16px;color:var(--text-2);border:0;background:none;cursor:pointer;min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center}
+.ph-body{padding:var(--s4)}
+.ph-title{font-size:16px;line-height:1.35;letter-spacing:-.01em;font-weight:600;margin-bottom:var(--s4)}
+.ph-lab{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--s2)}
+.pills{display:flex;gap:var(--s2);margin-bottom:var(--s4);flex-wrap:wrap}
+.pill{font-family:var(--mono);font-size:12px;border:1px solid var(--line-strong);color:var(--text-3);border-radius:99px;
+      padding:var(--s1) var(--s3);background:none;cursor:pointer;transition:transform 140ms var(--ease-out)}
+.pill:active{transform:scale(.97)}
+.pill.on{background:rgba(59,130,246,.16);border-color:rgba(59,130,246,.42);color:#bfdbfe}
+.tog{display:flex;align-items:center;justify-content:space-between;padding:var(--s3) var(--s4);background:var(--surface-deep);
+     border:1px solid var(--line);border-radius:10px;margin-bottom:var(--s2);cursor:pointer}
+.tog span{font-size:13px}
+.sw{width:38px;height:22px;border-radius:99px;background:rgba(255,255,255,.14);display:inline-flex;align-items:center;
+    padding:0 3px;flex:none;transition:background-color 160ms var(--ease-out)}
+.sw.on{background:var(--accent);justify-content:flex-end}
+.sw b{width:16px;height:16px;border-radius:50%;background:#fff;display:block}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:var(--s4);border-top:1px solid var(--line);cursor:pointer;transition:background-color 120ms ease}
+@media (hover:hover) and (pointer:fine){.srow:hover{background:rgba(255,255,255,.04)}}
+.srow .nm{font-size:13px}
+.srow .sub{font-family:var(--mono);font-size:11px;color:var(--text-3);margin-top:2px}
+.srow .ch{color:var(--text-3);font-size:16px}
+.ta{width:100%;min-height:152px;background:var(--surface-deep);border:1px solid var(--line-input);border-radius:10px;
+    padding:var(--s3);font-family:var(--mono);font-size:12.5px;line-height:1.75;color:var(--text-2)}
+.back{display:flex;align-items:center;gap:var(--s2);font-size:13px;color:var(--text-2);border:0;background:none;font-family:inherit;cursor:pointer}
+
+/* ═══ DATE SCROLLER ═══ */
+.field-demo{padding:var(--s8);display:flex;gap:var(--s8);flex-wrap:wrap;align-items:flex-start}
+.field{min-width:224px}
+.field-lab{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--s2)}
+.field-trigger{display:flex;align-items:center;justify-content:space-between;gap:var(--s4);padding:var(--s3) var(--s4);
+               background:var(--surface-deep);border:1px solid var(--line-input);border-radius:10px;
+               width:100%;font-family:inherit;cursor:pointer;transition:border-color 120ms ease,transform 120ms var(--ease-out)}
+.field-trigger:active{transform:scale(.99)}
+@media (hover:hover) and (pointer:fine){.field-trigger:hover{border-color:var(--accent)}}
+.field-trigger .v{font-family:var(--mono);font-size:13px;color:#e5e7eb}
+.field-trigger .c{color:var(--text-3);font-size:12px}
+.pop{background:var(--surface);border:1px solid var(--line-strong);border-radius:13px;box-shadow:var(--card-shadow);width:320px;overflow:hidden}
+.pop-tabs{display:flex;border-bottom:1px solid var(--line)}
+.pop-tabs button{flex:1;text-align:center;font-family:var(--mono);font-size:12px;color:var(--text-3);padding:var(--s3) 0;border:0;background:none;cursor:pointer}
+.pop-tabs button.on{color:var(--text);box-shadow:inset 0 -2px 0 var(--accent)}
+.pop-cols{display:grid;grid-template-columns:84px minmax(0,1fr);min-height:180px}
+.yr{border-right:1px solid var(--line);overflow:hidden;padding:var(--s2) 0}
+.yr button{font-family:var(--mono);font-size:13px;color:var(--text-3);text-align:center;padding:var(--s2) 0;
+           display:block;width:100%;border:0;background:none;cursor:pointer;transition:background-color 120ms ease}
+.yr button.on{color:var(--text);background:rgba(59,130,246,.15)}
+.yr button.dim{opacity:.45}
+.mo{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s1);padding:var(--s3)}
+.mo button{font-family:var(--mono);font-size:12px;color:var(--text-2);text-align:center;padding:var(--s2) 0;border-radius:7px;
+           border:0;background:none;cursor:pointer;transition:background-color 120ms ease,transform 120ms var(--ease-out)}
+.mo button:active{transform:scale(.95)}
+@media (hover:hover) and (pointer:fine){.mo button:hover:not(.on){background:rgba(255,255,255,.06)}}
+.mo button.on{background:var(--accent);color:#fff}
+.mo button.now{box-shadow:inset 0 0 0 1px var(--line-input)}
+.pop-foot{display:flex;align-items:center;justify-content:space-between;padding:var(--s3) var(--s4);border-top:1px solid var(--line)}
+.pop-foot .lab{font-size:13px;color:var(--text-2)}
+.keys{display:flex;gap:var(--s4);padding:var(--s3) var(--s4);border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--text-3);flex-wrap:wrap}
+
+/* ═══ COMMAND MENU ═══ */
+.cmd{background:var(--surface);border:1px solid var(--line-strong);border-radius:14px;box-shadow:var(--card-shadow);width:440px;max-width:100%;overflow:hidden}
+.cmd-search{display:flex;align-items:center;gap:var(--s3);padding:var(--s4) var(--s5);border-bottom:1px solid var(--line)}
+.cmd-search .q{font-size:15px;color:var(--text)}
+.cmd-search .cursor{width:1.5px;height:17px;background:var(--accent-soft);display:inline-block;animation:blink 1.06s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.cmd-search .hint{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text-3)}
+.cmd-body{max-height:300px;padding:var(--s2) 0}
+.cmd-group{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);padding:var(--s3) var(--s5) var(--s1)}
+.cmd-row{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) var(--s5);width:100%;border:0;background:none;
+         font-family:inherit;text-align:left;color:inherit;cursor:pointer;transition:background-color 120ms ease}
+.cmd-row.on{background:rgba(59,130,246,.13);box-shadow:inset 2px 0 0 var(--accent)}
+@media (hover:hover) and (pointer:fine){.cmd-row:hover:not(.on){background:rgba(255,255,255,.04)}}
+.cmd-row .box{width:15px;height:15px;border-radius:4px;border:1px solid var(--line-input);flex:none}
+.cmd-row .box.tick{background:var(--accent);border-color:var(--accent);position:relative}
+.cmd-row .box.tick::after{content:"";position:absolute;left:4.5px;top:1.5px;width:4px;height:8px;border:solid #fff;border-width:0 1.5px 1.5px 0;transform:rotate(42deg)}
+.cmd-row .nm{font-size:14px}
+.cmd-row .use{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text-3)}
+.cmd-row .use.orphan{color:var(--warn)}
+.cmd-new{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s5);border-top:1px solid var(--line);
+         color:var(--text-2);font-size:13px;width:100%;border-left:0;border-right:0;border-bottom:0;background:none;
+         font-family:inherit;text-align:left;cursor:pointer}
+@media (hover:hover) and (pointer:fine){.cmd-new:hover{background:rgba(255,255,255,.04)}}
+.cmd-new .plus{color:var(--accent-soft);font-family:var(--mono)}
+.cmd-new em{font-style:normal;color:var(--text)}
+
+/* ═══ 08 STATES ═══ */
+.states{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:var(--s4)}
+.state-card{background:var(--surface);border:1px solid var(--line-strong);border-radius:14px;overflow:hidden}
+.state-lab{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);
+           padding:var(--s3) var(--s4);border-bottom:1px solid var(--line)}
+.state-body{padding:var(--s6) var(--s4)}
+.empty{text-align:center;padding:var(--s8) var(--s4)}
+.empty .h{font-size:16px;font-weight:600;letter-spacing:-.01em;margin-bottom:var(--s2)}
+.empty .p{font-size:13px;color:var(--text-2);margin-bottom:var(--s5)}
+.skel{height:13px;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,.05),rgba(255,255,255,.10),rgba(255,255,255,.05));
+      background-size:200% 100%;animation:shimmer 1.4s linear infinite;margin-bottom:var(--s3)}
+@keyframes shimmer{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.skel{animation:none;background:rgba(255,255,255,.07)}}
+.field-err{padding:var(--s3) var(--s4);background:var(--surface-deep);border:1px solid var(--danger-line);border-radius:10px;font-family:var(--mono);font-size:13px;color:var(--text-2)}
+.err-msg{display:flex;gap:var(--s2);margin-top:var(--s2);font-size:13px;color:var(--danger)}
+.confirm-t{font-size:16px;font-weight:600;letter-spacing:-.01em;margin-bottom:var(--s2)}
+.confirm-p{font-size:13px;color:var(--text-2);margin-bottom:var(--s4)}
+.ref{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) var(--s3);border:1px solid var(--line);border-radius:8px;margin-bottom:var(--s2);font-size:13px}
+.ref .k{font-family:var(--mono);font-size:11px;color:var(--text-3)}
+.confirm-acts{display:flex;gap:var(--s2);justify-content:flex-end;margin-top:var(--s5)}
+/* failed save: rail marks the offending section, summary links to the field */
+.err-summary{border:1px solid var(--danger-line);background:var(--danger-bg);border-radius:10px;padding:var(--s3) var(--s4)}
+.err-summary h6{font-size:14px;font-weight:600;color:var(--danger);margin-bottom:var(--s2)}
+.err-summary a{display:block;font-size:13px;color:var(--text-2);text-decoration:underline;text-underline-offset:2px;padding:var(--s1) 0}
+@media (hover:hover) and (pointer:fine){.err-summary a:hover{color:var(--text)}}
+.rail-err{width:5px;height:5px;border-radius:50%;background:var(--danger);display:inline-block;margin-left:var(--s2);flex:none}
+.rail button{display:flex;align-items:center;justify-content:space-between}
+
+@media(max-width:860px){
+  .app,.sheet-body{grid-template-columns:1fr}
+  .side,.rail{border-right:0;border-bottom:1px solid var(--line)}
+  .wrap{padding:var(--s12) var(--s4) 80px}
+  .split{flex-direction:column}
+  .grip{width:auto;height:11px;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);cursor:row-resize}
+  .grip i{width:26px;height:2px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="doc-head">
+  <p class="stamp">Phase 4 · Admin panel · Screen review · Revision 3</p>
+  <h1>Admin panel screens</h1>
+  <p>Eight sections in the site's own palette. Hover, press and keyboard focus are live on this page — tab through it and press things, since those states are the half of the design that static pixels can't show. Revision 3 adds the WCAG 2.2 conformance items a design-intelligence pass caught: single-pointer drag alternatives, 24px minimum targets, and the failed-save state a section rail makes necessary.</p>
+</div>
+
+<!-- ═══════════ 00 ═══════════ -->
+<section>
+  <div class="sec-head"><span class="sec-num">00</span><h2>Foundations</h2></div>
+  <p class="sec-note">The scales every screen below is built from. Revision 1 had roughly fifteen distinct font sizes and off-grid padding values (17px, 13px, 9px, 2.5px); that is the clearest tell of a design assembled by eye rather than from a system. Seven type steps and a 4pt spacing grid replace them.</p>
+  <div class="frame"><div class="found">
+
+    <div>
+      <h3>Type scale</h3>
+      <p class="sec-note" style="margin-bottom:var(--s4)">Tracking is size-specific: negative as text grows, neutral at body, slightly positive on small mono. One <code>letter-spacing</code> for every size is wrong somewhere.</p>
+      <div class="spec-row"><span class="meta">display · 28 / 1.15 / −.02em</span><span class="t-display">Good to see you</span></div>
+      <div class="spec-row"><span class="meta">title · 20 / 1.25 / −.015em</span><span class="t-title">Projects</span></div>
+      <div class="spec-row"><span class="meta">heading · 16 / 1.35 / −.01em</span><span class="t-heading">Edit story</span></div>
+      <div class="spec-row"><span class="meta">body · 14 / 1.55 / 0</span><span class="t-body">LLM-assisted binary analysis</span></div>
+      <div class="spec-row"><span class="meta">small · 13 / 1.5 / 0</span><span class="t-small" style="color:var(--text-2)">Saw the decompiler write-up, are you open to a chat?</span></div>
+      <div class="spec-row"><span class="meta">mono · 12 / 1.4 / .01em</span><span class="t-mono" style="color:var(--text-3)">6 skills · featured · Mar 2026</span></div>
+      <div class="spec-row"><span class="meta">label · 11 / 1.3 / .08em caps</span><span class="t-label" style="color:var(--text-3)">Content</span></div>
+    </div>
+
+    <div>
+      <h3>Spacing — 4pt grid</h3>
+      <div class="grid-demo">
+        <div style="height:4px"></div><div style="height:8px"></div><div style="height:12px"></div><div style="height:16px"></div>
+        <div style="height:20px"></div><div style="height:24px"></div><div style="height:32px"></div><div style="height:48px"></div><div style="height:64px"></div>
+      </div>
+      <div class="grid-demo" style="margin-top:0">
+        <span>4</span><span>8</span><span>12</span><span>16</span><span>20</span><span>24</span><span>32</span><span>48</span><span>64</span>
+      </div>
+    </div>
+
+    <div>
+      <h3>Colour — measured, not eyeballed</h3>
+      <p class="sec-note" style="margin-bottom:var(--s4)">Revision 1's two metadata greys failed WCAG AA on this background: <code>#6b7280</code> at 3.97:1 and <code>#4b5563</code> at 2.54:1, both carrying dates, counts, IDs and keyboard hints. In an admin panel the metadata <em>is</em> the content, so they are merged into one tertiary that clears 4.5:1.</p>
+      <div class="swatches">
+        <div class="sw-card"><div class="sw-chip" style="background:#fff"></div><div class="sw-name">--text #ffffff</div><div class="sw-ratio"><b>19.2:1</b> · titles</div></div>
+        <div class="sw-card"><div class="sw-chip" style="background:#9ca3af"></div><div class="sw-name">--text-2 #9ca3af</div><div class="sw-ratio"><b>7.6:1</b> · body, excerpts</div></div>
+        <div class="sw-card"><div class="sw-chip" style="background:#818a99"></div><div class="sw-name">--text-3 #818a99</div><div class="sw-ratio"><b>5.5:1</b> · all metadata</div></div>
+        <div class="sw-card"><div class="sw-chip" style="background:#3b82f6"></div><div class="sw-name">--accent #3b82f6</div><div class="sw-ratio"><b>5.2:1</b> · focus ring, primary</div></div>
+        <div class="sw-card"><div class="sw-chip" style="background:#6ee7b7"></div><div class="sw-name">--ok #6ee7b7</div><div class="sw-ratio"><b>12.6:1</b> · shipped</div></div>
+        <div class="sw-card"><div class="sw-chip" style="background:#fcd34d"></div><div class="sw-name">--warn #fcd34d</div><div class="sw-ratio"><b>13.3:1</b> · in progress, issues</div></div>
+        <div class="sw-card"><div class="sw-chip" style="background:#fca5a5"></div><div class="sw-name">--danger #fca5a5</div><div class="sw-ratio"><b>10.1:1</b> · destructive</div></div>
+        <div class="sw-card"><div class="sw-chip" style="background:rgba(255,255,255,.36)"></div><div class="sw-name">--line-input 36%</div><div class="sw-ratio"><b>3.3:1</b> · input boundary</div></div>
+      </div>
+    </div>
+
+    <div>
+      <h3>Motion</h3>
+      <p class="sec-note" style="margin-bottom:var(--s4)">Revision 1 specified motion as one prose line with no values, which in practice means whatever the implementation reaches for first. These are the values. Note the admin panel does <em>not</em> import <code>components/motion/variants.ts</code> — those are 700ms scroll entrances built for a portfolio visitor arriving once.</p>
+      <table class="motion-tbl">
+        <thead><tr><th>What</th><th>Duration</th><th>Curve</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>Press feedback</td><td><code>120ms</code></td><td><code>--ease-out</code></td><td>Fires on pointer-down, not release</td></tr>
+          <tr><td>Hover tint</td><td><code>120ms</code></td><td><code>ease</code></td><td>Colour change, not movement</td></tr>
+          <tr><td>Chip add / remove</td><td><code>140ms</code></td><td><code>--ease-out</code></td><td>Seen dozens of times per session</td></tr>
+          <tr><td>Inline row expand</td><td><code>200ms</code></td><td><code>--ease-out</code></td><td>Height + opacity together</td></tr>
+          <tr><td>Popover (date, skills)</td><td><code>160ms</code></td><td><code>--ease-out</code></td><td>Scales from its trigger, not centre</td></tr>
+          <tr><td>Modal</td><td><code>spring 0.35</code></td><td><code>bounce 0</code></td><td>Tighter than the public site's 0.5 spring</td></tr>
+          <tr><td>Drag settle</td><td><code>spring 0.4</code></td><td><code>bounce .15</code></td><td>Carries release velocity</td></tr>
+          <tr><td>Exit (all)</td><td><code>×0.75</code></td><td><code>--ease-out</code></td><td>Leaving should be faster than arriving</td></tr>
+          <tr><td>Keyboard-opened anything</td><td><code>0ms</code></td><td>—</td><td>⌘K a hundred times a day; animation reads as lag</td></tr>
+        </tbody>
+      </table>
+      <div class="try">
+        <p>Live — press and tab to these:</p>
+        <button class="btn">Primary</button>
+        <button class="btn ghost">Ghost</button>
+        <button class="btn danger">Delete skill</button>
+        <button class="chip">Python <span class="x">×</span></button>
+        <button class="add-skill">add skill</button>
+      </div>
+    </div>
+
+  </div></div>
+</section>
+
+<!-- ═══════════ 01 ═══════════ -->
+<section>
+  <div class="sec-head"><span class="sec-num">01</span><h2>Content list, with inline expand</h2></div>
+  <p class="sec-note">Grouped sidebar so twelve destinations don't read as one flat wall. Rows on hairline dividers rather than a table grid. Rows now carry real horizontal padding with the divider drawn full-bleed behind them, so the hover fill is a row rather than a 4px sliver. Thin entities expand in place; the skill editor is type-to-add, never a checkbox wall.</p>
+  <div class="frame"><div class="app">
+    <nav class="side">
+      <p class="side-group">Overview</p>
+      <button class="nav pressable"><span class="dot"></span>Dashboard</button>
+      <p class="side-group">Content</p>
+      <button class="nav on pressable"><span class="dot"></span>Projects</button>
+      <button class="nav pressable"><span class="dot"></span>Experience</button>
+      <button class="nav pressable"><span class="dot"></span>Skills</button>
+      <button class="nav pressable"><span class="dot"></span>Stories</button>
+      <button class="nav pressable"><span class="dot"></span>Awards</button>
+      <button class="nav pressable"><span class="dot"></span>Engagements</button>
+      <button class="nav pressable"><span class="dot"></span>Soft skills</button>
+      <button class="nav pressable"><span class="dot"></span>Certifications</button>
+      <p class="side-group">Site</p>
+      <button class="nav pressable"><span class="dot"></span>Featured</button>
+      <button class="nav pressable"><span class="dot"></span>Site content</button>
+      <button class="nav pressable"><span class="dot"></span>Life phases</button>
+      <p class="side-group">Inbox</p>
+      <button class="nav pressable"><span class="dot"></span>Messages<span class="count">3</span></button>
+    </nav>
+    <div class="pane">
+      <div class="pane-head"><h3>Projects</h3><button class="btn">New project</button></div>
+      <div class="rows">
+        <button class="row">
+          <span><span class="row-t">LLM-assisted binary analysis</span><span class="row-m" style="display:block">6 skills · featured · Mar 2026</span></span>
+          <span class="tag live">shipped</span>
+        </button>
+        <button class="row">
+          <span><span class="row-t">Decompiler evaluation for LLM vulnerability discovery</span><span class="row-m" style="display:block">4 skills · featured · Jan 2026</span></span>
+          <span class="tag wip">in progress</span>
+        </button>
+        <button class="row">
+          <span><span class="row-t">Barnum observability POC</span><span class="row-m" style="display:block">editing</span></span>
+          <span class="tag draft">draft</span>
+        </button>
+      </div>
+      <div class="expand-in">
+        <p class="expand-lab">Skills</p>
+        <div class="chips">
+          <button class="chip">Kubernetes <span class="x">×</span></button>
+          <button class="chip">OpenTelemetry <span class="x">×</span></button>
+          <button class="chip">Python <span class="x">×</span></button>
+          <button class="add-skill">add skill</button>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══════════ 02 ═══════════ -->
+<section>
+  <div class="sec-head"><span class="sec-num">02</span><h2>Heavy-entity editor</h2></div>
+  <p class="sec-note">URL-driven so refresh and Back behave, with Escape and backdrop click guarded when the draft is dirty. <strong>Width corrected:</strong> revision 1 specified a 900px modal <em>and</em> a rule that split view collapses below 1100px because two ~400px panes are worse than one — but a 900px modal minus a 164px rail yields two ~350px panes on every screen, so split could never have been valid. Entities with a long-form body now open at 1140px, everything else at 800px, and split is gated on the editor pane measuring ≥720px rather than on the viewport.</p>
+  <div class="scrim"><div class="sheet">
+    <div class="sheet-bar">
+      <h4>Edit story</h4>
+      <div class="bar-right"><span class="saved">draft saved 2m ago</span><button class="btn ghost">Cancel</button><button class="btn">Save</button></div>
+    </div>
+    <div class="sheet-body">
+      <nav class="rail">
+        <button>Summary <span class="rail-err" title="2 errors in this section"></span></button><button>STAR fields</button><button class="on">Body</button><button>Skills</button><button>Related</button><button>Links</button>
+      </nav>
+      <div class="editor">
+        <div class="ed-head">
+          <span class="lab">Body</span>
+          <span class="seg"><button>write</button><button>preview</button><button class="on">split</button></span>
+        </div>
+        <div class="split">
+          <div class="md"><span class="h">## The Monday it broke</span><br><br>Nobody had a clue what was wrong.<br>The alert fired at 6am and by nine<br>we still had <span class="c">`nothing`</span>.<br><br>That sucked.</div>
+          <div class="grip"><i></i></div>
+          <div class="prev"><h5>The Monday it broke</h5><p>Nobody had a clue what was wrong. The alert fired at 6am and by nine we still had <code>nothing</code>.</p><p style="margin-top:var(--s2)">That sucked.</p></div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══════════ 03 ═══════════ -->
+<section>
+  <div class="sec-head"><span class="sec-num">03</span><h2>Featured manager</h2></div>
+  <p class="sec-note">Ordered by home page section, not by entity type, so the page reads as a schematic of the home page top to bottom. Sections that can't be feature-managed stay as dimmed position markers. Press and hold a drag row below — it lifts and shadows on grab, which is what tells you the row was picked up rather than clicked. Every row also carries <strong>move up / move down / unfeature</strong> buttons: WCAG 2.2 SC 2.5.7 requires a single-pointer path for any drag operation, and a keyboard alternative does not satisfy it — someone using a head pointer or switch has a pointer but cannot drag.</p>
+  <div class="frame"><div class="stack">
+    <div class="slot"><span class="n">1</span><span class="nm">Hero</span><span class="to">site content</span></div>
+    <div class="slot"><span class="n">2</span><span class="nm">About card</span><span class="to">site content</span></div>
+    <div class="card">
+      <div class="card-top"><span class="n">3</span><span class="t">Technical arsenal</span><span class="cap over">13 flagged · 12 fit</span></div>
+      <div class="chips">
+        <button class="chip on">Python</button><button class="chip on">Reverse engineering</button><button class="chip on">x86 assembly</button>
+        <button class="chip on">System security</button><button class="chip on">TypeScript</button><button class="chip">+7 more</button>
+        <button class="chip warn">Digital forensics</button>
+      </div>
+      <p class="warn-line">Digital forensics sits past the cutoff and will not render.</p>
+    </div>
+    <div class="card">
+      <div class="card-top"><span class="n">4</span><span class="t">Featured work</span><span class="cap">3 of 3</span></div>
+      <div class="drag" tabindex="0"><span class="hd"><b></b><b></b><b></b></span><span class="nm">LLM-assisted binary analysis</span>
+        <span class="moves"><button aria-label="Move up" disabled>↑</button><button aria-label="Move down">↓</button><button aria-label="Move to bench">−</button></span></div>
+      <div class="drag" tabindex="0"><span class="hd"><b></b><b></b><b></b></span><span class="nm">Decompiler evaluation</span>
+        <span class="moves"><button aria-label="Move up">↑</button><button aria-label="Move down">↓</button><button aria-label="Move to bench">−</button></span></div>
+      <div class="drag" tabindex="0" style="margin-bottom:0"><span class="hd"><b></b><b></b><b></b></span><span class="nm">Barnum observability POC</span>
+        <span class="moves"><button aria-label="Move up">↑</button><button aria-label="Move down" disabled>↓</button><button aria-label="Move to bench">−</button></span></div>
+      <p class="bench">Bench</p>
+      <div class="chips"><button class="chip ghost">Cloud POC</button><button class="chip ghost">Blockchain ledger</button><button class="chip ghost">Network IDS</button></div>
+    </div>
+    <div class="slot" style="opacity:.35"><span class="n">5</span><span class="nm">Sections 5 to 10 continue below</span></div>
+  </div></div>
+</section>
+
+<!-- ═══════════ 04 ═══════════ -->
+<section>
+  <div class="sec-head"><span class="sec-num">04</span><h2>Dashboard</h2></div>
+  <p class="sec-note">An action queue rather than a status report: who is waiting, what is half-finished, what is quietly broken. The integrity block renders only when something is wrong. Counts drop to a footer line. <strong>The greeting is gone</strong> — "Good evening" was the one piece of generic personality here, and the genuinely orienting fact after a month away is when you last published, so that becomes the headline instead.</p>
+  <div class="frame"><div class="dash">
+    <h3 class="dash-h">Last published 12 days ago</h3>
+    <p class="dash-sub">3 messages waiting · 2 drafts open · 2 issues</p>
+
+    <div class="block">
+      <div class="block-h"><span class="t">Waiting on you</span><span class="c">3 unread</span></div>
+      <div class="msg unread">
+        <div><span class="who">Priya Raghavan</span><span class="org">Cloudflare · recruiter</span><div class="ex">Saw the decompiler write-up. Are you open to a chat about the security engineering team?</div></div>
+        <span class="when">2d</span>
+      </div>
+      <div class="msg unread">
+        <div><span class="who">Marcus Oyelaran</span><span class="org">Sandia</span><div class="ex">Following up on Tracer Fire. Would you be interested in judging this year?</div></div>
+        <span class="when">5d</span>
+      </div>
+      <div class="msg unread">
+        <div><span class="who">No name given</span><span class="org">contact form</span><div class="ex">quick question about the barnum project stack</div></div>
+        <span class="when">9d</span>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-h"><span class="t">Half-finished</span><span class="c">2 drafts</span></div>
+      <div class="dline"><span class="tag draft">story</span><span class="nm">Tracer Fire 13 — the forensics call</span><span class="age">started 12d ago</span></div>
+      <div class="dline"><span class="tag draft">project</span><span class="nm">Barnum observability POC</span><span class="age">edited 3d ago</span></div>
+    </div>
+
+    <div class="block">
+      <div class="block-h"><span class="t">Needs fixing</span><span class="c">2 issues</span></div>
+      <div class="issue"><span class="bang">!</span><span class="txt">Technical arsenal has 13 items flagged for 12 slots<em>Digital forensics will not render on the home page</em></span></div>
+      <div class="issue"><span class="bang">!</span><span class="txt">Soft skill has no evidence attached<em>“Crisis management under pressure” opens to an empty modal</em></span></div>
+    </div>
+
+    <p class="foot-counts">58 skills · 12 projects · 7 experiences · 9 stories · 6 awards · 5 engagements</p>
+  </div></div>
+</section>
+
+<!-- ═══════════ 05 ═══════════ -->
+<section>
+  <div class="sec-head"><span class="sec-num">05</span><h2>Phone</h2></div>
+  <p class="sec-note">Quick toggles first, since that is most of what a phone edit is. Long-form fields get a focused screen instead of a squeezed scroll. One draft object in client state, sections navigate into it, one Save commits everything, autosave to <code>localStorage</code> keyed by entity id. Drill-down screens enter from the right and leave to the right, so Back reverses the path it arrived on.</p>
+  <div class="phones">
+    <div class="phone">
+      <div class="ph-bar"><button class="x">×</button><span class="t">Edit project</span><button class="a">Save</button></div>
+      <div class="ph-body">
+        <p class="ph-title">Barnum observability POC</p>
+        <p class="ph-lab">Status</p>
+        <div class="pills"><button class="pill on">in progress</button><button class="pill">shipped</button><button class="pill">archived</button></div>
+        <div class="tog"><span>Published</span><span class="sw on"><b></b></span></div>
+        <div class="tog" style="margin-bottom:0"><span>Featured on home</span><span class="sw"><b></b></span></div>
+      </div>
+      <p class="ph-lab" style="padding:var(--s4) var(--s4) var(--s2);margin:0">Sections</p>
+      <div class="srow"><div><div class="nm">Summary</div><div class="sub">128 characters</div></div><span class="ch">›</span></div>
+      <div class="srow"><div><div class="nm">Description</div><div class="sub">3 paragraphs</div></div><span class="ch">›</span></div>
+      <div class="srow"><div><div class="nm">Highlights</div><div class="sub">4 bullets</div></div><span class="ch">›</span></div>
+      <div class="srow"><div><div class="nm">Skills</div><div class="sub">6 selected</div></div><span class="ch">›</span></div>
+      <div class="srow"><div><div class="nm">Links</div><div class="sub">2 links</div></div><span class="ch">›</span></div>
+    </div>
+    <div class="phone">
+      <div class="ph-bar"><button class="back">‹ Back</button><span class="t">Description</span><button class="a" style="color:var(--text-3)">Done</button></div>
+      <div class="ph-body">
+        <div class="ed-head" style="margin-bottom:var(--s3)">
+          <span class="lab" style="font-size:13px">Markdown</span>
+          <span class="seg"><button class="on">write</button><button>preview</button></span>
+        </div>
+        <div class="ta">Kubernetes-deployed observability<br>POC tracking model drift across a<br>multi-agent chat app.<br><br>Built on OpenTelemetry with<br>OpenObserve as the backend.</div>
+        <p style="font-family:var(--mono);font-size:11px;color:var(--text-3);margin-top:var(--s3)">unsaved · returns to the draft, not the server</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 06 ═══════════ -->
+<section>
+  <div class="sec-head"><span class="sec-num">06</span><h2>Year and month scroller</h2></div>
+  <p class="sec-note">Every dated entity stores month precision only, so a native date input is the wrong control: it asks for a day you will never show and renders differently in every browser. Years scroll in a snap column, months sit in a fixed grid, so any date is two clicks. The end tab carries a Present switch, which writes <code>null</code> and greys the columns. The trigger renders through the same <code>formatDateRange()</code> the public site uses, so what you see here is what ships.</p>
+  <div class="frame"><div class="field-demo">
+    <div class="field">
+      <p class="field-lab">Closed range</p>
+      <button class="field-trigger"><span class="v">Jul 2021 – Jun 2024</span><span class="c">▾</span></button>
+      <p class="field-lab" style="margin-top:var(--s5)">Open range</p>
+      <button class="field-trigger"><span class="v">Aug 2025 – Present</span><span class="c">▾</span></button>
+      <p class="field-lab" style="margin-top:var(--s5)">Single mark</p>
+      <button class="field-trigger"><span class="v">Mar 2026</span><span class="c">▾</span></button>
+    </div>
+    <div class="pop">
+      <div class="pop-tabs"><button>start · aug 2025</button><button class="on">end</button></div>
+      <div class="pop-cols">
+        <div class="yr">
+          <button class="dim">2023</button><button>2024</button><button>2025</button><button class="on">2026</button><button>2027</button><button class="dim">2028</button>
+        </div>
+        <div class="mo">
+          <button>Jan</button><button>Feb</button><button>Mar</button>
+          <button>Apr</button><button>May</button><button>Jun</button>
+          <button>Jul</button><button>Aug</button><button class="now">Sep</button>
+          <button>Oct</button><button>Nov</button><button class="on">Dec</button>
+        </div>
+      </div>
+      <div class="pop-foot"><span class="lab">Present</span><span class="sw"><b></b></span></div>
+      <div class="keys"><span>↑↓ month</span><span>⇧↑↓ year</span><span>0000 jump</span><span>esc close</span></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══════════ 07 ═══════════ -->
+<section>
+  <div class="sec-head"><span class="sec-num">07</span><h2>Skill picker</h2></div>
+  <p class="sec-note">Clicking add skill opens a floating command menu rather than expanding a list in place. Results group by category, and the search matches aliases as well as names, reusing the same match function the public about page will need for its skill matrix. The menu stays open after a toggle so several can be added in one pass. The usage count is what stops near-duplicate skills accumulating: a skill nothing references is flagged, because that is a pill that would open an empty modal on the live site.</p>
+  <div class="scrim" style="display:flex;justify-content:center"><div class="cmd">
+    <div class="cmd-search"><span class="q">re</span><span class="cursor"></span><span class="hint">searching 58 skills</span></div>
+    <div class="cmd-body">
+      <p class="cmd-group">Domain</p>
+      <button class="cmd-row on"><span class="box tick"></span><span class="nm">Reverse engineering</span><span class="use">4 uses</span></button>
+      <button class="cmd-row"><span class="box"></span><span class="nm">Vulnerability research</span><span class="use">2 uses</span></button>
+      <button class="cmd-row"><span class="box"></span><span class="nm">Red teaming</span><span class="use orphan">unused</span></button>
+      <p class="cmd-group">Framework</p>
+      <button class="cmd-row"><span class="box tick"></span><span class="nm">React</span><span class="use">3 uses</span></button>
+      <p class="cmd-group">Practice</p>
+      <button class="cmd-row"><span class="box"></span><span class="nm">Secure SDLC</span><span class="use">1 use</span></button>
+    </div>
+    <button class="cmd-new"><span class="plus">+</span><span>Create a skill called <em>“re”</em></span></button>
+    <div class="keys"><span>↑↓ move</span><span>↵ toggle</span><span>⌘↵ open record</span><span>esc close</span></div>
+  </div></div>
+</section>
+
+<!-- ═══════════ 08 ═══════════ -->
+<section>
+  <div class="sec-head"><span class="sec-num">08</span><h2>The states nobody mocks up</h2></div>
+  <p class="sec-note">Revision 1 specified empty-state and error copy in prose but drew none of them, and drew no loading or destructive-confirm state at all. These are where an admin panel actually spends a meaningful share of its time, and they are the states most likely to end up improvised during the build. The failed-save state is the one a section rail makes uniquely necessary — see §02, where the rail carries the error marker.</p>
+  <div class="states">
+
+    <div class="state-card">
+      <p class="state-lab">Empty</p>
+      <div class="empty">
+        <p class="h">No stories yet</p>
+        <p class="p">The STAR write-ups that back your soft skills live here.</p>
+        <button class="btn">Write the first one</button>
+      </div>
+    </div>
+
+    <div class="state-card">
+      <p class="state-lab">Loading</p>
+      <div class="state-body">
+        <div class="skel" style="width:62%"></div><div class="skel" style="width:38%;height:11px;opacity:.7"></div>
+        <div class="skel" style="width:74%;margin-top:var(--s5)"></div><div class="skel" style="width:31%;height:11px;opacity:.7"></div>
+        <div class="skel" style="width:55%;margin-top:var(--s5)"></div><div class="skel" style="width:42%;height:11px;opacity:.7;margin-bottom:0"></div>
+      </div>
+    </div>
+
+    <div class="state-card">
+      <p class="state-lab">Inline validation</p>
+      <div class="state-body">
+        <p class="field-lab">Slug</p>
+        <div class="field-err">llm-assisted-binary-analysis</div>
+        <p class="err-msg"><span>!</span><span>Already used by another project. Slugs appear in shared URLs, so they have to be unique.</span></p>
+      </div>
+    </div>
+
+    <div class="state-card">
+      <p class="state-lab">Save failed, error out of view</p>
+      <div class="state-body">
+        <div class="err-summary" tabindex="-1">
+          <h6>Two fields need attention</h6>
+          <a href="#slug">Slug is already used by another project</a>
+          <a href="#summary">Summary is required</a>
+        </div>
+        <p style="font-size:13px;color:var(--text-2);margin-top:var(--s4)">Both fields live in <strong>Summary</strong>, a section the user was not looking at. The rail marks it, focus moves here, and the inline field errors stay where they are.</p>
+      </div>
+    </div>
+
+    <div class="state-card">
+      <p class="state-lab">Delete, blocked by references</p>
+      <div class="state-body">
+        <p class="confirm-t">Delete “Reverse engineering”?</p>
+        <p class="confirm-p">Three records reference this skill. Detach them first and the delete becomes available.</p>
+        <div class="ref"><span class="k">project</span><span>LLM-assisted binary analysis</span></div>
+        <div class="ref"><span class="k">experience</span><span>Graduate teaching assistant</span></div>
+        <div class="ref"><span class="k">story</span><span>Tracer Fire 13</span></div>
+        <div class="confirm-acts">
+          <button class="btn ghost">Cancel</button>
+          <button class="btn danger" disabled>Delete skill</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</div>
+</body>
+</html>

@@ -1,5 +1,5 @@
 /**
- * Seeds Firestore from content/local/* (PROJECT_PLAN.md Phase 3).
+ * Seeds Firestore from content/local/* (docs/project-plan.md Phase 3).
  *
  * Idempotent: every write is `.doc(id).set(data)` against a stable,
  * human-readable ID (§3.3.5), so re-running this produces the same end

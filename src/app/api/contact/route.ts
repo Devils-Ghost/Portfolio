@@ -20,7 +20,7 @@ export async function POST(request: Request): Promise<Response> {
   // No honeypot, no submit-timing check: both were tried and dropped after
   // producing real false positives against genuine visitors (browser
   // extension autofill, then field-history suggestions — see
-  // plan-progress.md). What's left: Turnstile actually verifies a human
+  // docs/plan-progress.md). What's left: Turnstile actually verifies a human
   // solved a real challenge, and the rate limiter below caps abuse volume
   // even in the case that's somehow bypassed. Bot crawlers hitting this
   // form specifically aren't an expected threat for a personal portfolio

@@ -21,7 +21,7 @@ interface ProjectCardProps {
 }
 
 /**
- * Purely presentational (PROJECT_PLAN.md §1.3 ⑤): it no longer owns modal
+ * Purely presentational (docs/project-plan.md §1.3 ⑤): it no longer owns modal
  * state, it dispatches `{kind:"project", id}` to the one global modal host.
  * That's what lets a skill's "used in" list open a project modal from a
  * context where no `ProjectCard` is mounted at all.

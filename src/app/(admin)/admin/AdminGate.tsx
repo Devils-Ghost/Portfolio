@@ -10,7 +10,7 @@ import { requireEnv } from "@/lib/utils";
  * in a <Suspense> boundary — cookies() is a dynamic API, and Cache
  * Components rejects the build if a dynamic API is read with no Suspense
  * boundary of its own, the same rule that shaped ModalDynamicGate in
- * Phase 3 (plan-progress.md, Phase 3 Stage 5).
+ * Phase 3 (docs/plan-progress.md, Phase 3 Stage 5).
  */
 export default async function AdminGate({
   children,

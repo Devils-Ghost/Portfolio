@@ -30,7 +30,7 @@ export const GmailIcon = ({ className }: { className?: string }) => (
  *
  * The links themselves live in `site.socials` and reach these components as
  * props — this file is presentation only, so the URL for GitHub exists in
- * exactly one place (PROJECT_PLAN.md §D1). The three kinds actually in use
+ * exactly one place (docs/project-plan.md §D1). The three kinds actually in use
  * get hand-drawn brand marks; `x` and `scholar` are modelled but unused, and
  * fall back to generic lucide glyphs rather than to brand marks invented
  * here. Swap them for real SVGs the day either link is added.

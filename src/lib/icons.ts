@@ -22,7 +22,7 @@ import {
 import type { IconName } from "@/content/types";
 
 /**
- * The icon registry (PROJECT_PLAN.md §1.3 ③).
+ * The icon registry (docs/project-plan.md §1.3 ③).
  *
  * Content stores `iconName: "flag"` — a string — never a component reference.
  * A React component can't be serialized, so it can't come out of Firestore,

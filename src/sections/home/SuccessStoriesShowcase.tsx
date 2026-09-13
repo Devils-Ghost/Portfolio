@@ -14,7 +14,7 @@ import type { Story } from "@/content/types";
  * Client, because the desktop split tracks which story is selected and the
  * mobile indicator reads `useScroll` on the carousel element. The stories
  * themselves come from the Server Component in SuccessStoriesSection
- * (PROJECT_PLAN.md §D4).
+ * (docs/project-plan.md §D4).
  */
 export default function SuccessStoriesShowcase({
   stories,

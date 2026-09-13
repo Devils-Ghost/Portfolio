@@ -9,7 +9,7 @@ import { FEATURED_LIMITS, featured, published } from "@/content/selectors";
 /**
  * Featured Work — `featured(projects, FEATURED_LIMITS.projects)`.
  *
- * Fully a Server Component (PROJECT_PLAN.md §D4). It reads the repository,
+ * Fully a Server Component (docs/project-plan.md §D4). It reads the repository,
  * drops drafts, and takes the top three by `order`. `ProjectCard` is purely
  * presentational (§1.3 ⑤) and resolves nothing itself — it dispatches
  * `{kind:"project", id}` to the modal host, which resolves skill chips

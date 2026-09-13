@@ -29,12 +29,12 @@ type Status = "idle" | "loading" | "success" | "error";
 
 /**
  * `ContactFormBody` — the one `{kind:"contact"}` modal every "Let's Talk" /
- * "Get in Touch" trigger dispatches to (PROJECT_PLAN.md §1.3 ⑤). Phase 3:
+ * "Get in Touch" trigger dispatches to (docs/project-plan.md §1.3 ⑤). Phase 3:
  * wired to the real `POST /api/contact` — Zod validation server-side,
  * Turnstile + rate limiting, a real send/store, replacing the placeholder
  * `alert()`. No honeypot field, no submit-timing check: both were tried
  * and dropped after producing real false positives against genuine
- * visitors (plan-progress.md) — Turnstile plus the rate limiter are the
+ * visitors (docs/plan-progress.md) — Turnstile plus the rate limiter are the
  * defenses that stayed.
  */
 export default function ContactFormBody({ content }: ModalBodyProps) {

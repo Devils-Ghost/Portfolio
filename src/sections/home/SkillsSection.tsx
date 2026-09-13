@@ -13,7 +13,7 @@ import { FEATURED_LIMITS, featured } from "@/content/selectors";
 /**
  * Technical Arsenal — `featured(skills, FEATURED_LIMITS.skills)`.
  *
- * Fully a Server Component (PROJECT_PLAN.md §D4). It used to need a client
+ * Fully a Server Component (docs/project-plan.md §D4). It used to need a client
  * half only because the heading, the pills and the CTA were all scrubbed by
  * one `useScroll` measuring this section's own element, which needs a ref a
  * server component can't hold. The entrance plays once now, so all three are

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
  * `/resume` — the stable, brandable download URL that `site.hero.resumeUrl`
  * points at.
  *
- * PROJECT_PLAN.md Phase 7 has this serving the PDF itself with a tracked
+ * docs/project-plan.md Phase 7 has this serving the PDF itself with a tracked
  * download. Until then it forwards to the file's current home, so the URL in
  * the content layer is real from today and the hero button keeps downloading
  * exactly what it downloaded before.

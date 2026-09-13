@@ -9,7 +9,7 @@ import { FEATURED_LIMITS, featured, published } from "@/content/selectors";
 /**
  * Experience — `featured(experiences, FEATURED_LIMITS.experiences)`.
  *
- * Fully a Server Component (PROJECT_PLAN.md §D4): the only animation it owns
+ * Fully a Server Component (docs/project-plan.md §D4): the only animation it owns
  * is the heading's `whileInView`, which lives in `ScrollReveal`, and each
  * card is already its own animated client leaf. The section itself just
  * fetches, filters and positions — `ExperienceCard` is presentational (§1.3

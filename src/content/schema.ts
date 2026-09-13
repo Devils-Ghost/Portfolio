@@ -20,7 +20,7 @@ import type {
 } from "./types";
 
 /**
- * Zod mirrors of `types.ts` (PROJECT_PLAN.md §D7).
+ * Zod mirrors of `types.ts` (docs/project-plan.md §D7).
  *
  * These exist so that content crossing a boundary we don't control — Firestore
  * in Phase 3, the admin panel's forms in Phase 4 — fails loudly with a field
