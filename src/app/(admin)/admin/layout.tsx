@@ -16,7 +16,7 @@ export default function ProtectedAdminLayout({
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center text-sm text-gray-500">
+        <div className="flex min-h-screen items-center justify-center text-sm text-meta">
           Loading…
         </div>
       }

@@ -125,8 +125,8 @@ export default function ExperienceCard({ exp }: ExperienceCardProps) {
             <h3 className="text-2xl font-bold text-white mb-2">{exp.role}</h3>
             <div className="flex flex-wrap items-center gap-2 text-sm">
               <span className="text-blue-400 font-medium">{exp.org}</span>
-              <span className="text-gray-600 hidden md:inline">•</span>
-              <span className="text-gray-500 font-mono">{dateLabel}</span>
+              <span className="text-meta hidden md:inline">•</span>
+              <span className="text-meta font-mono">{dateLabel}</span>
             </div>
           </div>
           {/* Job Type Badge */}

@@ -17,7 +17,7 @@ export default async function AdminDashboardPage() {
       <p className="mt-2 text-sm text-gray-400">
         Signed in as <span className="font-mono text-accent">{session?.uid}</span>.
       </p>
-      <p className="mt-1 text-sm text-gray-500">
+      <p className="mt-1 text-sm text-meta">
         Placeholder — CRUD, the featured manager, and the inbox land later in
         this phase.
       </p>

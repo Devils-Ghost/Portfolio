@@ -36,7 +36,7 @@ export default function Footer({ socials }: { socials: SocialLink[] }) {
               offensive security.
             </p>
 
-            <div className="flex items-center gap-2 text-sm text-gray-500 font-mono mb-8 px-4 py-2 bg-white/5 border border-white/10 rounded-lg">
+            <div className="flex items-center gap-2 text-sm text-meta font-mono mb-8 px-4 py-2 bg-white/5 border border-white/10 rounded-lg">
               <MapPin size={14} className="text-blue-500" />
               <span>Operating from Tempe, Arizona</span>
             </div>
@@ -100,7 +100,7 @@ export default function Footer({ socials }: { socials: SocialLink[] }) {
                   <span className="text-gray-300 text-sm font-medium mb-1">
                     Agentic Coding & LLMs
                   </span>
-                  <span className="text-gray-500 text-xs leading-relaxed">
+                  <span className="text-meta text-xs leading-relaxed">
                     Researching use of LLMs for autonomous decompilation and
                     vulnerability discovery.
                   </span>
@@ -111,7 +111,7 @@ export default function Footer({ socials }: { socials: SocialLink[] }) {
         </div>
 
         {/* ================= COPYRIGHT & TECH STACK ================= */}
-        <div className="w-full pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs md:text-sm text-gray-500 font-mono">
+        <div className="w-full pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs md:text-sm text-meta font-mono">
           <p>© {currentYear} Dhaval Tanna. All rights reserved.</p>
           <p className="flex items-center gap-1.5">
             Built with Next.js, Springboot and Firebase

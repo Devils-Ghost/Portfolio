@@ -61,7 +61,7 @@ export default function EngagementCard({
           />
         </div>
         <div className="md:hidden flex flex-col ml-4 overflow-hidden">
-          <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest mb-0.5">
+          <span className="text-meta font-mono text-[10px] uppercase tracking-widest mb-0.5">
             {typeLabel}
           </span>
           <h3 className="text-white font-bold text-base truncate">

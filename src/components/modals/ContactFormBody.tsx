@@ -203,7 +203,7 @@ export default function ContactFormBody({ content }: ModalBodyProps) {
 
       <div className="flex items-center gap-3 my-4">
         <div className="flex-1 h-px bg-white/10"></div>
-        <span className="text-xs text-gray-500 font-medium tracking-widest">
+        <span className="text-xs text-meta font-medium tracking-widest">
           OR
         </span>
         <div className="flex-1 h-px bg-white/10"></div>

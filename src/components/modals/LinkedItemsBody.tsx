@@ -82,12 +82,12 @@ export default function LinkedItemsBody({ id, content }: ModalBodyProps) {
         </p>
       )}
 
-      <p className="text-xs uppercase tracking-widest text-gray-500 font-mono mb-4">
+      <p className="text-xs uppercase tracking-widest text-meta font-mono mb-4">
         This skill was used in:
       </p>
 
       {usages.length === 0 && (
-        <p className="text-gray-500 text-sm">
+        <p className="text-meta text-sm">
           This skill is used somwhere that is not publicly published yet.
         </p>
       )}
@@ -118,7 +118,7 @@ export default function LinkedItemsBody({ id, content }: ModalBodyProps) {
                         className={`${rowClasses} bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/30 text-left text-gray-200 transition-colors`}
                       >
                         <span>{title}</span>
-                        <span className="text-gray-500 font-mono text-xs shrink-0">
+                        <span className="text-meta font-mono text-xs shrink-0">
                           {date}
                         </span>
                       </button>
@@ -136,7 +136,7 @@ export default function LinkedItemsBody({ id, content }: ModalBodyProps) {
                         className={`${rowClasses} bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/30 text-left text-gray-200 transition-colors`}
                       >
                         <span>{title}</span>
-                        <span className="text-gray-500 font-mono text-xs shrink-0">
+                        <span className="text-meta font-mono text-xs shrink-0">
                           {date}
                         </span>
                       </button>
@@ -149,7 +149,7 @@ export default function LinkedItemsBody({ id, content }: ModalBodyProps) {
                       className={`${rowClasses} text-gray-400`}
                     >
                       <span>{title}</span>
-                      <span className="text-gray-500 font-mono text-xs shrink-0">
+                      <span className="text-meta font-mono text-xs shrink-0">
                         {date}
                       </span>
                     </div>

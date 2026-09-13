@@ -35,6 +35,24 @@
   --color-accent: var(--color-blue-500);
   --color-accent-soft: var(--color-blue-400);
 
+  /* ── Metadata text ─────────────────────────────────────────────────
+     Dates, counts, IDs, type labels — the mono line under a title.
+
+     This exists because `gray-500` (3.97:1) and `gray-600` (2.54:1) on
+     --color-surface both fail WCAG AA for normal text, and metadata is
+     normal text no matter how small it is set. 4.5:1 is the floor; this
+     measures 5.5:1.
+
+     Deliberately a NEW token rather than a redefinition of the gray
+     scale, which is what the blue block above does. Blue was safe to
+     redefine because every blue on the site is the accent. Grey is not:
+     `to-gray-500`/`to-gray-600` render the metallic pushpin on
+     ProjectCard and the lanyard clip on AboutSection, and lightening
+     those would flatten two of the details project-plan.md §1.2 calls
+     out as worth preserving. Text and material happened to share a
+     scale; they don't share a meaning. */
+  --color-meta: #818a99;
+
   /* ── Shape & depth ─────────────────────────────────────────────────── */
   --radius-card: 1rem; /* matches the rounded-xl cards use today */
   --shadow-card: 0 20px 40px -15px rgb(0 0 0 / 0.7);

@@ -111,7 +111,7 @@ export default function UnderConstruction({ page, tagline, emailHref }: Props) {
             <span className="w-3 h-3 rounded-full bg-red-500/70" />
             <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
             <span className="w-3 h-3 rounded-full bg-green-500/70" />
-            <span className="ml-3 flex items-center gap-1.5 text-xs text-gray-500 font-mono truncate">
+            <span className="ml-3 flex items-center gap-1.5 text-xs text-meta font-mono truncate">
               <Terminal size={12} />
               visitor@dhaval-tanna: ~/{slug}
             </span>
@@ -135,7 +135,7 @@ export default function UnderConstruction({ page, tagline, emailHref }: Props) {
           transition={{ duration: 0.5, delay: 0.5 }}
           className="mb-10"
         >
-          <div className="flex justify-between text-xs text-gray-500 font-mono mb-2">
+          <div className="flex justify-between text-xs text-meta font-mono mb-2">
             <span>build_progress.sh</span>
             <span>in progress</span>
           </div>

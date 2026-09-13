@@ -40,7 +40,7 @@ export default function SuccessStoryListItem({
         {story.title}
       </h3>
       <div
-        className={`flex items-center gap-3 mt-1.5 font-mono text-sm transition-all duration-300 ${isActive ? "text-blue-400" : "text-gray-600"}`}
+        className={`flex items-center gap-3 mt-1.5 font-mono text-sm transition-all duration-300 ${isActive ? "text-blue-400" : "text-meta"}`}
       >
         <span>{story.org ?? story.type}</span>
       </div>

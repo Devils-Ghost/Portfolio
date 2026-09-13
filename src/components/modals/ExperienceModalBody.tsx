@@ -35,7 +35,7 @@ export default function ExperienceModalBody({ id, content }: ModalBodyProps) {
           </h3>
           <div className="flex items-center gap-3 text-sm">
             <span className="text-blue-400 font-medium text-lg">{exp.org}</span>
-            <span className="text-gray-500 font-mono">• {dateLabel}</span>
+            <span className="text-meta font-mono">• {dateLabel}</span>
           </div>
         </div>
         <span className="text-gray-400 bg-white/5 px-3 py-1 rounded text-xs border border-white/10 uppercase tracking-wider">

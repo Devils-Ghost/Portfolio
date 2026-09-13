@@ -63,7 +63,7 @@ A personal portfolio for a graduate software/systems engineer specialising in cy
 | `--color-surface-deep` | `#05080c`                                                              | gradient card bottoms                 |
 | background             | pure black + radial blue glow, fixed, `-z-10`                          | page canvas                           |
 | accent                 | blue (500/400 range)                                                   | links, active states, glows, brackets |
-| text                   | white → `gray-400` for body → `gray-500/600` for meta                  |                                       |
+| text                   | white → `gray-400` for body → `text-meta` for metadata                 | `gray-500/600` are **retired for text** — both fail WCAG AA on `--color-surface` (3.97:1 and 2.54:1). `--color-meta` is 5.5:1. They remain in use as gradient stops for the pushpin and lanyard clip, where they render material rather than text |
 | mono                   | headline metadata, dates, skill pills, type labels                     |                                       |
 | radii                  | `rounded-xl` cards · `rounded-2xl`/`3xl` panels · `rounded-full` pills |                                       |
 | card shadow            | `0 20px 40px -15px rgb(0 0 0 / 0.7)`                                   |                                       |

@@ -85,7 +85,7 @@ export default function CredentialsGrid({
                   key={cert.id}
                   className="flex items-start gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-300"
                 >
-                  <div className="mt-1 text-gray-500">
+                  <div className="mt-1 text-meta">
                     <ShieldCheck size={18} />
                   </div>
                   <div className="flex flex-col">
@@ -152,7 +152,7 @@ export default function CredentialsGrid({
                     key={award.id}
                     className="flex items-start gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-purple-500/30 transition-all duration-300"
                   >
-                    <div className="mt-1 text-gray-500">
+                    <div className="mt-1 text-meta">
                       <ContentIcon name={award.iconName} size={18} />
                     </div>
                     <div className="flex flex-col">
